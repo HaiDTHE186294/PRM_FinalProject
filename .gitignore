@@ -1,15 +1,47 @@
+# ================================================
+# Android Studio / IntelliJ
+# ================================================
+
+# User-specific files
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.idea/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (contains SDK path and other sensitive info)
 local.properties
+
+# ================================================
+# Android generated files
+# ================================================
+
+# Generated APKs, AABs, and bundles
+*.apk
+*.aab
+*.ap_
+
+# Files for the Dalvik VM
+*.dex
+
+# Keystore files
+*.keystore
+*.jks
+
+# C/C++ native build files
+.cxx/
+.externalNativeBuild/
+
+# Other generated files
+captures/
+
+# ================================================
+# OS-specific files
+# ================================================
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
