@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Experiment(
     @SerialName("experimentId")
-    val experimentId: Int,
+    val experimentId: Int? = null,
 
     @SerialName("experimentTitle")
     val experimentTitle: String? = null,

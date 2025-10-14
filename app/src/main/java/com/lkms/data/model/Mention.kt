@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializable
 data class Mention(
     // Khóa ngoại đến Comment
     @SerialName("commentId")
-    val commentId: Int,
+    val commentId: Int? = null,
 
     // Khóa ngoại đến User
     @SerialName("userId")
-    val userId: Int
+    val userId: Int? = null
 )

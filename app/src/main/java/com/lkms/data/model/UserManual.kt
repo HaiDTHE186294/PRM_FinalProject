@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserManual(
     @SerialName("manualId")
-    val manualId: String,
+    val manualId: String? = null,
 
     @SerialName("url")
     val url: String? = null

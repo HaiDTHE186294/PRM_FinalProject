@@ -12,11 +12,11 @@ import kotlinx.serialization.Serializable
 data class ProtocolItem(
     // Khóa ngoại đến Protocol
     @SerialName("protocolId")
-    val protocolId: Int,
+    val protocolId: Int? = null,
 
     // Khóa ngoại đến Item
     @SerialName("itemId")
-    val itemId: Int,
+    val itemId: Int? = null,
 
     @SerialName("quantity")
     val quantity: Int? = null
