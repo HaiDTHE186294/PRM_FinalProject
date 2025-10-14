@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Comment(
     @SerialName("commentId")
-    val commentId: Int,
+    val commentId: Int? = null,
 
     @SerialName("commentType")
     val commentType: String? = null,

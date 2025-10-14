@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Booking(
     @SerialName("bookingId")
-    val bookingId: Int,
+    val bookingId: Int? = null,
 
     // Khóa ngoại đến User
     @SerialName("userId")

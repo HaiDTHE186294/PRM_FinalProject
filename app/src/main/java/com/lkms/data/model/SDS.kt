@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SDS(
     @SerialName("sdsId")
-    val sdsId: String,
+    val sdsId: String? = null,
 
     @SerialName("url")
     val url: String? = null

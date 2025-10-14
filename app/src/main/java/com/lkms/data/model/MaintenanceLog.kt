@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MaintenanceLog(
     @SerialName("maintenanceId")
-    val maintenanceId: Int,
+    val maintenanceId: Int? = null,
 
     // Khóa ngoại đến User
     @SerialName("userId")

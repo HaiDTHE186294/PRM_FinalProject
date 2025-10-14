@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Item(
     @SerialName("itemId")
-    val itemId: Int,
+    val itemId: Int? = null,
 
     @SerialName("itemName")
     val itemName: String? = null,

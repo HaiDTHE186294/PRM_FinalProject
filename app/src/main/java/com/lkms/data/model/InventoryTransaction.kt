@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class InventoryTransaction(
     @SerialName("transactionId")
-    val transactionId: Int,
+    val transactionId: Int? = null,
 
     @SerialName("transactionType")
     val transactionType: String? = null,
