@@ -93,14 +93,14 @@ public interface IEquipmentRepository {
      * UC9: Lấy các đặt chỗ hiện có cho một thiết bị trong một khoảng thời gian.
      * Truy vấn bảng "Booking" [2] để hiển thị lịch (Calendar view).
      */
-    void getEquipmentBookings(int equipmentId, Date startDate, Date endDate, BookingListCallback callback);
+    void getEquipmentBookings(int equipmentId, String startDate, String endDate, BookingListCallback callback);
 
     /**
      * UC9: Tạo yêu cầu đặt chỗ mới.
      * Chèn dữ liệu vào bảng "Booking" [2] với "bookingStatus" là Pending.
      * Server sẽ chịu trách nhiệm xác thực xung đột thời gian.
      */
-    void createBooking(int userId, int equipmentId, int experimentId, Date startTime, Date endTime, BookingIdCallback callback);
+    void createBooking(int userId, int equipmentId, int experimentId, String startTime, String endTime, BookingIdCallback callback);
 
     // --- Chức năng Phê duyệt (Approval - Dành cho Lab Manager) ---
 
