@@ -64,7 +64,7 @@ class EquipmentRepositoryImpl : IEquipmentRepository {
             try {
                 val response = client.postgrest["Equipment"].insert(newEquipment)
                 val insertedEquipment = response.decodeSingleOrNull<Equipment>()
-                if (insertedEquipment != null) {
+                if (insertedEquipment != null && insertedEquipment.equipmentId != null) {
                     callback.onSuccess(insertedEquipment.equipmentId)
                 } else {
                     callback.onError("Failed to add equipment or get returned ID.")
@@ -74,6 +74,7 @@ class EquipmentRepositoryImpl : IEquipmentRepository {
             }
         }
     }
+
 
     override fun getMaintenanceLogs(equipmentId: Int, callback: IEquipmentRepository.MaintenanceLogCallback) {
         scope.launch {
@@ -139,8 +140,8 @@ class EquipmentRepositoryImpl : IEquipmentRepository {
 
     override fun getEquipmentBookings(
         equipmentId: Int,
-        startDate: Date,
-        endDate: Date,
+        startDate: String,
+        endDate: String,
         callback: IEquipmentRepository.BookingListCallback
     ) {
         scope.launch {
@@ -148,8 +149,8 @@ class EquipmentRepositoryImpl : IEquipmentRepository {
                 val response = client.postgrest["Booking"].select {
                     filter {
                         eq("equipmentId", equipmentId)
-                        lte("startTime", toIsoString(endDate) ?: "")
-                        gte("endTime", toIsoString(startDate) ?: "")
+                        lte("startTime", endDate ?: "")
+                        gte("endTime", startDate ?: "")
                     }
                 }
                 val bookings = response.decodeList<Booking>()
@@ -164,30 +165,33 @@ class EquipmentRepositoryImpl : IEquipmentRepository {
         userId: Int,
         equipmentId: Int,
         experimentId: Int,
-        startTime: Date,
-        endTime: Date,
+        startTime: String,
+        endTime: String,
         callback: IEquipmentRepository.BookingIdCallback
+
     ) {
         scope.launch {
             try {
+
                 // ✅ Tạo object có @Serializable thay vì Map<String, Any>
                 val newBooking = Booking(
-                    bookingId = 0, // Supabase sẽ auto-generate
+                    bookingId = null, // Không cần set ID
                     userId = userId,
                     equipmentId = equipmentId,
                     experimentId = experimentId,
-                    startTime = toIsoString(startTime),
-                    endTime = toIsoString(endTime),
+                    startTime = startTime,
+                    endTime = endTime,
                     bookingStatus = "Pending"
                 )
+
 
                 val response = client.postgrest["Booking"].insert(newBooking)
                 val created = response.decodeSingleOrNull<Booking>()
 
-                if (created != null) {
+                if (created?.bookingId != null) {
                     callback.onSuccess(created.bookingId)
                 } else {
-                    callback.onError("Failed to create booking.")
+                    callback.onError("Booking ID is null after insert.")
                 }
             } catch (e: Exception) {
                 callback.onError(e.message ?: "Unknown error")

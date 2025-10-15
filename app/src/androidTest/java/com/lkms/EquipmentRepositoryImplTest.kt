@@ -4,7 +4,6 @@ import com.lkms.data.repository.IEquipmentRepository
 import com.lkms.data.repository.implement.EquipmentRepositoryImpl
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.util.*
 
 class EquipmentRepositoryImplTest {
 
@@ -17,7 +16,7 @@ class EquipmentRepositoryImplTest {
             override fun onSuccess(equipmentList: List<com.lkms.data.model.Equipment>) {
                 println("✅ Equipment list size: ${equipmentList.size}")
                 equipmentList.forEach {
-                    println(" - ${it.equipmentName} (${it.equipmentId})")
+                    println(" - ${it.equipmentName} (ID=${it.equipmentId ?: "null"})")
                 }
             }
 
@@ -34,7 +33,7 @@ class EquipmentRepositoryImplTest {
         val id = 1
         repo.getEquipmentById(id, object : IEquipmentRepository.EquipmentCallback {
             override fun onSuccess(equipment: com.lkms.data.model.Equipment) {
-                println("✅ Equipment: ${equipment.equipmentName}")
+                println("✅ Equipment: ${equipment.equipmentName} (ID=${equipment.equipmentId})")
             }
 
             override fun onError(error: String) {
@@ -47,8 +46,8 @@ class EquipmentRepositoryImplTest {
     // ✅ 3. Test lấy danh sách booking theo thiết bị + khoảng thời gian
     @Test
     fun testGetEquipmentBookings() = runBlocking {
-        val startDate = Date(System.currentTimeMillis() - 86400000) // hôm qua
-        val endDate = Date(System.currentTimeMillis() + 86400000)  // ngày mai
+        val startDate = "2024-01-01"
+        val endDate = "2124-01-01"
 
         repo.getEquipmentBookings(
             equipmentId = 1,
@@ -58,7 +57,7 @@ class EquipmentRepositoryImplTest {
                 override fun onSuccess(bookings: List<com.lkms.data.model.Booking>) {
                     println("✅ Bookings: ${bookings.size}")
                     bookings.forEach {
-                        println(" - Booking ID ${it.bookingId} | Start ${it.startTime} | End ${it.endTime}")
+                        println(" - Booking ID=${it.bookingId ?: "null"} | ${it.startTime} → ${it.endTime}")
                     }
                 }
 
@@ -70,11 +69,11 @@ class EquipmentRepositoryImplTest {
         Thread.sleep(3000)
     }
 
-    // ✅ 4. Test tạo booking mới
+    // ✅ 4. Test tạo booking mới (Supabase auto ID)
     @Test
     fun testCreateBooking() = runBlocking {
-        val start = Date()
-        val end = Date(System.currentTimeMillis() + 3600000) // +1h
+        val start = "2004-09-24"
+        val end = "2204-09-23"
 
         repo.createBooking(
             userId = 1,
@@ -83,8 +82,8 @@ class EquipmentRepositoryImplTest {
             startTime = start,
             endTime = end,
             callback = object : IEquipmentRepository.BookingIdCallback {
-                override fun onSuccess(id: Int) {
-                    println("✅ Booking created with ID: $id")
+                override fun onSuccess(bookingId: Int) { // 🔹 Đổi id → bookingId
+                    println("✅ Booking created with ID: $bookingId")
                 }
 
                 override fun onError(error: String) {
@@ -94,6 +93,7 @@ class EquipmentRepositoryImplTest {
         )
         Thread.sleep(3000)
     }
+
 
     // ✅ 5. Test lấy URL manual (hướng dẫn thiết bị)
     @Test
@@ -110,10 +110,9 @@ class EquipmentRepositoryImplTest {
         Thread.sleep(3000)
     }
 
-    // ✅ 6. (Tùy chọn) Test lấy danh sách manual theo serialNumber = manualId
+    // ✅ 6. Test lấy manual theo serialNumber = manualId
     @Test
     fun testManualIdEqualsSerialNumber() = runBlocking {
-        // Giả định hàm getManualBySerialNumber được thêm trong repo
         repo.getManualBySerialNumber("EQ-001", object : IEquipmentRepository.StringCallback {
             override fun onSuccess(result: String) {
                 println("✅ Manual URL for EQ-001: $result")
