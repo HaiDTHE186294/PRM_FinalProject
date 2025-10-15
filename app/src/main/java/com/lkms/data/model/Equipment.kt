@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Equipment(
     @SerialName("equipmentId")
-    val equipmentId: Int,
+    val equipmentId: Int? = null,
 
     @SerialName("equipmentName")
     val equipmentName: String? = null,

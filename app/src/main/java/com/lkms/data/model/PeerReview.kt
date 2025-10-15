@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PeerReview(
     @SerialName("reviewId")
-    val reviewId: Int,
+    val reviewId: Int? = null,
 
     // Khóa ngoại đến Project
     @SerialName("projectId")

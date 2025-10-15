@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProtocolStep(
     @SerialName("protocolStepId")
-    val protocolStepId: Int,
+    val protocolStepId: Int? = null,
 
     @SerialName("stepOrder")
     val stepOrder: Int? = null,

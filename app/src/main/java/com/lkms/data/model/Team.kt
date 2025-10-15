@@ -11,11 +11,11 @@ import kotlinx.serialization.Serializable
 data class Team(
     // Khóa ngoại đến Experiment
     @SerialName("experimentId")
-    val experimentId: Int,
+    val experimentId: Int? = null,
 
     // Khóa ngoại đến User
     @SerialName("userId")
-    val userId: Int,
+    val userId: Int? = null,
 
     @SerialName("status")
     val status: String? = null

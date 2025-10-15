@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LogEntry(
     @SerialName("logId")
-    val logId: Int,
+    val logId: Int? = null,
 
     // Khóa ngoại đến ExperimentStep
     @SerialName("experimentStepId")

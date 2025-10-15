@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Protocol(
     @SerialName("protocolId")
-    val protocolId: Int,
+    val protocolId: Int? = null,
 
     @SerialName("protocolTitle")
     val protocolTitle: String? = null,
