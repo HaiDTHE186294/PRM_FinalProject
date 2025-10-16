@@ -52,30 +52,25 @@ class UserRepositoryImpl : IUserRepository {
     ) {
         scope.launch {
             try {
-                // Create a json object
-                val newData = buildJsonObject {
-                    name?.let           { put("name", JsonPrimitive(it)) }
-                    contactInfo?.let    { put("contactInfo", JsonPrimitive(it)) }
-                }
 
-                // Proceed only if there's something to update
-                if (newData.isNotEmpty()) {
-
-                    //Update the user's data first
-                    client.postgrest["User"].update(newData) {
-                        filter {
-                            eq("userId", userId)
-                        }
+                //Update the user's data first
+                client.postgrest["User"].update({
+                    set("name", name)
+                    set("contactInfo", contactInfo)
+                }) {
+                    filter {
+                        eq("userId", userId)
                     }
-
-                    //Then get the data for callback
-                    val updatedUser = client.postgrest["User"].select {
-                        filter {
-                            eq("userId", userId)
-                        }
-                    }.decodeSingle<User>()
-                    callback?.onSuccess(updatedUser)
                 }
+
+                //Then get the data for callback
+                val updatedUser = client.postgrest["User"].select {
+                    filter {
+                        eq("userId", userId)
+                    }
+                }.decodeSingle<User>()
+                callback?.onSuccess(updatedUser)
+
             } catch (e: Exception) {
                 callback?.onError(e.message ?: "Unknown error during profile update")
             }
@@ -89,8 +84,7 @@ class UserRepositoryImpl : IUserRepository {
     override fun getAllUsers(callback: IUserRepository.UserListCallback?) {
         scope.launch {
             try {
-                val response = client.postgrest["User"].select()
-                val userList = response.decodeList<User>()
+                val userList = client.postgrest["User"].select().decodeList<User>()
                 callback?.onSuccess(userList)
             } catch (e: Exception) {
                 callback?.onError(e.message ?: "Unknown error")
@@ -105,16 +99,23 @@ class UserRepositoryImpl : IUserRepository {
     ) {
         scope.launch {
             try {
-                val user = client.postgrest["User"].update(
-                    {
-                        set("roleId", newRoleId)
-                    }
+
+                client.postgrest["User"].update(
+                    { set("roleId", newRoleId) }
                 ) {
                     filter {
                         eq("userId", targetUserId)
                     }
+                }
+
+                //Split out to prevent that one JSON "EOF" error
+                val updatedUser = client.postgrest["User"].select {
+                    filter {
+                        eq("userId", targetUserId)
+                    }
                 }.decodeSingle<User>()
-                callback?.onSuccess(user)
+                callback?.onSuccess(updatedUser)
+
             } catch (e: Exception) {
                 callback?.onError(e.message ?: "Unknown error during role update")
             }
