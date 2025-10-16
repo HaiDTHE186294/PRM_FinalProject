@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface IUserRepository {
 
-    // --- Các giao diện Callback ---
+    //region //Callback
 
     interface UserCallback {
         void onSuccess(User user);
@@ -21,7 +21,24 @@ public interface IUserRepository {
         void onError(String errorMessage);
     }
 
-    // --- Chức năng Quản lý Hồ sơ Cá nhân (UC14) ---
+    //endregion
+
+    //region //Chức năng Quản lý Hồ sơ Cá nhân (UC14)
+
+//    /**
+//     * UC01: Lấy dữ liệu của người dùng sau khi login bằng email và password
+//     *
+//     * @param email email người dùng nhập vào
+//     * @param password password người dùng nhập vào
+//     */
+//    void getUser(String email, String password);
+
+    /**
+     * UC14: Lấy dữ liệu người dùng dựa trên ID của người dùng đó
+     *
+     * @param userId Id của người dùng
+     */
+    void getUserById(int userId, UserCallback callback);
 
     /**
      * UC14: Cập nhật thông tin hồ sơ cá nhân của người dùng.
@@ -33,7 +50,9 @@ public interface IUserRepository {
      */
     void updateUserProfile(int userId, String name, String contactInfo, UserCallback callback);
 
-    // --- Chức năng Quản lý Vai trò (Chỉ Lab Manager) (UC14) ---
+    //endregion
+
+    //region //Chức năng Quản lý Vai trò (Chỉ Lab Manager) (UC14)
 
     /**
      * UC14: Lấy danh sách tất cả người dùng trong phòng thí nghiệm.
@@ -50,4 +69,6 @@ public interface IUserRepository {
      * @param newRoleId ID vai trò mới (trường "roleId" [1]).
      */
     void updateUserRole(int targetUserId, int newRoleId, UserCallback callback);
+
+    //endregion
 }
