@@ -1,15 +1,16 @@
 package com.lkms.data.repository.implement
 
-import androidx.core.graphics.set
+
 import com.lkms.data.dal.SupabaseClient
 import com.lkms.data.model.User
 import com.lkms.data.repository.IUserRepository
-import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Returning // <-- Import added
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 
 class UserRepositoryImpl : IUserRepository {
 
@@ -19,12 +20,14 @@ class UserRepositoryImpl : IUserRepository {
     //Control lifetime of a process (According to my research)
     private val scope = CoroutineScope(Dispatchers.IO)
 
+    //region //Common user's methods
+
     override fun getUserById (userId: Int, callback: IUserRepository.UserCallback)
     {
         scope.launch {
             try {
                 //Get user data's from Supabase
-                val getUser = client.from("User").select {
+                val getUser = client.postgrest["User"].select {
                     filter {
                         eq("userId", userId)
                     }
@@ -49,31 +52,39 @@ class UserRepositoryImpl : IUserRepository {
     ) {
         scope.launch {
             try {
-                // Create a map of the fields to update, ignoring nulls
-                val newData = mutableMapOf<String, Any>().apply {
-                    name?.let { put("name", it) }
-                    contactInfo?.let { put("contactInfo", it) }
+                // Create a json object
+                val newData = buildJsonObject {
+                    name?.let           { put("name", JsonPrimitive(it)) }
+                    contactInfo?.let    { put("contactInfo", JsonPrimitive(it)) }
                 }
 
-//                // Proceed only if there's something to update
-//                if (updates.isNotEmpty()) {
+                // Proceed only if there's something to update
+                if (newData.isNotEmpty()) {
 
+                    //Update the user's data first
                     client.postgrest["User"].update(newData) {
                         filter {
                             eq("userId", userId)
                         }
-                    }.decodeSingle<User>()
+                    }
 
-                    callback?.onSuccess(User())
-//                }
+                    //Then get the data for callback
+                    val updatedUser = client.postgrest["User"].select {
+                        filter {
+                            eq("userId", userId)
+                        }
+                    }.decodeSingle<User>()
+                    callback?.onSuccess(updatedUser)
+                }
             } catch (e: Exception) {
                 callback?.onError(e.message ?: "Unknown error during profile update")
             }
         }
     }
 
-    //Lab manager's specific methods
-    //region
+    //endregion
+
+    //region //Lab manager's specific methods
 
     override fun getAllUsers(callback: IUserRepository.UserListCallback?) {
         scope.launch {
@@ -111,4 +122,5 @@ class UserRepositoryImpl : IUserRepository {
     }
 
     //endregion
+
 }
