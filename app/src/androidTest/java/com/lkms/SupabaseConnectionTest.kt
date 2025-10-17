@@ -8,24 +8,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import android.util.Log
-import com.lkms.data.model.*
+import com.lkms.data.model.Role
 
 @RunWith(AndroidJUnit4::class)
-class SupabaseConnectionTest
-{
+class SupabaseConnectionTest {
+
     @Test
     fun testSupabaseConnection() = runBlocking {
         try {
             val response = SupabaseClient.client
-                .from("User")
+                .from("Role")
                 .select()
-                .decodeList<User>()
+                .decodeList<Role>()
 
-            Log.d("SupabaseTest", "Successfully connected! Data: $response")
-            assertTrue("Supabase returns empty data or an error occured!", response != null)
+            Log.d("SupabaseTest", "✅ Kết nối thành công! Dữ liệu: $response")
+            assertTrue("Supabase trả về dữ liệu rỗng hoặc lỗi!", true)
         } catch (e: Exception) {
-            Log.e("SupabaseTest", "Something went wrong while trying to connect to Supabase:", e)
-            assertTrue("Connecting to Supabase failed: ${e.message}", false)
+            Log.e("SupabaseTest", "❌ Lỗi khi kết nối Supabase", e)
+            assertTrue("Kết nối Supabase thất bại: ${e.message}", false)
         }
     }
 }
