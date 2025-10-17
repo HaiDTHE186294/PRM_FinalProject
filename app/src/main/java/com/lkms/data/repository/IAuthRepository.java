@@ -1,6 +1,7 @@
 package com.lkms.data.repository;
 
 import com.lkms.data.model.AuthResult;
+import com.lkms.data.model.User;
 
 /**
  * Giao diện Repository cho các chức năng liên quan đến Xác thực (Authentication).
@@ -29,7 +30,8 @@ public interface IAuthRepository {
     // Giao diện callback để xử lý kết quả bất đồng bộ trong Java
 
     interface AuthCallback {
-        void onSuccess(AuthResult result);
+        void onSuccess(User user);
+        //  void onSuccess(AuthResult result);
         void onError(String errorMessage);
     }
 
