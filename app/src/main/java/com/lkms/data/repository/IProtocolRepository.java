@@ -62,7 +62,7 @@ public interface IProtocolRepository {
      * và danh sách các bước [2].
      * @param creatorUserId (int) Dựa trên trường "creatorUserId" [2].
      */
-    void createNewProtocol(Protocol protocolData, List<ProtocolStep> steps, int creatorUserId, ProtocolIdCallback callback);
+    void createNewProtocol(Protocol protocolData, List<ProtocolStep> steps, List<ProtocolItem> items, int creatorUserId, ProtocolIdCallback callback);
 
     // --- Chức năng Phê duyệt Protocol (UC20, UC21 - Chỉ Lab Manager) ---
 
