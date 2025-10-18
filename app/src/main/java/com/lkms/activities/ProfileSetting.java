@@ -23,4 +23,6 @@ public class ProfileSetting extends AppCompatActivity {
             return insets;
         });
     }
+
+    //Will working on these in the future
 }
