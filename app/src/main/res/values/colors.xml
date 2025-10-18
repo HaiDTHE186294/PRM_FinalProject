@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="role_lab_mng">#BF8CFF</color>
+    <color name="role_researcher">#9BE997</color>
+    <color name="role_technician">#FFE084</color>
 </resources>
