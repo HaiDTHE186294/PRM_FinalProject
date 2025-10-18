@@ -2,6 +2,8 @@ package com.lkms.data.repository;
 
 import com.lkms.data.model.Item;
 import com.lkms.data.model.InventoryTransaction;
+
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +14,11 @@ import java.util.List;
 public interface IInventoryRepository {
 
     // --- Các giao diện Callback ---
+
+    interface IdCallback {
+        void onSuccess(String id); // Trả về id mới
+        void onError(String errorMessage);
+    }
 
     interface InventoryListCallback {
         void onSuccess(List<Item> items);
@@ -90,4 +97,17 @@ public interface IInventoryRepository {
      * Cập nhật trường "transactionStatus" và "rejectReason" trong bảng "InventoryTransaction" [2].
      */
     void processInventoryApproval(int transactionId, boolean approve, String rejectReason, GenericCallback callback);
+
+    /**
+     * @param itemId ID của mặt hàng cần cập nhật.
+     * @param updatedData Đối tượng Item chứa thông tin mới.
+     * @param callback Gọi lại khi hoàn tất (trả về Item sau khi cập nhật hoặc báo lỗi).
+     */
+    void updateInventoryItem(int itemId, Item updatedData, InventoryItemCallback callback);
+
+
+    void uploadFileSdsToStorage(File file, StringCallback callback);
+
+
+    void addSds(String casNumber, String fileUrl, IdCallback callback);
 }
