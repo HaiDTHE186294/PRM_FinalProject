@@ -1,6 +1,6 @@
 package com.lkms.data.repository;
 
-import com.lkms.data.model.User;
+import com.lkms.data.model.java.User;
 
 /**
  * Giao diện Repository cho các chức năng liên quan đến Xác thực (Authentication).

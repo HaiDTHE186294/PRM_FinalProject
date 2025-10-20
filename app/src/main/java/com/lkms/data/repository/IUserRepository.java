@@ -1,6 +1,6 @@
 package com.lkms.data.repository;
 
-import com.lkms.data.model.User; // Ánh xạ bảng User [1]
+import com.lkms.data.model.java.*;
 import java.util.List;
 
 /**

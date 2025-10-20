@@ -1,8 +1,6 @@
 package com.lkms.data.repository;
 
 import com.lkms.data.model.java.*;
-//import com.lkms.data.model.Equipment;
-//import com.lkms.data.model.MaintenanceLog;
 import java.util.Date;
 import java.util.List;
 

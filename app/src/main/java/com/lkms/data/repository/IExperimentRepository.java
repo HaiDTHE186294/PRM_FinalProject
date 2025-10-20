@@ -1,9 +1,6 @@
 package com.lkms.data.repository;
 
-import com.lkms.data.model.Experiment;
-import com.lkms.data.model.ExperimentStep;
-import com.lkms.data.model.LogEntry;
-import com.lkms.data.model.Comment;
+import com.lkms.data.model.java.*;
 
 import java.io.File;
 import java.util.List;
