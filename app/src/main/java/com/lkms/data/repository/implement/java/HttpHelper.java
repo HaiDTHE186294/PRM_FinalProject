@@ -1,11 +1,13 @@
 package com.lkms.data.repository.implement.java;
 
 import static com.lkms.BuildConfig.SUPABASE_ANON_KEY;
+import static com.lkms.BuildConfig.SUPABASE_URL;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.net.URLConnection;
 
 /**
  * HttpHelper - tiện ích chung cho toàn bộ repository.
@@ -60,6 +62,57 @@ public class HttpHelper {
     }
 
     // ===============================================================
+// 🔹 UPLOAD FILE - Upload file lên Supabase Storage
+// ===============================================================
+    public static String uploadFile(String bucketName, String path, File file) throws IOException {
+        String SUPABASE_URL = com.lkms.BuildConfig.SUPABASE_URL;
+        String SUPABASE_ANON_KEY = com.lkms.BuildConfig.SUPABASE_ANON_KEY;
+
+        String uploadUrl = SUPABASE_URL + "/storage/v1/object/" + bucketName + "/" + path;
+
+        HttpURLConnection conn = (HttpURLConnection) new URL(uploadUrl).openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Authorization", "Bearer " + SUPABASE_ANON_KEY);
+        conn.setRequestProperty("apikey", SUPABASE_ANON_KEY);
+
+        // 🔸 Xác định Content-Type (tương thích API 24)
+        String contentType = URLConnection.guessContentTypeFromName(file.getName());
+        if (contentType == null) contentType = "application/octet-stream";
+        conn.setRequestProperty("Content-Type", contentType);
+
+        // 🔸 Ghi file vào request body
+        try (OutputStream os = conn.getOutputStream();
+             FileInputStream fis = new FileInputStream(file)) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+        }
+
+        // 🔸 Đọc phản hồi từ server
+        int responseCode = conn.getResponseCode();
+        InputStream stream = (responseCode >= 200 && responseCode < 300)
+                ? conn.getInputStream()
+                : conn.getErrorStream();
+
+        StringBuilder response = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) response.append(line);
+        }
+
+        if (responseCode >= 200 && responseCode < 300) {
+            // 🔸 Trả về public URL của file
+            return SUPABASE_URL + "/storage/v1/object/public/" + bucketName + "/" + path;
+        } else {
+            throw new IOException("Upload failed (" + responseCode + "): " + response);
+        }
+    }
+
+    // ===============================================================
     // ⚙️ Private helper methods
     // ===============================================================
 
@@ -75,6 +128,7 @@ public class HttpHelper {
         conn.setRequestProperty("Authorization", "Bearer " + SUPABASE_ANON_KEY);
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Accept", "application/json");
+        conn.setRequestProperty("Prefer", "return=representation");
         conn.setDoInput(true);
 
         // Các phương thức cần body (POST, PUT, PATCH)
