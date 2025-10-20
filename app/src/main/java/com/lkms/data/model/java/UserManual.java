@@ -1,8 +1,12 @@
 package com.lkms.data.model.java;
 
-
 import com.google.gson.annotations.SerializedName;
+import lombok.Data;
 
+/**
+ * Đại diện cho một hàng trong bảng "UserManual".
+ */
+@Data
 public class UserManual {
 
     @SerializedName("manualId")
@@ -10,13 +14,4 @@ public class UserManual {
 
     @SerializedName("url")
     private String url;
-
-    public void UserManual() {}
-
-    // --- Getters & Setters ---
-    public String getManualId() { return manualId; }
-    public void setManualId(String manualId) { this.manualId = manualId; }
-
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
 }

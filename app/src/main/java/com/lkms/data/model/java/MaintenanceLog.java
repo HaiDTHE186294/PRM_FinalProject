@@ -1,44 +1,35 @@
 package com.lkms.data.model.java;
+
 import com.google.gson.annotations.SerializedName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    public class MaintenanceLog {
+/**
+ * Đại diện cho một hàng trong bảng "MaintenanceLog".
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MaintenanceLog {
 
-        @SerializedName("maintenanceId")
-        private Integer maintenanceId;
+    @SerializedName("maintenanceId")
+    private Integer maintenanceId;
 
-        @SerializedName("userId")
-        private Integer userId;
+    // Khóa ngoại đến User
+    @SerializedName("userId")
+    private Integer userId;
 
-        @SerializedName("equipmentId")
-        private Integer equipmentId;
+    // Khóa ngoại đến Equipment
+    @SerializedName("equipmentId")
+    private Integer equipmentId;
 
-        @SerializedName("maintenanceTime")
-        private String maintenanceTime;
+    @SerializedName("maintenanceTime")
+    private String maintenanceTime;
 
-        @SerializedName("maintenanceType")
-        private String maintenanceType;
+    @SerializedName("maintenanceType")
+    private String maintenanceType;
 
-        @SerializedName("detail")
-        private String detail;
-
-        public void MaintenanceLog() {}
-
-        // --- Getters & Setters ---
-        public Integer getMaintenanceId() { return maintenanceId; }
-        public void setMaintenanceId(Integer maintenanceId) { this.maintenanceId = maintenanceId; }
-
-        public Integer getUserId() { return userId; }
-        public void setUserId(Integer userId) { this.userId = userId; }
-
-        public Integer getEquipmentId() { return equipmentId; }
-        public void setEquipmentId(Integer equipmentId) { this.equipmentId = equipmentId; }
-
-        public String getMaintenanceTime() { return maintenanceTime; }
-        public void setMaintenanceTime(String maintenanceTime) { this.maintenanceTime = maintenanceTime; }
-
-        public String getMaintenanceType() { return maintenanceType; }
-        public void setMaintenanceType(String maintenanceType) { this.maintenanceType = maintenanceType; }
-
-        public String getDetail() { return detail; }
-        public void setDetail(String detail) { this.detail = detail; }
-    }
+    @SerializedName("detail")
+    private String detail;
+}

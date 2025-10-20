@@ -1,9 +1,14 @@
 package com.lkms.data.model.java;
 
 import com.lkms.data.model.Role;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthResult {
 
         private String authToken; // Authentication token (e.g., JWT)

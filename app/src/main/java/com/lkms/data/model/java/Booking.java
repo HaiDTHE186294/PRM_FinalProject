@@ -1,18 +1,30 @@
 package com.lkms.data.model.java;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+/**
+ * Đại diện cho một hàng trong bảng "Booking".
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
 
     @SerializedName("bookingId")
     private Integer bookingId;
 
+    // Khóa ngoại đến User
     @SerializedName("userId")
     private Integer userId;
 
+    // Khóa ngoại đến Equipment
     @SerializedName("equipmentId")
     private Integer equipmentId;
 
+    // Khóa ngoại đến Experiment
     @SerializedName("experimentId")
     private Integer experimentId;
 
@@ -27,43 +39,4 @@ public class Booking {
 
     @SerializedName("rejectReason")
     private String rejectReason;
-
-    public void Booking() {}
-
-    public Booking(Integer bookingId, Integer userId, Integer equipmentId,
-                   Integer experimentId, String startTime, String endTime,
-                   String bookingStatus) {
-        this.bookingId = bookingId;
-        this.userId = userId;
-        this.equipmentId = equipmentId;
-        this.experimentId = experimentId;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.bookingStatus = bookingStatus;
-    }
-
-    // --- Getters & Setters ---
-    public Integer getBookingId() { return bookingId; }
-    public void setBookingId(Integer bookingId) { this.bookingId = bookingId; }
-
-    public Integer getUserId() { return userId; }
-    public void setUserId(Integer userId) { this.userId = userId; }
-
-    public Integer getEquipmentId() { return equipmentId; }
-    public void setEquipmentId(Integer equipmentId) { this.equipmentId = equipmentId; }
-
-    public Integer getExperimentId() { return experimentId; }
-    public void setExperimentId(Integer experimentId) { this.experimentId = experimentId; }
-
-    public String getStartTime() { return startTime; }
-    public void setStartTime(String startTime) { this.startTime = startTime; }
-
-    public String getEndTime() { return endTime; }
-    public void setEndTime(String endTime) { this.endTime = endTime; }
-
-    public String getBookingStatus() { return bookingStatus; }
-    public void setBookingStatus(String bookingStatus) { this.bookingStatus = bookingStatus; }
-
-    public String getRejectReason() { return rejectReason; }
-    public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
 }
