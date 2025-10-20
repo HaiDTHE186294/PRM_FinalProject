@@ -34,7 +34,7 @@
 //                val equipmentList = response.decodeList<Equipment>()
 //                callback.onSuccess(equipmentList)
 //            } catch (e: Exception) {
-//                callback.onError(e.message ?: "Unknown error")
+//                callback.onError(e.message ?: "Unknown error") //ghi rõ lỗi
 //            }
 //        }
 //    }

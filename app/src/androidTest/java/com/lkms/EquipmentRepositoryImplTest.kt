@@ -30,7 +30,7 @@
 //    // ✅ 2. Test lấy thông tin thiết bị theo ID
 //    @Test
 //    fun testGetEquipmentById() = runBlocking {
-//        val id = 1
+//        val id = 2
 //        repo.getEquipmentById(id, object : IEquipmentRepository.EquipmentCallback {
 //            override fun onSuccess(equipment: com.lkms.data.model.Equipment) {
 //                println("✅ Equipment: ${equipment.equipmentName} (ID=${equipment.equipmentId})")
@@ -113,9 +113,9 @@
 //    // ✅ 6. Test lấy manual theo serialNumber = manualId
 //    @Test
 //    fun testManualIdEqualsSerialNumber() = runBlocking {
-//        repo.getManualBySerialNumber("EQ-001", object : IEquipmentRepository.StringCallback {
+//        repo.getManualBySerialNumber("S1", object : IEquipmentRepository.StringCallback {
 //            override fun onSuccess(result: String) {
-//                println("✅ Manual URL for EQ-001: $result")
+//                println("✅ Manual URL for S1: $result")
 //            }
 //
 //            override fun onError(error: String) {
