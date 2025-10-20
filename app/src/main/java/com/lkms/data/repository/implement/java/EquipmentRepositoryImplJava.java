@@ -8,11 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.*;
 import com.lkms.data.repository.IEquipmentRepository;
 
-import java.io.*;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class EquipmentRepositoryImplJava implements IEquipmentRepository {
@@ -25,7 +21,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
         new Thread(() -> {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Equipment?select=*";
-                String json = getJson(endpoint);
+                String json = HttpHelper.getJson(endpoint);
                 Type listType = new TypeToken<List<Equipment>>() {}.getType();
                 List<Equipment> list = gson.fromJson(json, listType);
                 callback.onSuccess(list);
@@ -41,7 +37,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
         new Thread(() -> {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Equipment?select=*&equipmentId=eq." + equipmentId;
-                String json = getJson(endpoint);
+                String json = HttpHelper.getJson(endpoint);
                 Type listType = new TypeToken<List<Equipment>>() {}.getType();
                 List<Equipment> list = gson.fromJson(json, listType);
                 if (list != null && !list.isEmpty()) callback.onSuccess(list.get(0));
@@ -59,10 +55,8 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Equipment";
                 String jsonBody = gson.toJson(newEquipment);
-                String response = postJson(endpoint, jsonBody);
-
-                // Trả về ID mới (nếu Supabase có trả)
-                callback.onSuccess(0); // hoặc parse từ response nếu có ID
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+                callback.onSuccess(0);
             } catch (Exception e) {
                 callback.onError("Lỗi khi thêm thiết bị: " + e.getMessage());
             }
@@ -75,7 +69,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
         new Thread(() -> {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/MaintenanceLog?select=*&equipmentId=eq." + equipmentId;
-                String json = getJson(endpoint);
+                String json = HttpHelper.getJson(endpoint);
                 Type listType = new TypeToken<List<MaintenanceLog>>() {}.getType();
                 List<MaintenanceLog> logs = gson.fromJson(json, listType);
                 callback.onSuccess(logs);
@@ -90,21 +84,17 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
     public void getManualDownloadUrl(int equipmentId, StringCallback callback) {
         new Thread(() -> {
             try {
-                // 🔹 B1: Lấy serialNumber từ bảng Equipment
                 String eqEndpoint = SUPABASE_URL + "/rest/v1/Equipment?select=serialNumber&equipmentId=eq." + equipmentId;
-                String eqJson = getJson(eqEndpoint);
+                String eqJson = HttpHelper.getJson(eqEndpoint);
 
                 if (!eqJson.contains("serialNumber")) {
                     callback.onError("Không tìm thấy serialNumber cho thiết bị ID=" + equipmentId);
                     return;
                 }
 
-                // 🔹 B2: Parse serialNumber ra
                 String serial = eqJson.split("\"serialNumber\":\"")[1].split("\"")[0];
-
-                // 🔹 B3: Dùng serialNumber để lấy url trong bảng UserManual
                 String manualEndpoint = SUPABASE_URL + "/rest/v1/UserManual?select=url&manualId=eq." + serial;
-                String manualJson = getJson(manualEndpoint);
+                String manualJson = HttpHelper.getJson(manualEndpoint);
 
                 if (manualJson.contains("url")) {
                     String url = manualJson.split("\"url\":\"")[1].split("\"")[0];
@@ -127,7 +117,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Booking?select=*&equipmentId=eq." + equipmentId
                         + "&startTime=gte." + startDate + "&endTime=lte." + endDate;
-                String json = getJson(endpoint);
+                String json = HttpHelper.getJson(endpoint);
                 Type listType = new TypeToken<List<Booking>>() {}.getType();
                 List<Booking> bookings = gson.fromJson(json, listType);
                 callback.onSuccess(bookings);
@@ -146,7 +136,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
                 String jsonBody = String.format(
                         "{\"userId\":%d,\"equipmentId\":%d,\"experimentId\":%d,\"startTime\":\"%s\",\"endTime\":\"%s\"}",
                         userId, equipmentId, experimentId, startTime, endTime);
-                postJson(endpoint, jsonBody);
+                HttpHelper.postJson(endpoint, jsonBody);
                 callback.onSuccess(0);
             } catch (Exception e) {
                 callback.onError("Lỗi khi tạo booking: " + e.getMessage());
@@ -163,7 +153,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
                 String jsonBody = approve ?
                         "{\"status\":\"approved\"}" :
                         "{\"status\":\"rejected\",\"rejectReason\":\"" + rejectReason + "\"}";
-                patchJson(endpoint, jsonBody);
+                HttpHelper.patchJson(endpoint, jsonBody);
                 callback.onSuccess();
             } catch (Exception e) {
                 callback.onError("Lỗi khi cập nhật trạng thái booking: " + e.getMessage());
@@ -183,14 +173,10 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
         new Thread(() -> {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/UserManual?select=url&manualId=eq." + serialNumber;
-                String json = getJson(endpoint);
+                String json = HttpHelper.getJson(endpoint);
 
                 if (json != null && json.contains("url")) {
-                    // ✅ Lấy chính xác phần giữa "url":" và "}]
-                    String url = json.split("\"url\":\"")[1]
-                            .split("\"")[0]
-                            .trim();
-
+                    String url = json.split("\"url\":\"")[1].split("\"")[0].trim();
                     callback.onSuccess(url);
                 } else {
                     callback.onError("Không tìm thấy URL cho manualId: " + serialNumber);
@@ -201,66 +187,4 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
         }).start();
     }
 
-
-    // ===============================================================
-    // 🔧 Helper methods cho GET / POST / PATCH JSON
-    // ===============================================================
-    private String getJson(String endpoint) throws Exception {
-        URL url = new URL(endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("apikey", SUPABASE_ANON_KEY);
-        conn.setRequestProperty("Authorization", "Bearer " + SUPABASE_ANON_KEY);
-        conn.setRequestProperty("Accept", "application/json");
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) sb.append(line);
-        reader.close();
-        return sb.toString();
-    }
-
-    private String postJson(String endpoint, String jsonBody) throws Exception {
-        URL url = new URL(endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("apikey", SUPABASE_ANON_KEY);
-        conn.setRequestProperty("Authorization", "Bearer " + SUPABASE_ANON_KEY);
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-
-        try (OutputStream os = conn.getOutputStream()) {
-            os.write(jsonBody.getBytes(StandardCharsets.UTF_8));
-        }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) sb.append(line);
-        reader.close();
-        return sb.toString();
-    }
-
-    private String patchJson(String endpoint, String jsonBody) throws Exception {
-        URL url = new URL(endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("PATCH");
-        conn.setRequestProperty("apikey", SUPABASE_ANON_KEY);
-        conn.setRequestProperty("Authorization", "Bearer " + SUPABASE_ANON_KEY);
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Prefer", "return=representation");
-        conn.setDoOutput(true);
-
-        try (OutputStream os = conn.getOutputStream()) {
-            os.write(jsonBody.getBytes(StandardCharsets.UTF_8));
-        }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) sb.append(line);
-        reader.close();
-        return sb.toString();
-    }
 }
