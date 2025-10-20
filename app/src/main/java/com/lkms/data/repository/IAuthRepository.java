@@ -1,6 +1,5 @@
 package com.lkms.data.repository;
 
-import com.lkms.data.model.AuthResult;
 import com.lkms.data.model.User;
 
 /**

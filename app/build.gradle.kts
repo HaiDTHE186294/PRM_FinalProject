@@ -87,6 +87,14 @@ dependencies {
 
     // GSON (Dependency for Harium Supabase)
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Lombok
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+
+    // Các dependency khác của bạn
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 }
 
 // Tác vụ tùy chỉnh để chạy Supabase test runner từ console
