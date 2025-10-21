@@ -6,7 +6,7 @@
 //import kotlinx.coroutines.CoroutineScope
 //import kotlinx.coroutines.Dispatchers
 //import io.github.jan.supabase.postgrest.postgrest
-//import com.lkms.data.model.User
+//import com.lkms.data.model.kotlin.User
 //import kotlinx.coroutines.*
 //
 //class AuthRepositoryImpl : IAuthRepository {

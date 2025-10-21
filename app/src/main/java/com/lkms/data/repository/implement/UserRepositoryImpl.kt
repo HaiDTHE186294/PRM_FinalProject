@@ -2,7 +2,7 @@
 //
 //
 //import com.lkms.data.dal.SupabaseClient
-//import com.lkms.data.model.User
+//import com.lkms.data.model.kotlin.User
 //import com.lkms.data.repository.IUserRepository
 //import io.github.jan.supabase.postgrest.postgrest
 //import io.github.jan.supabase.postgrest.query.Returning // <-- Import added
