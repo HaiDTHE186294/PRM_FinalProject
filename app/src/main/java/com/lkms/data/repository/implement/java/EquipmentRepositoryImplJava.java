@@ -132,17 +132,28 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
     public void createBooking(int userId, int equipmentId, int experimentId, String startTime, String endTime, BookingIdCallback callback) {
         new Thread(() -> {
             try {
-                String endpoint = SUPABASE_URL + "/rest/v1/Booking";
+                String endpoint = SUPABASE_URL + "/rest/v1/Booking?select=*";
                 String jsonBody = String.format(
                         "{\"userId\":%d,\"equipmentId\":%d,\"experimentId\":%d,\"startTime\":\"%s\",\"endTime\":\"%s\"}",
                         userId, equipmentId, experimentId, startTime, endTime);
-                HttpHelper.postJson(endpoint, jsonBody);
-                callback.onSuccess(0);
+
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                Type listType = new TypeToken<List<Booking>>() {}.getType();
+                List<Booking> created = gson.fromJson(response, listType);
+
+                if (created != null && !created.isEmpty() && created.get(0).getBookingId() != null) {
+                    callback.onSuccess(created.get(0).getBookingId());
+                } else {
+                    callback.onError("Không thể tạo booking mới.");
+                }
+
             } catch (Exception e) {
                 callback.onError("Lỗi khi tạo booking: " + e.getMessage());
             }
         }).start();
     }
+
 
     // -------------------- APPROVE / REJECT BOOKING --------------------
     @Override
