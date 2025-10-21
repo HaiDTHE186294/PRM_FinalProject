@@ -2,10 +2,10 @@
 //import kotlinx.serialization.json.Json
 //import kotlinx.serialization.json.encodeToJsonElement
 //import com.lkms.data.dal.SupabaseClient
-//import com.lkms.data.model.Booking
-//import com.lkms.data.model.Equipment
-//import com.lkms.data.model.MaintenanceLog
-//import com.lkms.data.model.UserManual
+//import com.lkms.data.model.kotlin.Booking
+//import com.lkms.data.model.kotlin.Equipment
+//import com.lkms.data.model.kotlin.MaintenanceLog
+//import com.lkms.data.model.kotlin.UserManual
 //import com.lkms.data.repository.IEquipmentRepository
 //import io.github.jan.supabase.postgrest.postgrest
 //import kotlinx.coroutines.CoroutineScope
@@ -271,7 +271,7 @@
 //                    }
 //                }
 //
-//                val manual = manualResponse.decodeSingleOrNull<com.lkms.data.model.UserManual>()
+//                val manual = manualResponse.decodeSingleOrNull<com.lkms.data.model.kotlin.UserManual>()
 //                if (manual != null && !manual.url.isNullOrBlank()) {
 //                    callback.onSuccess(manual.url)
 //                } else {

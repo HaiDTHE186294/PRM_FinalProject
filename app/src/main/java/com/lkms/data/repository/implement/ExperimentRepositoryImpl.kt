@@ -8,9 +8,9 @@
 //import kotlinx.coroutines.launch
 //import java.util.Date
 //
-//import com.lkms.data.model.Experiment
-//import com.lkms.data.model.ExperimentStep
-//import com.lkms.data.model.LogEntry
+//import com.lkms.data.model.kotlin.Experiment
+//import com.lkms.data.model.kotlin.ExperimentStep
+//import com.lkms.data.model.kotlin.LogEntry
 //import com.lkms.data.repository.enumPackage.ExperimentStatus
 //import io.github.jan.supabase.storage.storage
 //import java.io.File
