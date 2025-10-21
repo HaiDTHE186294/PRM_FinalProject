@@ -2,9 +2,9 @@
 //package com.lkms.data.repository.implement
 //
 //import com.lkms.data.dal.SupabaseClient
-//import com.lkms.data.model.Protocol
-//import com.lkms.data.model.ProtocolItem
-//import com.lkms.data.model.ProtocolStep
+//import com.lkms.data.model.kotlin.Protocol
+//import com.lkms.data.model.kotlin.ProtocolItem
+//import com.lkms.data.model.kotlin.ProtocolStep
 //import com.lkms.data.repository.IProtocolRepository
 //import io.github.jan.supabase.postgrest.postgrest
 //import io.github.jan.supabase.postgrest.query.Returning

@@ -1,4 +1,4 @@
-package com.lkms.data.model
+package com.lkms.data.model.kotlin
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
