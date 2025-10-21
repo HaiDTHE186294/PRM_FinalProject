@@ -1,0 +1,223 @@
+package com.lkms.data.repository.implement.java;
+
+import static com.lkms.BuildConfig.SUPABASE_URL;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.lkms.data.model.java.Experiment;
+import com.lkms.data.model.java.ExperimentStep;
+import com.lkms.data.model.java.LogEntry;
+import com.lkms.data.repository.IExperimentRepository;
+import com.lkms.data.repository.enumPackage.ExperimentStatus;
+
+import java.io.File;
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.List;
+
+public class ExperimentRepositoryImplJava implements IExperimentRepository {
+
+    private static final Gson gson = new Gson();
+
+    // -------------------- CREATE NEW EXPERIMENT --------------------
+    @Override
+    public void createNewExperiment(String title, String objective, int userId, int protocolId, int projectId, IdCallback callback) {
+        new Thread(() -> {
+            try {
+                Experiment newExperiment = new Experiment(
+                        null,
+                        title != null ? title : "Untitled Experiment",
+                        objective != null ? objective : "No objective provided",
+                        ExperimentStatus.INPROCESS.toString(),
+                        new Date().toString(), // startDate
+                        null,                  // finishDate
+                        userId,
+                        protocolId,
+                        projectId
+                );
+
+                String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*";
+                String jsonBody = gson.toJson(newExperiment);
+
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                Type listType = new TypeToken<List<Experiment>>() {}.getType();
+                List<Experiment> created = gson.fromJson(response, listType);
+
+                if (created != null && !created.isEmpty() && created.get(0).getExperimentId() != null) {
+                    callback.onSuccess(created.get(0).getExperimentId());
+                } else {
+                    callback.onError("Không thể tạo experiment mới.");
+                }
+
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tạo experiment: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- GET ONGOING EXPERIMENTS --------------------
+    @Override
+    public void getOngoingExperiments(int userId, ExperimentListCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*"
+                        + "&userId=eq." + userId
+                        + "&experimentStatus=eq." + ExperimentStatus.INPROCESS;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<Experiment>>() {}.getType();
+                List<Experiment> experiments = gson.fromJson(json, listType);
+
+                callback.onSuccess(experiments);
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải danh sách experiment: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- GET EXPERIMENT STEPS --------------------
+    @Override
+    public void getExperimentStepsList(int experimentId, ExperimentStepListCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/ExperimentStep?select=*"
+                        + "&experimentId=eq." + experimentId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<ExperimentStep>>() {}.getType();
+                List<ExperimentStep> steps = gson.fromJson(json, listType);
+
+                callback.onSuccess(steps);
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải danh sách bước: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- GET LOG ENTRIES --------------------
+    @Override
+    public void getExperimentLogEntries(int experimentStepId, LogEntryListCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/LogEntry?select=*"
+                        + "&experimentStepId=eq." + experimentStepId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<LogEntry>>() {}.getType();
+                List<LogEntry> logEntries = gson.fromJson(json, listType);
+
+                callback.onSuccess(logEntries);
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải log entries: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- ADD TEXT NOTE --------------------
+    @Override
+    public void addTextNote(int experimentStepId, int userId, String content, IdCallback callback) {
+        new Thread(() -> {
+            try {
+                LogEntry newLog = new LogEntry(
+                        null,
+                        experimentStepId,
+                        "Text",
+                        userId,
+                        content != null ? content : "",
+                        null,
+                        new Date().toString()
+                );
+
+                String endpoint = SUPABASE_URL + "/rest/v1/LogEntry?select=*";
+                String jsonBody = gson.toJson(newLog);
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                Type listType = new TypeToken<List<LogEntry>>() {}.getType();
+                List<LogEntry> created = gson.fromJson(response, listType);
+
+                if (created != null && !created.isEmpty() && created.get(0).getLogId() != null) {
+                    callback.onSuccess(created.get(0).getLogId());
+                } else {
+                    callback.onError("Không thể tạo ghi chú text.");
+                }
+
+            } catch (Exception e) {
+                callback.onError("Lỗi khi thêm ghi chú: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- ADD FILE ENTRY --------------------
+    @Override
+    public void addFileEntry(int experimentStepId, int userId, String logType, String content, String fileUrl, IdCallback callback) {
+        new Thread(() -> {
+            try {
+                LogEntry newLog = new LogEntry(
+                        null,
+                        experimentStepId,
+                        logType != null ? logType : "File",
+                        userId,
+                        content != null ? content : "",
+                        fileUrl,
+                        new Date().toString()
+                );
+
+                String endpoint = SUPABASE_URL + "/rest/v1/LogEntry?select=*";
+                String jsonBody = gson.toJson(newLog);
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                Type listType = new TypeToken<List<LogEntry>>() {}.getType();
+                List<LogEntry> created = gson.fromJson(response, listType);
+
+                if (created != null && !created.isEmpty() && created.get(0).getLogId() != null) {
+                    callback.onSuccess(created.get(0).getLogId());
+                } else {
+                    callback.onError("Không thể tạo log file.");
+                }
+
+            } catch (Exception e) {
+                callback.onError("Lỗi khi thêm file entry: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- UPLOAD FILE --------------------
+    @Override
+    public void uploadFileToStorage(File file, StringCallback callback) {
+        if (file == null) {
+            callback.onError("File là null");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                String bucketName = "ExperimentLog";
+                String path = System.currentTimeMillis() + "_" + file.getName();
+                String publicUrl = HttpHelper.uploadFile(bucketName, path, file);
+                callback.onSuccess(publicUrl);
+            } catch (Exception e) {
+                callback.onError("Lỗi upload file: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- NOT IMPLEMENTED YET --------------------
+    @Override
+    public void requestExperimentReport(int experimentId, StringCallback callback) {
+        callback.onError("Chưa được triển khai.");
+    }
+
+    @Override
+    public void postComment(int experimentId, int userId, String commentText, GenericCallback callback) {
+        callback.onError("Chưa được triển khai.");
+    }
+
+    @Override
+    public void getCommentsForExperiment(int experimentId, CommentListCallback callback) {
+        callback.onError("Chưa được triển khai.");
+    }
+}

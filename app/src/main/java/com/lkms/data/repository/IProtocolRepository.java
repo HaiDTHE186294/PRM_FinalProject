@@ -1,9 +1,7 @@
 package com.lkms.data.repository;
 
 // Sử dụng trực tiếp các model ánh xạ DB
-import com.lkms.data.model.Protocol;
-import com.lkms.data.model.ProtocolStep;
-import com.lkms.data.model.ProtocolItem;
+import com.lkms.data.model.java.*;
 import java.util.List;
 
 /**

@@ -1,0 +1,2 @@
+Tầng Domain (Use Cases, Entities): Nằm ở giữa, chứa tất cả logic nghiệp vụ (business logic).
+Nó ra lệnh cho tầng Data phải làm gì và chuẩn bị dữ liệu cho tầng UI hiển thị.
