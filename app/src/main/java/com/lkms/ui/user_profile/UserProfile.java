@@ -1,19 +1,18 @@
-package com.lkms.activities;
+package com.lkms.ui.user_profile;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
+//import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.lkms.R;
-import com.lkms.data.repository.implement.UserRepositoryImpl;
-import com.lkms.activities.viewmodel.UserProfileViewModel;
-import com.lkms.activities.viewmodel.factory.UserProfileViewModelFactory;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
+import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
+import com.lkms.ui.user_profile.viewmodel.UserProfileViewModel;
+import com.lkms.ui.user_profile.viewmodel.factory.UserProfileViewModelFactory;
 
 //For debugging
 //import android.util.Log;
@@ -25,8 +24,7 @@ public class UserProfile extends AppCompatActivity {
     // UI components
     private TextView textViewName;
     private TextView textViewEmail;
-    private TextView textViewRole;
-    private FrameLayout roleBackground;
+    private RoleTag userRoleTag;
 
     private TextView changePasswordOption;
     private TextView profileSettingOption;
@@ -39,8 +37,7 @@ public class UserProfile extends AppCompatActivity {
         //Get user's name and email field
         textViewName = findViewById(R.id.user_name);
         textViewEmail = findViewById(R.id.user_email);
-        textViewRole = findViewById(R.id.user_role);
-        roleBackground = findViewById(R.id.role_background);
+        userRoleTag = findViewById(R.id.user_role);
 
         //Change password option
         changePasswordOption = findViewById(R.id.option_change_password);
@@ -53,11 +50,14 @@ public class UserProfile extends AppCompatActivity {
         profileSettingOption = findViewById(R.id.option_profile_setting);
         profileSettingOption.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, ProfileSetting.class);
+
+            //Passing user's id to ProfileSetting
+            intent.putExtra("UserId", userProfileViewModel.getUser().getValue().getUserId());
             startActivity(intent);
         });
 
         //Setup ViewModel
-        UserRepositoryImpl userRepository = new UserRepositoryImpl();
+        UserRepositoryImplJava userRepository = new UserRepositoryImplJava();
         UserProfileViewModelFactory factory = new UserProfileViewModelFactory(userRepository);
         userProfileViewModel = new ViewModelProvider(this, factory).get(UserProfileViewModel.class);
 
@@ -70,7 +70,11 @@ public class UserProfile extends AppCompatActivity {
                 textViewEmail.setText(user.getEmail());
 
                 //Update role
-                updateUserRoleUI(user.getRoleId());
+                LKMSConstantEnums.UserRole role = LKMSConstantEnums.UserRole.values()[
+                    //Subtract by one since the first role (Lab Manager) start with 1
+                    user.getRoleId() - 1
+                ];
+                userRoleTag.setRole(role);
             }
         });
 
@@ -78,29 +82,12 @@ public class UserProfile extends AppCompatActivity {
         userProfileViewModel.loadUser(2);
     }
 
-    private void updateUserRoleUI(int roleId) {
-        String roleName = "UNKNOW";
-        int backgroundColor = ContextCompat.getColor(this, android.R.color.darker_gray);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        switch (roleId) {
-            case 1:
-                roleName = "Lab Manager";
-                backgroundColor = ContextCompat.getColor(this, R.color.role_lab_mng);
-                break;
-            case 2:
-                roleName = "Researcher";
-                backgroundColor = ContextCompat.getColor(this, R.color.role_researcher);
-                break;
-            case 3:
-                roleName = "Technician";
-                backgroundColor = ContextCompat.getColor(this, R.color.role_technician);
-                break;
-        }
-
-        // Set the text and background color
-        textViewRole.setText(roleName);
-        roleBackground.setBackgroundColor(backgroundColor);
-        roleBackground.setVisibility(View.VISIBLE); // Make sure it's visible
+        //Load user
+        userProfileViewModel.reloadUser();
     }
 }
 

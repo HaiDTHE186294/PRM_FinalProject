@@ -1,17 +1,19 @@
-package com.lkms.activities.viewmodel.factory; // Create a 'factory' sub-package
+package com.lkms.ui.user_profile.viewmodel.factory; // Create a 'factory' sub-package
+
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.lkms.data.repository.implement.UserRepositoryImpl;
-import com.lkms.activities.viewmodel.UserProfileViewModel;
+import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
+import com.lkms.ui.user_profile.viewmodel.UserProfileViewModel;
 
 public class UserProfileViewModelFactory implements ViewModelProvider.Factory {
 
-    private final UserRepositoryImpl userRepository;
+    private final UserRepositoryImplJava userRepository;
 
-    public UserProfileViewModelFactory(UserRepositoryImpl userRepository) {
+    public UserProfileViewModelFactory(UserRepositoryImplJava userRepository) {
         this.userRepository = userRepository;
     }
 

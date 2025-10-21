@@ -1,4 +1,4 @@
-package com.lkms.activities;
+package com.lkms.ui.user_profile;
 
 import android.os.Bundle;
 
@@ -10,19 +10,17 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.lkms.R;
 
-public class ProfileSetting extends AppCompatActivity {
+public class PasswordChange extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_profile_setting);
+        setContentView(R.layout.activity_password_change);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
     }
-
-    //Will working on these in the future
 }
