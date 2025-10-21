@@ -1,0 +1,13 @@
+•Tầng Domain (Use Cases, Entities): Nằm ở giữa, chứa tất cả logic nghiệp vụ
+(business logic). Nó ra lệnh cho tầng Data phải làm gì và chuẩn
+bị dữ liệu cho tầng UI hiển thị.
+
+1.Use Cases:
+•Đặt vào domain/usecase/.
+•Mỗi file là một lớp, chứa logic cho một nghiệp vụ duy nhất.
+•Khi ViewModel cần làm một việc gì đó phức tạp hơn CRUD, hãy tạo một Use Case.
+•Khi một nghiệp vụ cần kết hợp dữ liệu từ nhiều Repository.
+
+2.Domain Models (Entities):
+•Đặt vào domain/model/.
+•Các data class thuần túy, không chứa bất kỳ annotation nào liên quan đến framework hay thư viện bên ngoài.
