@@ -2,6 +2,7 @@ package com.lkms.ui.user_profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 //import android.widget.Toast;
 
@@ -11,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.lkms.R;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
+import com.lkms.ui.user_profile.view.RoleTag;
+import com.lkms.ui.user_profile.view.UserProfileHeader;
 import com.lkms.ui.user_profile.viewmodel.UserProfileViewModel;
 import com.lkms.ui.user_profile.viewmodel.factory.UserProfileViewModelFactory;
 
@@ -20,14 +23,9 @@ import com.lkms.ui.user_profile.viewmodel.factory.UserProfileViewModelFactory;
 public class UserProfile extends AppCompatActivity {
 
     private UserProfileViewModel userProfileViewModel;
+    private UserProfileHeader userProfileHeader;
 
-    // UI components
-    private TextView textViewName;
-    private TextView textViewEmail;
-    private RoleTag userRoleTag;
-
-    private TextView changePasswordOption;
-    private TextView profileSettingOption;
+    private TextView manageTeamOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +33,12 @@ public class UserProfile extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
 
         //Get user's name and email field
-        textViewName = findViewById(R.id.user_name);
-        textViewEmail = findViewById(R.id.user_email);
-        userRoleTag = findViewById(R.id.user_role);
+        userProfileHeader = findViewById(R.id.user_profile_header);
 
-        //Change password option
-        changePasswordOption = findViewById(R.id.option_change_password);
-        changePasswordOption.setOnClickListener(v -> {
-            Intent intent = new Intent(UserProfile.this, PasswordChange.class);
-            startActivity(intent);
-        });
+        //region //OPTIONS
 
         //Profile setting option
-        profileSettingOption = findViewById(R.id.option_profile_setting);
+        TextView profileSettingOption = findViewById(R.id.option_profile_setting);
         profileSettingOption.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, ProfileSetting.class);
 
@@ -55,6 +46,19 @@ public class UserProfile extends AppCompatActivity {
             intent.putExtra("UserId", userProfileViewModel.getUser().getValue().getUserId());
             startActivity(intent);
         });
+
+        //Lab Manager's manage team option
+        manageTeamOption = findViewById(R.id.option_manage_team);
+        manageTeamOption.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, MemberList.class);
+
+            //Passing user's id to ProfileSetting
+            intent.putExtra("UserId", userProfileViewModel.getUser().getValue().getUserId());
+            startActivity(intent);
+        });
+
+
+        //endregion
 
         //Setup ViewModel
         UserRepositoryImplJava userRepository = new UserRepositoryImplJava();
@@ -65,16 +69,19 @@ public class UserProfile extends AppCompatActivity {
         userProfileViewModel.getUser().observe(this, user -> {
             if (user != null)
             {
-                //Update name and email
-                textViewName.setText(user.getName());
-                textViewEmail.setText(user.getEmail());
+                userProfileHeader.setUser(user);
 
-                //Update role
+                //Get role
                 LKMSConstantEnums.UserRole role = LKMSConstantEnums.UserRole.values()[
                     //Subtract by one since the first role (Lab Manager) start with 1
                     user.getRoleId() - 1
                 ];
-                userRoleTag.setRole(role);
+
+                //Update Manage Team option (depends on wether the user's role is Lab Manager or not)
+                if (role == LKMSConstantEnums.UserRole.LAB_MANAGER)
+                    manageTeamOption.setVisibility(View.VISIBLE);
+                else
+                    manageTeamOption.setVisibility(View.INVISIBLE);
             }
         });
 

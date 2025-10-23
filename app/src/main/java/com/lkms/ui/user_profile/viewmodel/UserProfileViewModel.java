@@ -5,6 +5,8 @@ package com.lkms.ui.user_profile.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
 import com.lkms.data.model.java.User;
 
@@ -80,6 +82,33 @@ public class UserProfileViewModel extends ViewModel {
                     _user.postValue(null);
                 }
         });
+    }
+
+    public void updateUserRole(LKMSConstantEnums.UserRole newRole)
+    {
+        User getUser = _user.getValue();
+        if (getUser == null)
+            return;
+
+        //Update user's data inside this ViewModel
+        getUser.setRoleId(newRole.ordinal() + 1);
+        _user.postValue(getUser);
+
+        //Update user's data inside DB
+        userRepository.updateUserRole(
+                getUser.getUserId(),
+                newRole.ordinal() + 1,
+                new UserRepositoryImplJava.UserCallback() {
+                    @Override
+                    public void onSuccess(User user) {
+                        _user.postValue(user);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        _user.postValue(null);
+                    }
+                });
     }
 
     public void reloadUser()

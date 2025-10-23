@@ -14,10 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.LKMS">
         <activity
-            android:name=".ui.user_profile.ProfileSetting"
+            android:name=".ui.user_profile.MemberDetail"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.PasswordChange"
+            android:name=".ui.user_profile.MemberList"
+            android:exported="false" />
+        <activity
+            android:name=".ui.user_profile.ProfileSetting"
             android:exported="false" />
         <activity
             android:name=".ui.user_profile.UserProfile"

@@ -21,9 +21,9 @@ public class UserProfileViewModelFactory implements ViewModelProvider.Factory {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(UserProfileViewModel.class)) {
+        if (modelClass.isAssignableFrom(UserProfileViewModel.class))
             return (T) new UserProfileViewModel(userRepository);
-        }
-        throw new IllegalArgumentException("Unknown ViewModel class");
+        else
+            throw new IllegalArgumentException("Unknown ViewModel class");
     }
 }

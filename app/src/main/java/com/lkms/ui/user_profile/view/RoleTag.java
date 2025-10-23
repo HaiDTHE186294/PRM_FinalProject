@@ -1,4 +1,4 @@
-package com.lkms.ui.user_profile;
+package com.lkms.ui.user_profile.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 
-import android.view.View;
 import com.lkms.R;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.UserRole;
 

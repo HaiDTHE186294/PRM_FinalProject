@@ -29,46 +29,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!--User's profile display part-->
-    <LinearLayout
-        android:id="@+id/user_info_section"
+    <com.lkms.ui.user_profile.view.UserProfileHeader
+        android:id="@+id/user_profile_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/user_prof_bg"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
-
-        <!--Name-->
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Username here"
-            android:textColor="@android:color/white"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <!--Email address-->
-        <TextView
-            android:id="@+id/user_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:text="Email here"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:drawableStartCompat="@android:drawable/ic_dialog_email"
-            app:drawableTint="@android:color/white" />
-
-        <!--Role-->
-        <com.lkms.ui.user_profile.RoleTag
-            android:id="@+id/user_role"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 
     <!--Options-->
     <LinearLayout
@@ -79,23 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/user_info_section">
-
-        <!--Change Password-->
-        <TextView
-            android:id="@+id/option_change_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:drawablePadding="8dp"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:text="Change Password"
-            android:textAppearance="?attr/textAppearanceListItem"
-            android:textSize="18sp"
-            app:drawableStartCompat="@drawable/abc_ic_go_search_api_material"
-            app:drawableTint="?attr/colorControlNormal" />
+        app:layout_constraintTop_toBottomOf="@id/user_profile_header">
 
         <!--Profile setting-->
         <TextView
@@ -113,6 +62,23 @@
             app:drawableStartCompat="@drawable/abc_ic_go_search_api_material"
             app:drawableTint="?attr/colorControlNormal" />
 
+        <!--Manage team members (Lab Manager only)-->
+        <TextView
+            android:id="@+id/option_manage_team"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="Manage team members"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textSize="18sp"
+            app:drawableStartCompat="@drawable/abc_ic_go_search_api_material"
+            app:drawableTint="?attr/colorControlNormal"
+
+            android:clickable="true"
+            android:visibility="invisible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
