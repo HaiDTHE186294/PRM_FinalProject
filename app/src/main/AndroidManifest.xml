@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -13,8 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LKMS">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.equipmentBooking.EquipmentDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.equipmentBooking.BookingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.equipmentBooking.EquipmentListActivity"
             android:exported="true">
+
+            <!-- Nếu muốn đây là màn hình khởi đầu, thêm intent-filter -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
