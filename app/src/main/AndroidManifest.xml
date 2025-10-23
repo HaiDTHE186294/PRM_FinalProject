@@ -14,16 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.LKMS">
         <activity
-            android:name=".ui.user_profile.MemberDetail"
+            android:name=".ui.user_profile.MemberDetailActvity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.MemberList"
+            android:name=".ui.user_profile.MemberListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.ProfileSetting"
+            android:name=".ui.user_profile.ProfileSettingActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.UserProfile"
+            android:name=".ui.user_profile.UserProfileActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

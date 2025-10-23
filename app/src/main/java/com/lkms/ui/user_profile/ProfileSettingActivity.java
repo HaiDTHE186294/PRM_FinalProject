@@ -7,18 +7,14 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.lkms.R;
-import com.lkms.data.model.java.User;
-import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
-import com.lkms.ui.user_profile.viewmodel.UserProfileViewModel;
-import com.lkms.ui.user_profile.viewmodel.factory.UserProfileViewModelFactory;
+import com.lkms.domain.UserProfileUseCase;
 
-public class ProfileSetting extends AppCompatActivity {
+public class ProfileSettingActivity extends AppCompatActivity {
 
-    private UserProfileViewModel userProfileViewModel;
+    private final UserProfileUseCase userProfileUseCase = new UserProfileUseCase();
 
     TextInputEditText nameEditText;
     TextInputEditText contactInfoEditText;
@@ -37,13 +33,8 @@ public class ProfileSetting extends AppCompatActivity {
         nameEditText = findViewById(R.id.name_edit_text);
         contactInfoEditText = findViewById(R.id.contact_info_edit_text);
 
-        //Setup ViewModel
-        UserRepositoryImplJava userRepository = new UserRepositoryImplJava();
-        UserProfileViewModelFactory factory = new UserProfileViewModelFactory(userRepository);
-        userProfileViewModel = new ViewModelProvider(this, factory).get(UserProfileViewModel.class);
-
         // Observe. Execute ONLY when the data is ready.
-        userProfileViewModel.getUser().observe(this, user -> {
+        userProfileUseCase.getUser().observe(this, user -> {
             if (user != null)
             {
                 nameEditText.setText(user.getName());
@@ -54,13 +45,13 @@ public class ProfileSetting extends AppCompatActivity {
         //Buttons
         saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> {
-            if (userProfileViewModel.getUser().getValue() == null){
+            if (userProfileUseCase.getUser().getValue() == null){
                 Toast.makeText(this, "Cannot save, user data not loaded.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             try {
-                userProfileViewModel.updateUser(
+                userProfileUseCase.updateUser(
                         nameEditText.getText().toString(),
                         contactInfoEditText.getText().toString()
                 );
@@ -87,6 +78,6 @@ public class ProfileSetting extends AppCompatActivity {
             finish();
         }
         else
-            userProfileViewModel.loadUser(userId);
+            userProfileUseCase.loadUser(userId);
     }
 }

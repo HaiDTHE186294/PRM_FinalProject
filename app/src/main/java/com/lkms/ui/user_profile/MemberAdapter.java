@@ -2,7 +2,6 @@ package com.lkms.ui.user_profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
         holder.nameTextView.setText(member.getName());
 
         //Role
-        LKMSConstantEnums.UserRole role = LKMSConstantEnums.UserRole.values()[member.getRoleId() - 1];
+        LKMSConstantEnums.UserRole role = LKMSConstantEnums.UserRole.values()[member.getRoleId()];
         holder.roleTagView.setRole(role);
 
     }
@@ -71,7 +70,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
             Context context = v.getContext();
 
-            Intent intent = new Intent(context, MemberDetail.class);
+            Intent intent = new Intent(context, MemberDetailActvity.class);
             intent.putExtra("MemberId", user.getUserId());
 
             context.startActivity(intent);

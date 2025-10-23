@@ -17,6 +17,13 @@ import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.UserRole;
 //Adding new role in the future should be easier with this
 public class RoleTag extends AppCompatTextView {
 
+//    String[] roleNames = {"Lab Manager", "Researcher", "Technician"};
+//    int[] backgroundColors = {
+//        ContextCompat.getColor(getContext(), R.color.role_lab_mng),
+//        ContextCompat.getColor(getContext(), R.color.role_researcher),
+//        ContextCompat.getColor(getContext(), R.color.role_technician)
+//    };
+
     //region // Constructors required to support XML
     public RoleTag(@NonNull Context context) {
         super(context);
@@ -72,16 +79,11 @@ public class RoleTag extends AppCompatTextView {
                 roleName = "Technician";
                 backgroundColor = ContextCompat.getColor(getContext(), R.color.role_technician);
                 break;
-//            default:
-//                // If an unknown role is passed, hide the view.
-//                //setVisibility(com.google.ar.imp.view.View.GONE);
-//                return;
         }
 
-        // Set the properties and make the tag visible
+        // Set the properties
         setText(roleName);
         setBackgroundColor(backgroundColor);
-//        setVisibility(com.google.ar.imp.view.View.VISIBLE);
     }
 
     /**

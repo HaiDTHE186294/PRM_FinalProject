@@ -69,12 +69,6 @@ public class UserProfileHeader extends LinearLayout {
         userName.setText(user.getName());
         userEmail.setText(user.getEmail());
 
-        // Assuming roleId is 1-based. Adjust if it's 0-based.
-        if (user.getRoleId() > 0 && user.getRoleId() <= UserRole.values().length) {
-            UserRole roleEnum = UserRole.values()[user.getRoleId() - 1];
-            userRole.setRole(roleEnum);
-        } else {
-            userRole.setRole(null); // Hide the role tag if the role is invalid
-        }
+        userRole.setRole(UserRole.values()[user.getRoleId()]);
     }
 }

@@ -1,25 +1,19 @@
 package com.lkms.ui.user_profile;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import com.lkms.R;
 import com.lkms.data.model.java.User;
-import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
-import com.lkms.ui.user_profile.viewmodel.MemberListViewModel;
-import com.lkms.ui.user_profile.viewmodel.factory.MemberListViewModelFactory;
+import com.lkms.domain.MemberManagementUseCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberList extends AppCompatActivity {
+public class MemberListActivity extends AppCompatActivity {
 
-    private MemberListViewModel viewModel;
+    private MemberManagementUseCase memberManagementUseCase = new MemberManagementUseCase();
     private RecyclerView memberRecyclerView;
     private MemberAdapter memberAdapter;
     private List<User> memberList = new ArrayList<>(); // To store member data
@@ -36,13 +30,8 @@ public class MemberList extends AppCompatActivity {
         memberAdapter = new MemberAdapter(memberList);
         memberRecyclerView.setAdapter(memberAdapter);
 
-        //Setup ViewModel
-        UserRepositoryImplJava userRepository = new UserRepositoryImplJava(); // You need to pass your Postgrest client
-        MemberListViewModelFactory factory = new MemberListViewModelFactory(userRepository);
-        viewModel = new ViewModelProvider(this, factory).get(MemberListViewModel.class);
-
         //Setup Observers for async stuff
-        viewModel.getMemberList().observe(
+        memberManagementUseCase.getAllMembers().observe(
             this,
             members -> {
                 memberList.clear();
@@ -51,12 +40,13 @@ public class MemberList extends AppCompatActivity {
         });
 
         //Load Data
-        viewModel.loadAllUsers();
+        memberManagementUseCase.loadAllMembers();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.loadAllUsers();
+
+        memberManagementUseCase.loadAllMembers();
     }
 }
