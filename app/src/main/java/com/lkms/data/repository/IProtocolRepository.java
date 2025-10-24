@@ -35,6 +35,13 @@ public interface IProtocolRepository {
         void onError(String errorMessage);
     }
 
+    interface ProtocolStepCallback {
+        void onSuccess(ProtocolStep step);
+        void onError(String errorMessage);
+    }
+
+
+
     // --- Chức năng Tra cứu và Hiển thị Protocols (UC3) ---
 
     /**
@@ -69,4 +76,6 @@ public interface IProtocolRepository {
      * Cập nhật trường "approveStatus" và "approverUserId" [2] trong bảng "Protocol".
      */
     void approveProtocol(int protocolId, int approverUserId, boolean approved, String reason, GenericCallback callback);
+
+    void getProtocolStep(int protocolStepId, ProtocolStepCallback callback);
 }

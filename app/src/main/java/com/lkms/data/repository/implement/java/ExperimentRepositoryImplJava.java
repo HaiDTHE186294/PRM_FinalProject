@@ -8,7 +8,7 @@ import com.lkms.data.model.java.Experiment;
 import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.model.java.LogEntry;
 import com.lkms.data.repository.IExperimentRepository;
-import com.lkms.data.repository.enumPackage.ExperimentStatus;
+import com.lkms.data.repository.enumPackage.LKMSConstantEnums;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -28,7 +28,7 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
                         null,
                         title != null ? title : "Untitled Experiment",
                         objective != null ? objective : "No objective provided",
-                        ExperimentStatus.INPROCESS.toString(),
+                        LKMSConstantEnums.ExperimentStatus.ONGOING.toString(),
                         new Date().toString(), // startDate
                         null,                  // finishDate
                         userId,
@@ -63,7 +63,7 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*"
                         + "&userId=eq." + userId
-                        + "&experimentStatus=eq." + ExperimentStatus.INPROCESS;
+                        + "&experimentStatus=eq." + LKMSConstantEnums.ExperimentStatus.ONGOING;
 
                 String json = HttpHelper.getJson(endpoint);
 
