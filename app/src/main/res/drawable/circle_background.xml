@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Đây là code để vẽ một hình tròn với màu nền. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"> <!-- "oval" là hình bầu dục, nhưng nếu width=height nó sẽ là hình tròn -->
+
+    <!-- Màu nền của hình tròn. Bạn có thể thay đổi mã màu này. -->
+    <!-- Ví dụ: #4CAF50 (xanh lá), #2196F3 (xanh dương) -->
+    <solid android:color="@color/purple_500" /> <!-- Sử dụng màu tím mặc định của project -->
+
+</shape>
+    
