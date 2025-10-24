@@ -1,12 +1,20 @@
 package com.lkms.ui.equipmentBooking;
 
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import android.app.DatePickerDialog;
+import android.view.ViewGroup;
+
+
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +43,9 @@ public class BookingActivity extends AppCompatActivity {
 
     private List<Experiment> experiments; // danh sách experiment load từ repo
 
+    CalendarView calendarView;
+    List<Calendar> bookedDates = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +67,7 @@ public class BookingActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(BookingViewModel.class);
         viewModel.setEquipmentId(equipmentId);
+        viewModel.loadBookedDays();
 
         observeViewModel();
         setupExperimentSpinner();
@@ -63,6 +75,9 @@ public class BookingActivity extends AppCompatActivity {
         btnSelectStartDate.setOnClickListener(v -> showCalendar(true));
         btnSelectEndDate.setOnClickListener(v -> showCalendar(false));
         btnBook.setOnClickListener(v -> viewModel.bookEquipment());
+
+        calendarView = findViewById(R.id.calendarView);
+
     }
 
     private void observeViewModel() {
@@ -82,7 +97,17 @@ public class BookingActivity extends AppCompatActivity {
         viewModel.error.observe(this, msg -> {
             if (msg != null) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         });
+
+        viewModel.bookedDays.observe(this, list -> {
+            if (list != null) {
+                highlightBookedDates(list);
+            } else {
+                calendarView.setEvents(new ArrayList<>());
+            }
+        });
+
     }
+
 
     private void setupExperimentSpinner() {
         IExperimentRepository experimentRepo = new ExperimentRepositoryImplJava(); // hoặc repo của bạn
@@ -122,17 +147,66 @@ public class BookingActivity extends AppCompatActivity {
 
 
     private void showCalendar(boolean isStart) {
+        List<LocalDate> blocked = viewModel.bookedDays.getValue();
+
         Calendar now = Calendar.getInstance();
-        DatePickerDialog dialog = new DatePickerDialog(this,
-                (view, year, month, dayOfMonth) -> {
+        DatePickerDialog dialog = new DatePickerDialog(
+                this,
+                (view, year, month, day) -> {
                     LocalDate selected = null;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        selected = LocalDate.of(year, month + 1, dayOfMonth);
+                        selected = LocalDate.of(year, month + 1, day);
                     }
+
+                    if (blocked != null && blocked.contains(selected)) {
+                        Toast.makeText(this, "Ngày này đã được đặt!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (isStart) viewModel.selectStartDate(selected);
                     else viewModel.selectEndDate(selected);
                 },
-                now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+
+        // ✅ Không cho chọn ngày quá khứ
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+
         dialog.show();
     }
+
+
+    private void highlightBookedDates(List<java.time.LocalDate> dates) {
+        if (dates == null || dates.isEmpty()) {
+            calendarView.setEvents(new ArrayList<>()); // xoá event hiện có
+            return;
+        }
+
+        List<EventDay> events = new ArrayList<>();
+        List<Calendar> disabledDays = new ArrayList<>();
+
+        for (java.time.LocalDate ld : dates) {
+            Calendar cal = Calendar.getInstance();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                cal.set(ld.getYear(), ld.getMonthValue() - 1, ld.getDayOfMonth());
+            }
+
+            // EventDay hiển thị icon (dot). Dùng drawable bạn tạo ic_dot
+            events.add(new EventDay(cal, R.drawable.ic_dot));
+
+            // Nếu muốn disable (không cho chọn) cùng lúc
+            disabledDays.add(cal);
+        }
+
+        // Hiển thị dot (events)
+        calendarView.setEvents(events);
+
+        // Nếu muốn disable ngày (không cho chọn) — phương thức tồn tại trong Applandeo
+        calendarView.setDisabledDays(disabledDays);
+    }
+
+
+
 }

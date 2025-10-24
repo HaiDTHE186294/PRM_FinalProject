@@ -12,7 +12,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LKMS">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity
+            android:name=".ui.equipmentBooking.PdfViewerActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.equipmentBooking.EquipmentDetailActivity"
             android:exported="false" />

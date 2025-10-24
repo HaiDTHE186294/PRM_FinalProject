@@ -12,6 +12,7 @@ import com.lkms.domain.EquipmentBookingUseCase;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class BookingViewModel extends ViewModel {
 
@@ -23,6 +24,8 @@ public class BookingViewModel extends ViewModel {
     private final MutableLiveData<LocalDate> _endDate = new MutableLiveData<>();
     public LiveData<LocalDate> endDate = _endDate;
 
+    private final MutableLiveData<List<LocalDate>> _bookedDays = new MutableLiveData<>();
+    public LiveData<List<LocalDate>> bookedDays = _bookedDays;
     private final MutableLiveData<Integer> _selectedExperimentId = new MutableLiveData<>();
     public LiveData<Integer> selectedExperimentId = _selectedExperimentId;
 
@@ -80,14 +83,40 @@ public class BookingViewModel extends ViewModel {
 
         useCase.bookEquipment(userId, equipmentId, startTime, endTime, experimentId,
                 new IEquipmentRepository.BookingIdCallback() {
+
                     @Override
                     public void onSuccess(int bookingId) {
                         _bookingResult.postValue(true);
+                        loadBookedDays();
                     }
 
                     @Override
                     public void onError(String message) {
                         _bookingResult.postValue(false);
+                        _error.postValue(message);
+                    }
+                });
+    }
+
+    public void loadBookedDays() {
+        String start = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            start = LocalDate.now().minusMonths(1).toString();
+        }
+        String end = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            end = LocalDate.now().plusMonths(3).toString();
+        }
+
+        useCase.loadBookingsForCalendar(equipmentId, start, end, 0,
+                new EquipmentBookingUseCase.CalendarBookingCallback() {
+                    @Override
+                    public void onSuccess(List<LocalDate> list) {
+                        _bookedDays.postValue(list);
+                    }
+
+                    @Override
+                    public void onError(String message) {
                         _error.postValue(message);
                     }
                 });

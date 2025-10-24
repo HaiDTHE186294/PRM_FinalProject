@@ -38,4 +38,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"/>
+
+    <Button
+        android:id="@+id/btnViewManual"
+        android:text="View User Manual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+
+
+    <Button
+        android:id="@+id/btnDownloadManual"
+        android:text="Download User Manual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+
+    <FrameLayout
+        android:id="@+id/fragmentQrContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"/>
+
+
 </LinearLayout>

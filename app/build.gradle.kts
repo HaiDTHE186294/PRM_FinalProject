@@ -97,7 +97,10 @@ dependencies {
     // Các dependency khác của bạn
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.applandeo:material-calendar-view:1.9.2")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
+
 
 // Tác vụ tùy chỉnh để chạy Supabase test runner từ console
 val runTest by tasks.registering(JavaExec::class) {
