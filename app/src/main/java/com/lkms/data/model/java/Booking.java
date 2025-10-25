@@ -39,4 +39,7 @@ public class Booking {
 
     @SerializedName("rejectReason")
     private String rejectReason;
+
+    @SerializedName("equipmentName")
+    private String equipmentName;
 }

@@ -35,4 +35,7 @@ public class User {
 
     @SerializedName("userStatus")
     private String userStatus;
+
+    @SerializedName("token")
+    private String token;
 }
