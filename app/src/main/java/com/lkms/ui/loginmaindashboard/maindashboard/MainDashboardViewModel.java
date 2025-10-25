@@ -2,6 +2,7 @@ package com.lkms.ui.loginmaindashboard.maindashboard;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 
@@ -166,7 +167,7 @@ public class MainDashboardViewModel extends AppCompatActivity {
 
             return sharedPreferences.getInt("user_id", -1); // -1 nếu chưa lưu
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("get userId failed:", e.toString() );
             return -1;
         }
     }
