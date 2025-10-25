@@ -1,4 +1,4 @@
-package com.lkms.ui.equipmentBooking;
+package com.lkms.ui.equipment;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

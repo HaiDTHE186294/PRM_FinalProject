@@ -1,9 +1,7 @@
 package com.lkms.domain;
 
 import com.lkms.data.repository.IEquipmentRepository;
-import com.lkms.data.model.java.MaintenanceLog;
 
-import java.util.List;
 
 public class MaintenanceLogUseCase {
 

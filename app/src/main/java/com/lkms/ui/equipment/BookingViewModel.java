@@ -1,13 +1,14 @@
-package com.lkms.ui.equipmentBooking;
+package com.lkms.ui.equipment;
 
 import android.os.Build;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
+import com.lkms.data.model.java.Experiment;
 import com.lkms.data.repository.IEquipmentRepository;
+import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
+import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.domain.EquipmentBookingUseCase;
 
 import java.time.LocalDate;
@@ -17,6 +18,10 @@ import java.util.List;
 public class BookingViewModel extends ViewModel {
 
     private final EquipmentBookingUseCase useCase;
+    private final IExperimentRepository experimentRepo;
+
+    private final MutableLiveData<List<Experiment>> _experiments = new MutableLiveData<>();
+    public LiveData<List<Experiment>> experiments = _experiments;
 
     private final MutableLiveData<LocalDate> _startDate = new MutableLiveData<>();
     public LiveData<LocalDate> startDate = _startDate;
@@ -26,8 +31,8 @@ public class BookingViewModel extends ViewModel {
 
     private final MutableLiveData<List<LocalDate>> _bookedDays = new MutableLiveData<>();
     public LiveData<List<LocalDate>> bookedDays = _bookedDays;
+
     private final MutableLiveData<Integer> _selectedExperimentId = new MutableLiveData<>();
-    public LiveData<Integer> selectedExperimentId = _selectedExperimentId;
 
     private final MutableLiveData<Boolean> _bookingResult = new MutableLiveData<>();
     public LiveData<Boolean> bookingResult = _bookingResult;
@@ -35,15 +40,30 @@ public class BookingViewModel extends ViewModel {
     private final MutableLiveData<String> _error = new MutableLiveData<>();
     public LiveData<String> error = _error;
 
-    private final int userId = 1; // tạm thời
+    private final int userId = 1;
     private int equipmentId;
 
     public BookingViewModel() {
         this.useCase = new EquipmentBookingUseCase(new EquipmentRepositoryImplJava());
+        this.experimentRepo = new ExperimentRepositoryImplJava();
     }
 
     public void setEquipmentId(int equipmentId) {
         this.equipmentId = equipmentId;
+    }
+
+    public void loadExperiments() {
+        experimentRepo.getOngoingExperiments(userId, new IExperimentRepository.ExperimentListCallback() {
+            @Override
+            public void onSuccess(List<Experiment> list) {
+                _experiments.postValue(list);
+            }
+
+            @Override
+            public void onError(String msg) {
+                _error.postValue(msg);
+            }
+        });
     }
 
     public void selectStartDate(LocalDate date) {
@@ -58,32 +78,42 @@ public class BookingViewModel extends ViewModel {
         _selectedExperimentId.postValue(experimentId);
     }
 
+    public boolean isBlocked(LocalDate date) {
+        if (_bookedDays.getValue() == null) return false;
+        return _bookedDays.getValue().contains(date);
+    }
+
     public void bookEquipment() {
         LocalDate start = _startDate.getValue();
         LocalDate end = _endDate.getValue();
         Integer experimentId = _selectedExperimentId.getValue();
 
         if (start == null || end == null) {
-            _error.postValue("Chưa chọn đầy đủ ngày bắt đầu và ngày kết thúc");
+            _error.postValue("Chọn đầy đủ ngày bắt đầu và ngày kết thúc");
             return;
         }
-
         if (experimentId == null) {
             _error.postValue("Chưa chọn experiment");
             return;
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && end.isBefore(start)) {
-            _error.postValue("Ngày kết thúc phải sau ngày bắt đầu");
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (end.isBefore(start)) {
+                _error.postValue("Ngày kết thúc phải sau ngày bắt đầu");
+                return;
+            }
         }
 
-        LocalDateTime startTime = start.atStartOfDay();
-        LocalDateTime endTime = end.atStartOfDay();
+        LocalDateTime startTime = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startTime = start.atStartOfDay();
+        }
+        LocalDateTime endTime = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            endTime = end.atStartOfDay();
+        }
 
         useCase.bookEquipment(userId, equipmentId, startTime, endTime, experimentId,
                 new IEquipmentRepository.BookingIdCallback() {
-
                     @Override
                     public void onSuccess(int bookingId) {
                         _bookingResult.postValue(true);
@@ -108,7 +138,7 @@ public class BookingViewModel extends ViewModel {
             end = LocalDate.now().plusMonths(3).toString();
         }
 
-        useCase.loadBookingsForCalendar(equipmentId, start, end, 0,
+        useCase.loadBookingsForCalendar(equipmentId, start, end,
                 new EquipmentBookingUseCase.CalendarBookingCallback() {
                     @Override
                     public void onSuccess(List<LocalDate> list) {

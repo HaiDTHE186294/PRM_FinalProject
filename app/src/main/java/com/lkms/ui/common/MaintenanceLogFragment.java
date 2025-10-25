@@ -18,7 +18,7 @@ import com.lkms.data.model.java.MaintenanceLog;
 import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.domain.MaintenanceLogUseCase;
-import com.lkms.ui.equipmentBooking.MaintenanceLogAdapter;
+import com.lkms.ui.equipment.MaintenanceLogAdapter;
 
 import java.util.List;
 
@@ -40,9 +40,7 @@ public class MaintenanceLogFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maintenance_log, container, false);
 
         recyclerLog = view.findViewById(R.id.rvMaintenanceLog);
@@ -69,9 +67,7 @@ public class MaintenanceLogFragment extends Fragment {
 
                 @Override
                 public void onError(String errorMessage) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                    );
+                    requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show());
                 }
             });
 

@@ -1,4 +1,4 @@
-package com.lkms.ui.equipmentBooking;
+package com.lkms.ui.equipment;
 
 import android.view.LayoutInflater;
 import android.view.View;

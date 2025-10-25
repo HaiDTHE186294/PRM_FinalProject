@@ -4,82 +4,58 @@ import android.os.Build;
 
 import com.lkms.data.model.java.Booking;
 import com.lkms.data.repository.IEquipmentRepository;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class EquipmentBookingUseCase {
 
     private final IEquipmentRepository repository;
+
+    private final String CONFIRMED =
+            String.valueOf(LKMSConstantEnums.BookingStatus.CONFIRMED);
+    private final String PENDING =
+            String.valueOf(LKMSConstantEnums.BookingStatus.PENDING);
 
     public EquipmentBookingUseCase(IEquipmentRepository repository) {
         this.repository = repository;
     }
 
-    /**
-     * Lấy danh sách thiết bị
-     */
     public void loadEquipmentList(IEquipmentRepository.EquipmentListCallback callback) {
         repository.getAllEquipment(callback);
     }
 
-    /**
-     * Lấy booking cho một thiết bị, trả về danh sách ngày đã book dưới dạng LocalDate
-     */
     public void loadBookingsForCalendar(
             int equipmentId,
             String startDate,
             String endDate,
-            int experimentId,
             CalendarBookingCallback callback
     ) {
-        repository.getEquipmentBookings(equipmentId, startDate, endDate, new IEquipmentRepository.BookingListCallback() {
-            @Override
-            public void onSuccess(List<Booking> bookings) {
-                List<LocalDate> bookedDays = new ArrayList<>();
-
-                for (Booking b : bookings) {
-                    try {
-                        if (!"Approved".equalsIgnoreCase(b.getBookingStatus()) &&
-                                !"Pending".equalsIgnoreCase(b.getBookingStatus())) {
-                            continue; // bỏ các booking Cancel/Rejected
-                        }
-
+        repository.getEquipmentBookings(equipmentId, startDate, endDate,
+                new IEquipmentRepository.BookingListCallback() {
+                    @Override
+                    public void onSuccess(List<Booking> bookings) {
+                        List<LocalDate> bookedDays = new ArrayList<>();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            LocalDate start = LocalDate.parse(b.getStartTime().substring(0, 10));
-                            LocalDate end = LocalDate.parse(b.getEndTime().substring(0, 10));
-
-                            // Thêm tất cả các ngày trong đoạn [start, end]
-                            LocalDate d = start;
-                            while (!d.isAfter(end)) {
-                                bookedDays.add(d);
-                                d = d.plusDays(1);
+                            for (Booking booking : bookings) {
+                                if (isValidStatus(booking)) {
+                                    bookedDays.addAll(expandBookedDays(booking));
+                                }
                             }
                         }
-
-                    } catch (Exception e) {
-                        // bỏ qua nếu parse lỗi
+                        callback.onSuccess(bookedDays);
                     }
-                }
 
-                callback.onSuccess(bookedDays);
-            }
-
-            @Override
-            public void onError(String message) {
-                callback.onError(message);
-            }
-        });
+                    @Override
+                    public void onError(String message) {
+                        callback.onError(message);
+                    }
+                });
     }
 
-
-    /**
-     * Tạo booking mới
-     */
     public void bookEquipment(
             int userId,
             int equipmentId,
@@ -88,16 +64,13 @@ public class EquipmentBookingUseCase {
             int experimentID,
             IEquipmentRepository.BookingIdCallback callback
     ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            callback.onError("Phiên bản Android không hỗ trợ chức năng này.");
+            return;
+        }
 
-        // 1. Lấy toàn bộ booking của thiết bị trong khoảng rộng
-        String startRange = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startRange = LocalDate.now().minusYears(1).toString();
-        }
-        String endRange = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            endRange = LocalDate.now().plusYears(1).toString();
-        }
+        String startRange = LocalDate.now().minusYears(1).toString();
+        String endRange = LocalDate.now().plusYears(1).toString();
 
         repository.getEquipmentBookings(
                 equipmentId,
@@ -106,50 +79,16 @@ public class EquipmentBookingUseCase {
                 new IEquipmentRepository.BookingListCallback() {
                     @Override
                     public void onSuccess(List<Booking> bookings) {
-
-                        // 2. Tạo danh sách tất cả ngày đã booked
                         List<LocalDate> bookedDays = new ArrayList<>();
-                        for (Booking b : bookings) {
-                            if (!"Approved".equalsIgnoreCase(b.getBookingStatus()) &&
-                                    !"Pending".equalsIgnoreCase(b.getBookingStatus())) continue;
-
-                            LocalDate bookedStart = null;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                bookedStart = LocalDate.parse(b.getStartTime().substring(0, 10));
-                            }
-                            LocalDate bookedEnd = null;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                bookedEnd = LocalDate.parse(b.getEndTime().substring(0, 10));
-                            }
-
-                            LocalDate tmp = bookedStart;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                while (!tmp.isAfter(bookedEnd)) {
-                                    bookedDays.add(tmp);
-                                    tmp = tmp.plusDays(1);
-                                }
+                        for (Booking booking : bookings) {
+                            if (isValidStatus(booking)) {
+                                bookedDays.addAll(expandBookedDays(booking));
                             }
                         }
 
-                        // 3. Tạo danh sách các ngày user muốn đặt
-                        LocalDate start = null;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            start = startTime.toLocalDate();
-                        }
-                        LocalDate end = null;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            end = endTime.toLocalDate();
-                        }
-                        List<LocalDate> newBookingDays = new ArrayList<>();
-                        LocalDate tmp = start;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            while (!tmp.isAfter(end)) {
-                                newBookingDays.add(tmp);
-                                tmp = tmp.plusDays(1);
-                            }
-                        }
+                        List<LocalDate> newBookingDays =
+                                expandDateRange(startTime.toLocalDate(), endTime.toLocalDate());
 
-                        // 4. Check trùng
                         for (LocalDate day : newBookingDays) {
                             if (bookedDays.contains(day)) {
                                 callback.onError("Thời gian đã có người đặt, vui lòng chọn khoảng khác");
@@ -157,7 +96,6 @@ public class EquipmentBookingUseCase {
                             }
                         }
 
-                        // 5. Không trùng → tạo booking mới
                         repository.createBooking(
                                 userId,
                                 equipmentId,
@@ -176,28 +114,51 @@ public class EquipmentBookingUseCase {
         );
     }
 
+    private boolean isValidStatus(Booking booking) {
+        String status = booking.getBookingStatus();
+        return CONFIRMED.equalsIgnoreCase(status) ||
+                PENDING.equalsIgnoreCase(status);
+    }
 
-    /**
-     * Callback trả về danh sách ngày đã book
-     */
+    private List<LocalDate> expandBookedDays(Booking booking) {
+        List<LocalDate> days = new ArrayList<>();
+        LocalDate start = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            start = LocalDate.parse(booking.getStartTime().substring(0, 10));
+        }
+        LocalDate end = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            end = LocalDate.parse(booking.getEndTime().substring(0, 10));
+        }
+        days.addAll(expandDateRange(start, end));
+        return days;
+    }
+
+    private List<LocalDate> expandDateRange(LocalDate start, LocalDate end) {
+        List<LocalDate> days = new ArrayList<>();
+        LocalDate tmp = start;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            while (!tmp.isAfter(end)) {
+                days.add(tmp);
+                tmp = tmp.plusDays(1);
+            }
+        }
+        return days;
+    }
+
     public interface CalendarBookingCallback {
         void onSuccess(List<LocalDate> bookedDays);
-
         void onError(String message);
     }
 
-    public void getEquipmentById(int serialNum, IEquipmentRepository.EquipmentCallback callback) {
+    public void getEquipmentById(int serialNum,
+                                 IEquipmentRepository.EquipmentCallback callback) {
         repository.getEquipmentById(serialNum, callback);
     }
 
-    public void getManualUrlBySerial(String serial, IEquipmentRepository.StringCallback callback) {
+    public void getManualUrlBySerial(String serial,
+                                     IEquipmentRepository.StringCallback callback) {
         repository.getManualBySerialNumber(serial, callback);
     }
-
-    public void getMaintainLogByEquipmentID(int equipmentId, IEquipmentRepository.MaintenanceLogCallback callback) {
-        repository.getMaintenanceLogs(equipmentId, callback);
-    }
-
-
 
 }

@@ -14,16 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".ui.equipmentBooking.PdfViewerActivity"
+            android:name=".ui.equipment.PdfViewerActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.equipmentBooking.EquipmentDetailActivity"
+            android:name=".ui.equipment.EquipmentDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.equipmentBooking.BookingActivity"
+            android:name=".ui.equipment.BookingActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.equipmentBooking.EquipmentListActivity"
+            android:name=".ui.equipment.EquipmentListActivity"
             android:exported="true">
 
             <!-- Nếu muốn đây là màn hình khởi đầu, thêm intent-filter -->
