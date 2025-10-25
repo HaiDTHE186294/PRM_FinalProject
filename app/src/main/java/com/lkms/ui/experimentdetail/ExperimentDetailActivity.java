@@ -1,6 +1,7 @@
 package com.lkms.ui.experimentdetail;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -41,10 +42,8 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
             return insets;
         });
 
-        // --- BẮT ĐẦU SỬA ---
 
         // 1. Khởi tạo Adapter CHỈ MỘT LẦN
-        //    Adapter này là "dumb adapter" (adapter "ngu ngốc")
         adapter = new ExperimentDetailAdapter(this);
 
         // 2. Setup RecyclerView
@@ -53,12 +52,9 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         recyclerView.setAdapter(adapter); // Gán adapter rỗng vào
 
         // 3. Khởi tạo ViewModel (Giả sử Factory đã được sửa)
-        // [CẢNH BÁO] Đảm bảo ExperimentDetailViewModelFactory của bạn cung cấp CẢ 2 UseCase!
         ExperimentDetailViewModelFactory factory = new ExperimentDetailViewModelFactory(
-                // Bạn cần khởi tạo và truyền 2 UseCase vào đây
-                // ví dụ: new GetExperimentStepUseCase(...),
-                //        new GetProtocolStepBasedOnExperimentStepUseCase(...)
         );
+
         viewModel = new ViewModelProvider(this, factory).get(ExperimentDetailViewModel.class);
 
         // 4. Lắng nghe ViewModel
@@ -67,7 +63,6 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         // 5. Gọi hàm MỚI của ViewModel để tải dữ liệu
         viewModel.loadExperimentData(getExperimentId());
 
-        // --- KẾT THÚC SỬA ---
     }
 
     private void observeViewModel() {
@@ -77,13 +72,24 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
             // Dữ liệu về!
             // 'adapterItems' là List<AdapterItem> đã được xử lý
             if (adapterItems != null) {
+                Log.d("ActivityDebug", "Observer nhận được adapterItems. Size: " + adapterItems.size());
                 adapter.submitList(adapterItems); // Cập nhật adapter
+            } else {
+                Log.d("ActivityDebug", "Observer nhận được adapterItems = null");
             }
         });
 
         // Giữ nguyên: Lắng nghe lỗi
         viewModel.error.observe(this, errorMsg -> {
+            Log.d("ActivityDebug", "Observer nhận được LỖI: " + errorMsg);
             Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+        });
+
+        // Lắng nghe sự kiện "CHÈN LOG"
+        viewModel.logInsertWrapper.observe(this, event -> {
+            if (event != null) {
+                adapter.insertLogsForStep(event.logs, event.adapterPosition);
+            }
         });
     }
 
@@ -108,5 +114,8 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         // TODO: Gọi logic expand/collapse
         // Ví dụ: viewModel.loadLogsForStep(stepId, adapterPosition);
         // Sau đó, khi có kết quả, gọi: adapter.insertLogsForStep(logList, adapterPosition);
+        viewModel.loadLogFromStep(stepId, adapterPosition);
     }
+
+
 }

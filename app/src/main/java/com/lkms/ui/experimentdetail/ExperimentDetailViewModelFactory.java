@@ -11,6 +11,7 @@ import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.implement.java.ProtocolRepositoryImplJava;
 import com.lkms.domain.experimentdetail.GetExperimentStepUseCase;
+import com.lkms.domain.experimentdetail.GetLogEntryUseCase;
 import com.lkms.domain.experimentdetail.GetProtocolStepBasedOnExperimentStepUseCase;
 
 public class ExperimentDetailViewModelFactory implements ViewModelProvider.Factory {
@@ -25,10 +26,10 @@ public class ExperimentDetailViewModelFactory implements ViewModelProvider.Facto
             IProtocolRepository repository1 = new ProtocolRepositoryImplJava();
 
             GetExperimentStepUseCase useCase = new GetExperimentStepUseCase(repository);
+            GetLogEntryUseCase usecaseLog = new GetLogEntryUseCase(repository);
             GetProtocolStepBasedOnExperimentStepUseCase useCase1 = new GetProtocolStepBasedOnExperimentStepUseCase(repository1);
 
-
-            return (T) new ExperimentDetailViewModel(useCase, useCase1);
+            return (T) new ExperimentDetailViewModel(useCase, useCase1, usecaseLog);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

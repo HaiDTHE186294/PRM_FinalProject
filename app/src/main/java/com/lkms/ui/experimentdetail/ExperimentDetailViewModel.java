@@ -3,14 +3,19 @@
 
 package com.lkms.ui.experimentdetail;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.lkms.data.model.java.ExperimentStep;
+import com.lkms.data.model.java.LogEntry;
 import com.lkms.data.model.java.ProtocolStep;
 import com.lkms.data.model.java.combine.ExperimentProtocolStep;
+import com.lkms.domain.experimentdetail.GetLogEntryUseCase;
 import com.lkms.ui.experimentdetail.adapter.AdapterItem;
+import com.lkms.ui.experimentdetail.adapter.LogInsertWrapper;
 import com.lkms.ui.experimentdetail.adapter.StepItemWrapper;
 
 import com.lkms.domain.experimentdetail.GetExperimentStepUseCase;
@@ -27,6 +32,7 @@ public class ExperimentDetailViewModel extends ViewModel {
     // 1. Dependencies
     private final GetExperimentStepUseCase getExperimentStepUseCase;
     private final GetProtocolStepBasedOnExperimentStepUseCase getProtocolStepUseCase;
+    private final GetLogEntryUseCase getLogEntryUseCase;
 
     // 2. LiveData để giữ trạng thái cho UI
     //    Activity sẽ "lắng nghe" (observe) các LiveData này
@@ -34,6 +40,9 @@ public class ExperimentDetailViewModel extends ViewModel {
     // Dữ liệu khi thành công
     private final MutableLiveData<List<AdapterItem>> _adapterItems = new MutableLiveData<>();
     public LiveData<List<AdapterItem>> adapterItems = _adapterItems;
+
+    private final MutableLiveData<LogInsertWrapper> _logInsertWrapper = new MutableLiveData<>();
+    public LiveData<LogInsertWrapper> logInsertWrapper = _logInsertWrapper;
 
     // Trạng thái loading
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>();
@@ -47,27 +56,33 @@ public class ExperimentDetailViewModel extends ViewModel {
     //    Chúng ta sẽ cần một ViewModelFactory để "tiêm" UseCase này vào
     public ExperimentDetailViewModel(
             GetExperimentStepUseCase getExperimentStepUseCase,
-            GetProtocolStepBasedOnExperimentStepUseCase getProtocolStepUseCase // Thêm dependency
+            GetProtocolStepBasedOnExperimentStepUseCase getProtocolStepUseCase,
+            // Thêm dependency
+            GetLogEntryUseCase getLogEntryUseCase
     ) {
         this.getExperimentStepUseCase = getExperimentStepUseCase;
         this.getProtocolStepUseCase = getProtocolStepUseCase; // Gán dependency
+        this.getLogEntryUseCase = getLogEntryUseCase;
     }
 
     // 4. Phương thức mà Activity sẽ gọi
     public void loadExperimentData(int experimentId) {
+        Log.d("ViewModelDebug", "loadExperimentData BẮT ĐẦU. ID: " + experimentId);
         _isLoading.setValue(true); // Bắt đầu loading
 
         // Bước 1: Lấy danh sách ExperimentStep
         getExperimentStepUseCase.execute(experimentId, new GetExperimentStepUseCase.getExperimentStepsListCallback() {
 
-            @Override
             public void onSuccess(List<ExperimentStep> originalSteps) {
                 // Bước 1 thành công!
                 // THAY ĐỔI: Không cập nhật LiveData vội.
                 // Thay vào đó, bắt đầu Bước 2: Lấy ProtocolSteps
+                Log.d("ViewModelDebug", "loadExperimentData thành công. StepSize: " + originalSteps.size());
+
                 initializeFlatList(originalSteps, new FlatListCallback() {
                     @Override
                     public void onFlatListReady(List<AdapterItem> flatList) {
+                        Log.d("ViewModelDebug", "loadExperimentData: UseCase THÀNH CÔNG. Nhận được " + originalSteps.size() + " steps.");
                         // Bước 2 thành công!
                         _adapterItems.postValue(flatList); // Cập nhật danh sách cuối cùng
                         _isLoading.postValue(false); // Báo UI: Hết loading
@@ -109,6 +124,7 @@ public class ExperimentDetailViewModel extends ViewModel {
                         flatList.add(resultMap.get(j));
                     }
                 }
+                Log.d("Get Flatlist Sucessfull", "Flatlist size: " + flatList.size());
                 callback.onFlatListReady(flatList);
             }
         };
@@ -144,5 +160,33 @@ public class ExperimentDetailViewModel extends ViewModel {
     public interface FlatListCallback {
         void onFlatListReady(List<AdapterItem> flatList);
         void onError(String error);
+    }
+
+    public void loadLogFromStep(int stepId, int adapterPosition){
+        _isLoading.postValue(true); // Bắt đầu loading
+
+        // Gọi UseCase
+        getLogEntryUseCase.execute(stepId, new GetLogEntryUseCase.GetLogEntryCallback() {
+
+            @Override
+            public void onSuccess(List<LogEntry> logs) {
+                _isLoading.postValue(false); // Xong loading
+
+                if (logs != null && !logs.isEmpty()) {
+                    // Thành công!
+                    // Gửi "Event" chứa cả vị trí và danh sách log
+                    _logInsertWrapper.postValue(new LogInsertWrapper(adapterPosition, logs));
+                } else {
+                    // Không có log nào, không cần chèn gì cả
+                    // (Bạn có thể gửi một event "empty" nếu muốn)
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                _isLoading.postValue(false); // Xong loading
+                _error.postValue(error); // Gửi lỗi
+            }
+        });
     }
 }

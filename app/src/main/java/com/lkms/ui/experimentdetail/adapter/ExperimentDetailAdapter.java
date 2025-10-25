@@ -1,5 +1,6 @@
 package com.lkms.ui.experimentdetail.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,13 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.lkms.R;
 
-// XÓA BỎ CÁC IMPORT LIÊN QUAN ĐẾN:
-// - LiveData
-// - Repository
-// - UseCase
-// - Map, ConcurrentHashMap, AtomicInteger
 
-import com.lkms.data.model.java.combine.ExperimentProtocolStep;
 import com.lkms.data.model.java.*;
 
 import java.util.ArrayList;
@@ -54,6 +49,8 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
         if (newItems == null) {
             newItems = new ArrayList<>();
         }
+
+        Log.d("AdapterDebug", "submitList được gọi. Size mới: " + newItems.size() + " | Size cũ: " + this.mItems.size());
         this.mItems.clear();
         this.mItems.addAll(newItems);
 

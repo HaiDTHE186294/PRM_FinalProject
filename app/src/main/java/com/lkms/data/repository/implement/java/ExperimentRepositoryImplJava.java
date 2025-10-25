@@ -2,6 +2,8 @@ package com.lkms.data.repository.implement.java;
 
 import static com.lkms.BuildConfig.SUPABASE_URL;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.Experiment;
@@ -90,6 +92,7 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
                 Type listType = new TypeToken<List<ExperimentStep>>() {}.getType();
                 List<ExperimentStep> steps = gson.fromJson(json, listType);
 
+                Log.d("RepoDebug", "getExperimentSteps: Parse JSON xong. Gọi onSuccess.");
                 callback.onSuccess(steps);
             } catch (Exception e) {
                 callback.onError("Lỗi khi tải danh sách bước: " + e.getMessage());
