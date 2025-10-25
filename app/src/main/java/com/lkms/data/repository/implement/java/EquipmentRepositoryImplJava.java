@@ -135,8 +135,9 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Booking?select=*";
                 String jsonBody = String.format(
-                        "{\"userId\":%d,\"equipmentId\":%d,\"experimentId\":%d,\"startTime\":\"%s\",\"endTime\":\"%s\"}",
-                        userId, equipmentId, experimentId, startTime, endTime);
+                        "{\"userId\":%d,\"equipmentId\":%d,\"experimentId\":%d,\"startTime\":\"%s\",\"endTime\":\"%s\",\"bookingStatus\":\"%s\"}",
+                        userId, equipmentId, experimentId, startTime, endTime, LKMSConstantEnums.BookingStatus.PENDING
+                );
 
                 String response = HttpHelper.postJson(endpoint, jsonBody);
 
