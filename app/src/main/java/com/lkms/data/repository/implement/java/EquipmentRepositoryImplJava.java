@@ -151,7 +151,7 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
                 }
 
             } catch (Exception e) {
-                callback.onError("Lỗi khi tạo booking: " + e.getMessage());
+                callback.onError("Ngày này đã được đặt");
             }
         }).start();
     }

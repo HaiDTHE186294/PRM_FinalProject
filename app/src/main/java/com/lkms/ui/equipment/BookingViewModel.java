@@ -135,7 +135,7 @@ public class BookingViewModel extends ViewModel {
         }
         String end = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            end = LocalDate.now().plusMonths(3).toString();
+            end = LocalDate.now().plusMonths(12).toString();
         }
 
         useCase.loadBookingsForCalendar(equipmentId, start, end,
