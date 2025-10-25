@@ -200,4 +200,24 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
         }).start();
     }
 
+
+    @Override
+    public void getBookingApproved(int userId, BookingListCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/Booking?select=*"
+                        + "&userId=eq." + userId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<Booking>>() {}.getType();
+                List<Booking> bookings = gson.fromJson(json, listType);
+
+                callback.onSuccess(bookings);
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải danh sách booking được duyệt: " + e.getMessage());
+            }
+        }).start();
+    }
+
 }

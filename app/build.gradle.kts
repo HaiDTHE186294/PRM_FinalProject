@@ -36,6 +36,12 @@ android {
             name = "SUPABASE_ANON_KEY",
             value = "\"${localProperties.getProperty("SUPABASE_ANON_KEY")}\""
         )
+
+        buildConfigField(
+            type = "String",
+            name = "JWT_SECRET",
+            value = "\"${localProperties.getProperty("JWT_SECRET", "DEFAULT_SECRET_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -98,6 +104,14 @@ dependencies {
     // Các dependency khác của bạn
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    //JWT
+    implementation("com.auth0:java-jwt:4.5.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    //Bcrypt
+    implementation("org.mindrot:jbcrypt:0.4")
+    
     implementation("com.applandeo:material-calendar-view:1.9.2")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

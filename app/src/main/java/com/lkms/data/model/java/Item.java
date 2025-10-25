@@ -36,4 +36,7 @@ public class Item {
 
     @SerializedName("expirationDate")
     private String expirationDate;
+
+    @SerializedName("daysLeft")
+    private int daysLeft;
 }

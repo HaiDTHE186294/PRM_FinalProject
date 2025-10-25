@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Icon tìm kiếm
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Search"
+        app:showAsAction="always" />-->
+
+    <!-- Icon chuông thông báo -->
+    <item
+        android:id="@+id/action_notifications"
+        android:icon="@drawable/ic_notifications"
+        android:title="Notifications"
+        app:showAsAction="always" />
+
+    <!-- Icon menu bên cạnh chuông -->
+    <item
+        android:id="@+id/action_menu"
+        android:icon="@drawable/ic_menu"
+        android:title="Menu"
+        app:showAsAction="always">
+
+        <menu>
+
+            <!-- Nhóm New Experiment -->
+            <item
+                android:id="@+id/menu_new_experiment"
+                android:title="New Experiment">
+
+                <!-- Menu con của New Experiment -->
+                <menu>
+                    <item
+                        android:id="@+id/menu_protocol"
+                        android:title="Protocol / SOP Repository" />
+                    <item
+                        android:id="@+id/menu_create_log"
+                        android:title="Create / Log New Experiment" />
+                </menu>
+            </item>
+
+            <!-- Các mục khác -->
+            <item
+                android:id="@+id/menu_project"
+                android:title="Project" />
+
+            <item
+                android:id="@+id/menu_inventory"
+                android:title="Inventory Management" />
+
+            <item
+                android:id="@+id/menu_equipment"
+                android:title="Equipment Booking / Status" />
+
+            <item
+                android:id="@+id/menu_sds"
+                android:title="SDS Lookup" />
+
+            <item
+                android:id="@+id/menu_user_profile"
+                android:title="User Profile" />
+
+            <item
+                android:id="@+id/menu_role"
+                android:title="Role Management" />
+
+            <item
+                android:id="@+id/menu_approve"
+                android:title="Approve Checkout / Booking" />
+            <item
+                android:id="@+id/menu_logout"
+                android:title="Logout" />
+        </menu>
+    </item>
+</menu>
