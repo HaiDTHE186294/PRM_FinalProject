@@ -13,4 +13,7 @@
     <color name="role_lab_mng">#BF8CFF</color>
     <color name="role_researcher">#9BE997</color>
     <color name="role_technician">#FFE084</color>
+    <color name="status_approved">#4CAF50</color>
+    <color name="status_rejected">#F44336</color>
+    <color name="status_pending">#FF9800</color>
 </resources>
