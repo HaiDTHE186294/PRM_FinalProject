@@ -7,7 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="gray">#BDBDBD</color>
     <color name="toolbar_bg">#388DD3</color>
     <color name="user_prof_bg">#50BBF0</color>
     <color name="role_lab_mng">#BF8CFF</color>

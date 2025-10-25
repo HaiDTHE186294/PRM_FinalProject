@@ -20,6 +20,15 @@
             android:name=".ui.equipment.EquipmentDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel"
+            android:exported="false" />
+        <activity
+            android:name=".ui.loginmaindashboard.maindashboard.MainDashboardViewModel"
+            android:exported="false" />
+        <activity
+            android:name=".ui.loginmaindashboard.login.SystemLoginViewModel"
+            android:exported="false" />
+        <activity
             android:name=".ui.equipment.BookingActivity"
             android:exported="false" />
         <activity
