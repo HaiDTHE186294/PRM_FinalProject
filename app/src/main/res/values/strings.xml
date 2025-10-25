@@ -46,4 +46,7 @@
     <string name="welcome_message">Welcome: %1$s</string>
     <string name="enter_new_name">Enter new name</string>
     <string name="update_button">Update</string>
+    <string name="user_name">Do Ngoc Hoang Anh</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
