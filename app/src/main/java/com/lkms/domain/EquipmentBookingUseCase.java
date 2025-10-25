@@ -115,11 +115,11 @@ public class EquipmentBookingUseCase {
 
                             LocalDate bookedStart = null;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                bookedStart = LocalDate.parse(b.getStartTime().substring(0,10));
+                                bookedStart = LocalDate.parse(b.getStartTime().substring(0, 10));
                             }
                             LocalDate bookedEnd = null;
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                bookedEnd = LocalDate.parse(b.getEndTime().substring(0,10));
+                                bookedEnd = LocalDate.parse(b.getEndTime().substring(0, 10));
                             }
 
                             LocalDate tmp = bookedStart;
@@ -177,12 +177,12 @@ public class EquipmentBookingUseCase {
     }
 
 
-
     /**
      * Callback trả về danh sách ngày đã book
      */
     public interface CalendarBookingCallback {
         void onSuccess(List<LocalDate> bookedDays);
+
         void onError(String message);
     }
 
@@ -193,4 +193,11 @@ public class EquipmentBookingUseCase {
     public void getManualUrlBySerial(String serial, IEquipmentRepository.StringCallback callback) {
         repository.getManualBySerialNumber(serial, callback);
     }
+
+    public void getMaintainLogByEquipmentID(int equipmentId, IEquipmentRepository.MaintenanceLogCallback callback) {
+        repository.getMaintenanceLogs(equipmentId, callback);
+    }
+
+
+
 }

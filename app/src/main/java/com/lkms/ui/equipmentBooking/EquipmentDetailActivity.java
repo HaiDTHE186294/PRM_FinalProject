@@ -20,6 +20,7 @@ import com.lkms.data.model.java.Equipment;
 import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.domain.EquipmentBookingUseCase;
+import com.lkms.ui.common.MaintenanceLogFragment;
 import com.lkms.ui.common.QRScannerFragment;
 
 public class EquipmentDetailActivity extends AppCompatActivity {
@@ -77,6 +78,16 @@ public class EquipmentDetailActivity extends AppCompatActivity {
             intent.putExtra(BookingActivity.EXTRA_EQUIPMENT_NAME, tvName.getText().toString());
             startActivity(intent);
         });
+
+        MaintenanceLogFragment maintenanceFragment = new MaintenanceLogFragment();
+        Bundle args = new Bundle();
+        args.putInt("equipment_id", equipmentId);
+        maintenanceFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentMaintenanceContainer, maintenanceFragment)
+                .commit();
+
     }
 
     private void loadEquipmentDetails(int equipmentId) {
