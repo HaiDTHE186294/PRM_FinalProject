@@ -77,6 +77,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+
     // SUPABASE - JAN TENNERT (for Kotlin code)
     implementation(platform("io.github.jan-tennert.supabase:bom:3.2.4"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
@@ -84,6 +85,7 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.github.jan-tennert.supabase:storage-kt")
     implementation("io.ktor:ktor-client-android:3.3.0")
+
 
 
     // GSON (Dependency for Harium Supabase)
@@ -96,7 +98,10 @@ dependencies {
     // Các dependency khác của bạn
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.applandeo:material-calendar-view:1.9.2")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
+
 
 // Tác vụ tùy chỉnh để chạy Supabase test runner từ console
 val runTest by tasks.registering(JavaExec::class) {
