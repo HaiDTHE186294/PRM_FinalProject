@@ -54,6 +54,7 @@ android {
     buildFeatures {
         dataBinding = true
         buildConfig = true
+        viewBinding = true
     }
     kotlinOptions {
         jvmTarget = "11"

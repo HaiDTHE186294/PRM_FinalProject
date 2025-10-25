@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="toolbar_bg">#388DD3</color>
+    <color name="user_prof_bg">#50BBF0</color>
+    <color name="role_lab_mng">#BF8CFF</color>
+    <color name="role_researcher">#9BE997</color>
+    <color name="role_technician">#FFE084</color>
+    <color name="status_approved">#4CAF50</color>
+    <color name="status_rejected">#F44336</color>
+    <color name="status_pending">#FF9800</color>
 </resources>
