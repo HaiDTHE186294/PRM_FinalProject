@@ -1,6 +1,6 @@
 package com.lkms.data.model.java;
 
-import com.lkms.data.model.kotlin.Role;
+import com.lkms.data.model.java.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
