@@ -1,8 +1,10 @@
+// File: IProtocolRepository.java
 package com.lkms.data.repository;
 
 // Sử dụng trực tiếp các model ánh xạ DB
 import com.lkms.data.model.java.*;
 import java.util.List;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus;
 
 /**
  * Giao diện Repository cho việc Quản lý Protocols và SOPs (UC3, UC4).
@@ -45,10 +47,37 @@ public interface IProtocolRepository {
     // --- Chức năng Tra cứu và Hiển thị Protocols (UC3) ---
 
     /**
-     * UC3: Lấy danh sách protocols.
+     * UC3: Lấy danh sách TẤT CẢ protocols (bao gồm cả bản nháp, bị từ chối...).
+     * Hữu ích cho các màn hình quản lý của Admin hoặc Lab Manager.
      * Truy vấn các trường từ bảng "Protocol" [1, 2].
      */
     void getAllProtocols(ProtocolListCallback callback);
+
+    // --- ▼▼▼ CÁC HÀM TÌM KIẾM VÀ LỌC MỚI ĐƯỢC THÊM VÀO ĐÂY ▼▼▼ ---
+
+    /**
+     * UC3: Lấy danh sách các protocol đã được duyệt (approved) và là phiên bản mới nhất.
+     * Đây là "thư viện chính" cho người dùng cuối (Lab Staff).
+     * @param callback Callback để trả về kết quả.
+     */
+    void getLatestApprovedProtocols(ProtocolListCallback callback);
+
+    /**
+     * UC3: Tìm kiếm protocol dựa trên tiêu đề (protocolTitle).
+     * Sử dụng tìm kiếm không phân biệt chữ hoa/thường.
+     * @param titleQuery Từ khóa tìm kiếm.
+     * @param callback Callback để trả về kết quả.
+     */
+    void searchProtocolsByTitle(String titleQuery, ProtocolListCallback callback);
+
+    /**
+     * UC3: Lọc protocol một cách linh hoạt dựa trên nhiều điều kiện.
+     * Bất kỳ tham số nào là null sẽ được bỏ qua trong bộ lọc.
+     * @param creatorId ID của người tạo (hoặc null để bỏ qua).
+     * @param versionNumber Số phiên bản (hoặc null để bỏ qua).
+     * @param callback Callback để trả về kết quả.
+     */
+    void filterProtocols(Integer creatorId, String versionNumber, ProtocolListCallback callback);
 
     // --- Chức năng Xem chi tiết Protocol (UC4) ---
 
@@ -75,7 +104,8 @@ public interface IProtocolRepository {
      * UC20: Duyệt hoặc từ chối một protocol mới.
      * Cập nhật trường "approveStatus" và "approverUserId" [2] trong bảng "Protocol".
      */
-    void approveProtocol(int protocolId, int approverUserId, boolean approved, String reason, GenericCallback callback);
-
+    void approveProtocol(int protocolId, int approverUserId, ProtocolApproveStatus newStatus, String reason, GenericCallback callback);
+  
+    // --- Chức năng lấy thông tin của protocolStep
     void getProtocolStep(int protocolStepId, ProtocolStepCallback callback);
 }

@@ -14,8 +14,10 @@ import com.lkms.data.repository.enumPackage.LKMSConstantEnums;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class ExperimentRepositoryImplJava implements IExperimentRepository {
 
@@ -222,6 +224,56 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
     @Override
     public void getCommentsForExperiment(int experimentId, CommentListCallback callback) {
         callback.onError("Chưa được triển khai.");
+    }
+
+    @Override
+    public void getExperimentIdsByUserId(int userId, IdListCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/Team?select=experimentId" + "&userId=eq." + userId;
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<Map<String, Integer>>>() {}.getType();
+                List<Map<String, Integer>> result = gson.fromJson(json, listType);
+
+                List<Integer> experimentIds = new ArrayList<>();
+                for (Map<String, Integer> row : result) {
+                    if (row.containsKey("experimentId")) {
+                        experimentIds.add(row.get("experimentId"));
+                    }
+                }
+
+                callback.onSuccess(experimentIds);
+            } catch (Exception e) {
+                callback.onError("Lỗi khi lấy danh sách experimentId: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @Override
+    public void getOngoingExperimentsByIds(List<Integer> experimentIds, ExperimentListCallback callback) {
+        new Thread(() -> {
+            try {
+                if (experimentIds == null || experimentIds.isEmpty()) {
+                    callback.onSuccess(new ArrayList<>());
+                    return;
+                }
+
+                String idList = experimentIds.toString().replace("[", "(").replace("]", ")");
+                String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*"
+                        + "&experimentId=in." + idList
+                        + "&experimentStatus=eq." + ExperimentStatus.INPROCESS;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<Experiment>>() {}.getType();
+                List<Experiment> experiments = gson.fromJson(json, listType);
+
+                callback.onSuccess(experiments);
+            } catch (Exception e) {
+                callback.onError("Error getting ongoing experiments: " + e.getMessage());
+            }
+        }).start();
     }
 
 }

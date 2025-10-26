@@ -59,6 +59,11 @@ public interface IExperimentRepository {
         void onError(String errorMessage);
     }
 
+    interface IdListCallback {
+        void onSuccess(List<Integer> experimentIds);
+        void onError(String errorMessage);
+    }
+
     // --- Chức năng Quản lý Thí nghiệm (UC5, UC34) ---
 
     /**
@@ -147,4 +152,9 @@ public interface IExperimentRepository {
      * Truy vấn bảng "Comment" [3].
      */
     void getCommentsForExperiment(int experimentId, CommentListCallback callback);
+
+
+    void getExperimentIdsByUserId(int userId, IdListCallback callback);
+
+    void getOngoingExperimentsByIds(List<Integer> experimentIds, ExperimentListCallback callback);
 }

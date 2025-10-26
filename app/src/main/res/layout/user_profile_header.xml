@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/user_prof_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Name -->
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        tools:text="Username Here" />
+
+    <!-- Email address -->
+    <TextView
+        android:id="@+id/user_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:drawableStartCompat="@android:drawable/ic_dialog_email"
+        app:drawableTint="@android:color/white"
+        tools:text="email@example.com" />
+
+    <!-- Role Tag -->
+    <com.lkms.ui.user_profile.view.RoleTag
+        android:id="@+id/user_role"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

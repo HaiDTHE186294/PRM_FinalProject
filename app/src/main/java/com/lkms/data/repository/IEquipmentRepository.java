@@ -118,4 +118,7 @@ public interface IEquipmentRepository {
      * Lấy đường dẫn manual dựa theo serialNumber (manualId = serialNumber).
      */
     void getManualBySerialNumber(String serialNumber, StringCallback callback);
+
+
+    void getBookingApproved(int userId, BookingListCallback callback);
 }

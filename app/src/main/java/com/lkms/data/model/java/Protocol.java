@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.google.gson.annotations.JsonAdapter;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus;
+import com.lkms.data.repository.enumPackage.java.ProtocolStatusAdapter;
 
 /**
  * Đại diện cho một hàng trong bảng "Protocol".
@@ -29,7 +32,8 @@ public class Protocol {
     private String safetyWarning;
 
     @SerializedName("approveStatus")
-    private String approveStatus;
+    @JsonAdapter(ProtocolStatusAdapter.class)
+    private ProtocolApproveStatus approveStatus;
 
     // Khóa ngoại đến User (người tạo)
     @SerializedName("creatorUserId")

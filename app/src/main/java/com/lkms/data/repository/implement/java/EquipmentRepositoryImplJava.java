@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.*;
 import com.lkms.data.repository.IEquipmentRepository;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -134,8 +135,9 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/Booking?select=*";
                 String jsonBody = String.format(
-                        "{\"userId\":%d,\"equipmentId\":%d,\"experimentId\":%d,\"startTime\":\"%s\",\"endTime\":\"%s\"}",
-                        userId, equipmentId, experimentId, startTime, endTime);
+                        "{\"userId\":%d,\"equipmentId\":%d,\"experimentId\":%d,\"startTime\":\"%s\",\"endTime\":\"%s\",\"bookingStatus\":\"%s\"}",
+                        userId, equipmentId, experimentId, startTime, endTime, LKMSConstantEnums.BookingStatus.PENDING
+                );
 
                 String response = HttpHelper.postJson(endpoint, jsonBody);
 
@@ -194,6 +196,26 @@ public class EquipmentRepositoryImplJava implements IEquipmentRepository {
                 }
             } catch (Exception e) {
                 callback.onError("Lỗi khi lấy manual: " + e.getMessage());
+            }
+        }).start();
+    }
+
+
+    @Override
+    public void getBookingApproved(int userId, BookingListCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/Booking?select=*"
+                        + "&userId=eq." + userId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                Type listType = new TypeToken<List<Booking>>() {}.getType();
+                List<Booking> bookings = gson.fromJson(json, listType);
+
+                callback.onSuccess(bookings);
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải danh sách booking được duyệt: " + e.getMessage());
             }
         }).start();
     }
