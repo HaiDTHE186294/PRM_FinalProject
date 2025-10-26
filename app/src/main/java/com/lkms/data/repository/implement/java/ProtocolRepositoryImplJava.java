@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * Triển khai bằng Java của IProtocolRepository.
- * Dựa trên bản Kotlin ProtocolRepositoryImpl.kt.
  */
 public class ProtocolRepositoryImplJava implements IProtocolRepository {
 
