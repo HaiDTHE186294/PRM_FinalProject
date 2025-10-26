@@ -1,17 +1,23 @@
 package com.lkms.data.model.java;
 
+import androidx.navigation.PopUpToBuilder;
+
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;;
+
 
 /**
  * Đại diện cho một hàng trong bảng "LogEntry".
  */
 @Data
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogEntry {
+
 
     @SerializedName("logId")
     private Integer logId;

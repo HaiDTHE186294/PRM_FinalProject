@@ -17,7 +17,6 @@ import java.util.Map;
 
 /**
  * Triển khai bằng Java của IProtocolRepository.
- * Dựa trên bản Kotlin ProtocolRepositoryImpl.kt.
  */
 public class ProtocolRepositoryImplJava implements IProtocolRepository {
 
@@ -243,5 +242,52 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
                 callback.onError("Lỗi khi cập nhật trạng thái phê duyệt: " + e.getMessage());
             }
         }).start();
+    }
+
+   //  -------------------- Lấy protocol step --------------------
+    @Override
+    public void getProtocolStep(int protocolStepId, ProtocolStepCallback callback) {
+        new Thread(() -> {
+            try {
+                String tableName = "ProtocolStep";
+                String idColumn = "protocolStepId";
+
+
+                String endpoint = SUPABASE_URL + "/rest/v1/" + tableName +
+                        "?select=*&" + idColumn + "=eq." + protocolStepId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                // Dù chỉ mong đợi 1 object, Supabase API trả về một mảng (List)
+                Type listType = new TypeToken<List<ProtocolStep>>() {}.getType();
+                List<ProtocolStep> steps = gson.fromJson(json, listType);
+
+                // Kiểm tra xem mảng có dữ liệu không
+                if (steps != null && !steps.isEmpty()) {
+                    // Lấy phần tử đầu tiên (và duy nhất)
+                    ProtocolStep protocolStep = steps.get(0);
+                    callback.onSuccess(protocolStep);
+                } else {
+                    // Không tìm thấy
+                    callback.onError("Không tìm thấy protocol step với id: " + protocolStepId);
+                }
+
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải protocol step: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // -------------------- CLASS PHỤ TRỢ --------------------
+    private static class ProtocolApprovalUpdate {
+        String approveStatus;
+        int approverUserId;
+        String rejectionReason;
+
+        ProtocolApprovalUpdate(String approveStatus, int approverUserId, String rejectionReason) {
+            this.approveStatus = approveStatus;
+            this.approverUserId = approverUserId;
+            this.rejectionReason = rejectionReason;
+        }
     }
 }

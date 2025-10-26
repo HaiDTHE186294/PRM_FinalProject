@@ -23,6 +23,12 @@
             android:name=".ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel"
             android:exported="false" />
         <activity
+            android:name=".ui.experimentInfo.ExperimentInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.experimentdetail.ExperimentDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.loginmaindashboard.maindashboard.MainDashboardViewModel"
             android:exported="false" />
         <activity
@@ -35,10 +41,8 @@
             android:name=".ui.equipment.EquipmentListActivity"
             android:exported="true">
 
-            <!-- Nếu muốn đây là màn hình khởi đầu, thêm intent-filter -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
