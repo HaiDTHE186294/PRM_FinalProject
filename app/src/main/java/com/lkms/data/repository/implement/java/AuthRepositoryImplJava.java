@@ -76,36 +76,6 @@ public class AuthRepositoryImplJava implements IAuthRepository {
             }
         }).start();
     }
-//
-//    @Override
-//    public void login(String email, String password, AuthCallback callback) {
-//        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-//            callback.onError("Email và mật khẩu không được để trống.");
-//            return;
-//        }
-//
-//        new Thread(() -> {
-//            try {
-//                String endpoint = SUPABASE_URL + "/rest/v1/User?select=*"
-//                        + "&email=eq." + email
-//                        + "&password=eq." + password;
-//
-//                String json = HttpHelper.getJson(endpoint);
-//
-//                Type listType = new TypeToken<List<User>>() {}.getType();
-//                List<User> users = gson.fromJson(json, listType);
-//
-//                if (users != null && !users.isEmpty()) {
-//                    callback.onSuccess(users.get(0));
-//                } else {
-//                    callback.onError("Email hoặc mật khẩu không đúng.");
-//                }
-//
-//            } catch (Exception e) {
-//                callback.onError("Đăng nhập thất bại: " + e.getMessage());
-//            }
-//        }).start();
-//    }
 
     // -------------------- LOGOUT --------------------
     @Override

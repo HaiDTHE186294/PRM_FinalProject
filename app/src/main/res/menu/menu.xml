@@ -52,7 +52,7 @@
 
             <item
                 android:id="@+id/menu_equipment"
-                android:title="Equipment Booking / Status" />
+                android:title="Equipment Booking" />
 
             <item
                 android:id="@+id/menu_sds"
@@ -62,13 +62,13 @@
                 android:id="@+id/menu_user_profile"
                 android:title="User Profile" />
 
-            <item
-                android:id="@+id/menu_role"
-                android:title="Role Management" />
+            <!--        <item
+                        android:id="@+id/menu_role"
+                        android:title="Role Management" />-->
 
-            <item
-                android:id="@+id/menu_approve"
-                android:title="Approve Checkout / Booking" />
+            <!--        <item
+                        android:id="@+id/menu_approve"
+                        android:title="Approve Checkout / Booking" />-->
             <item
                 android:id="@+id/menu_logout"
                 android:title="Logout" />
