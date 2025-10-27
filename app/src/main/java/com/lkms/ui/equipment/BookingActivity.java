@@ -3,6 +3,8 @@ package com.lkms.ui.equipment;
 import android.app.DatePickerDialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.*;
 
 import androidx.annotation.Nullable;
@@ -49,6 +51,7 @@ public class BookingActivity extends AppCompatActivity {
         setupViewModel();
         setupActions();
         setupExperimentSpinner();
+        startBookingRefresh();
     }
 
     private void initUI() {
@@ -193,4 +196,17 @@ public class BookingActivity extends AppCompatActivity {
         calendarView.setEvents(events);
         calendarView.setDisabledDays(disabled);
     }
+
+    private void startBookingRefresh() {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                viewModel.loadBookedDays();
+                handler.postDelayed(this, 3000); //
+            }
+        };
+        handler.post(runnable);
+    }
+
 }

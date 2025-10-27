@@ -1,4 +1,4 @@
-package com.lkms.data.repository.enumPackage;
+package com.lkms.data.repository.enumPackage.java;
 
 public class LKMSConstantEnums {
 
