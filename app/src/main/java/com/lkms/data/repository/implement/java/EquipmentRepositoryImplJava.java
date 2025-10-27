@@ -1,6 +1,5 @@
 package com.lkms.data.repository.implement.java;
 
-import static com.lkms.BuildConfig.SUPABASE_ANON_KEY;
 import static com.lkms.BuildConfig.SUPABASE_URL;
 
 import com.google.gson.Gson;

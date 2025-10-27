@@ -10,7 +10,7 @@ import com.lkms.data.model.java.Experiment;
 import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.model.java.LogEntry;
 import com.lkms.data.repository.IExperimentRepository;
-import com.lkms.data.repository.enumPackage.LKMSConstantEnums;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -262,7 +262,7 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
                 String idList = experimentIds.toString().replace("[", "(").replace("]", ")");
                 String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*"
                         + "&experimentId=in." + idList
-                        + "&experimentStatus=eq." + ExperimentStatus.INPROCESS;
+                        + "&experimentStatus=eq." + LKMSConstantEnums.ExperimentStatus.ONGOING;
 
                 String json = HttpHelper.getJson(endpoint);
 
