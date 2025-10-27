@@ -260,7 +260,7 @@ public class MainDashboardViewModel extends AppCompatActivity {
             finish();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("LOGOUT_ERROR", "Logout failed: " + e.getMessage(), e);
             Toast.makeText(this, "Lỗi khi đăng xuất: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
