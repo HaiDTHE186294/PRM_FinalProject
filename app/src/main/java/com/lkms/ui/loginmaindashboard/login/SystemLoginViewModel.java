@@ -70,7 +70,7 @@ public class SystemLoginViewModel extends AppCompatActivity {
                             int savedId = sharedPreferences.getInt("user_id", -1);
                             int savedRole = sharedPreferences.getInt("user_role", -1);
 
-                            if (savedRole == 1) {
+                            if (savedRole == 1 || savedRole == 2) {
                                 // research
                                 startActivity(new Intent(SystemLoginViewModel.this, MainDashboardViewModel.class));
                             } else {

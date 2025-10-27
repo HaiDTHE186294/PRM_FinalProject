@@ -7,4 +7,116 @@
     android:layout_height="match_parent"
     tools:context=".ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel">
 
+        <!-- Toolbar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/manager_toolbar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#1E2A47"
+            app:title="Manager Dashboard"
+            app:titleTextColor="@android:color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- ScrollView content -->
+        <ScrollView
+            android:id="@+id/manager_scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/manager_toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:fillViewport="true"
+            android:nestedScrollingEnabled="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp">
+
+                <!-- Activity title -->
+                <TextView
+                    android:id="@+id/manager_tvActivityTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manager Overview"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp" />
+
+                <!-- My Ongoing Experiments -->
+                <TextView
+                    android:id="@+id/manager_tvMyExperiments"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All Active Experiments"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="16dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/manager_recyclerExperiments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:clipToPadding="false"
+                    android:layout_marginTop="8dp"
+                    tools:listitem="@layout/item_experiment"
+                    tools:itemCount="5" />
+
+                <!-- Recent Inventory Alerts -->
+                <TextView
+                    android:id="@+id/manager_tvInventoryAlerts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recent Inventory Alerts"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="16dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/manager_recyclerAlerts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:clipToPadding="false"
+                    android:layout_marginTop="8dp"
+                    tools:listitem="@layout/item_inventory_alert"
+                    tools:itemCount="4" />
+
+                <!-- Upcoming Equipment Bookings -->
+                <TextView
+                    android:id="@+id/manager_tvUpcomingBookings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upcoming Equipment Bookings"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/manager_recyclerBookings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:layout_marginBottom="16dp"
+                    tools:listitem="@layout/item_booking"
+                    tools:itemCount="3" />
+
+            </LinearLayout>
+        </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

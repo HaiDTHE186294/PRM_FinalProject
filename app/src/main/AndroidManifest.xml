@@ -53,6 +53,9 @@
         </activity>
         <activity android:name=".ui.protocol.ProtocolListActivity" />
         <activity android:name=".ui.protocol.ProtocolDetailActivity" />
+        <activity android:name=".ui.user_profile.UserProfileActivity" />
+        <activity android:name=".ui.user_profile.MemberListActivity" />
+        <activity android:name=".ui.user_profile.ProfileSettingActivity" />
     </application>
 
 </manifest>
