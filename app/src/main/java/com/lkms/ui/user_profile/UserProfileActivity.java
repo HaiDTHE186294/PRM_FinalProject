@@ -57,7 +57,7 @@ public class UserProfileActivity extends AppCompatActivity {
         // Setup observer to observe async method to get user's data
         userProfileUseCase.getUser().observe(this, user -> {
 
-            Log.d("UserProfileActivityDEBUG", "Get user: " + user);
+//            Log.d("UserProfileActivityDEBUG", "Get user: " + user);
 
             if (user != null)
             {

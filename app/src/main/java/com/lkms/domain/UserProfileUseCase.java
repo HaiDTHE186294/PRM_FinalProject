@@ -60,7 +60,6 @@ public class UserProfileUseCase
         //Update user's data inside this ViewModel
         getUser.setName(newName);
         getUser.setContactInfo(newContactInfo);
-        _user.postValue(getUser);
 
         //Update user's data inside DB
         userRepository.updateUserProfile(
@@ -93,7 +92,6 @@ public class UserProfileUseCase
 
         //Update user's data inside this ViewModel
         getUser.setRoleId(newRole.ordinal());
-        _user.postValue(getUser);
 
         //Update user's data inside DB
         userRepository.updateUserRole(
