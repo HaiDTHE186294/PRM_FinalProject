@@ -1,5 +1,7 @@
 package com.lkms.ui.experimentdetail.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import com.lkms.R;
 
 
 import com.lkms.data.model.java.*;
+import com.lkms.ui.addlog.AddLogActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +106,19 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
                     if (stepClickListener != null) {
                         stepClickListener.onStepExpandClicked(stepId, holder.getBindingAdapterPosition());
                     }
+                }
+            });
+
+            stepHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+
+                    // TODO: Mở Activity riêng (dấu cộng)
+                    Intent separateIntent = new Intent(context, AddLogActivity.class);
+                    int stepId = stepWrapper.getProtocolStep().getProtocolStepId();
+                    separateIntent.putExtra("stepId", stepId);
+                    context.startActivity(separateIntent);
                 }
             });
 

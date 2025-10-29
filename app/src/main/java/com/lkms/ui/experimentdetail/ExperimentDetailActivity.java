@@ -2,6 +2,7 @@ package com.lkms.ui.experimentdetail;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,7 +20,7 @@ import com.lkms.ui.experimentdetail.adapter.ExperimentDetailAdapter;
 
 public class ExperimentDetailActivity extends AppCompatActivity implements ExperimentDetailAdapter.OnStepClickListener {
 
-    public static final String EXTRA_EXPERIMENT_ID = "EXTRA_EXPERIMENT_ID";
+    public static final String EXTRA_EXPERIMENT_ID = "experimentId";
     private static final int MOCK_EXPERIMENT_ID = 1;
 
     private RecyclerView recyclerView;
@@ -49,11 +50,14 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         // 2. Setup RecyclerView
         recyclerView = findViewById(RECYCLER_VIEW_ID);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter); // Gán adapter rỗng vào
+        recyclerView.setAdapter(adapter);
 
-        // 3. Khởi tạo ViewModel (Giả sử Factory đã được sửa)
-        ExperimentDetailViewModelFactory factory = new ExperimentDetailViewModelFactory(
-        );
+        TextView tilte = findViewById(R.id.tilte);
+        TextView status = findViewById(R.id.status);
+        TextView objectiveText = findViewById(R.id.objectiveText);
+
+        // 3. Khởi tạo ViewModel
+        ExperimentDetailViewModelFactory factory = new ExperimentDetailViewModelFactory();
 
         viewModel = new ViewModelProvider(this, factory).get(ExperimentDetailViewModel.class);
 
@@ -63,6 +67,9 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         // 5. Gọi hàm MỚI của ViewModel để tải dữ liệu
         viewModel.loadExperimentData(getExperimentId());
 
+        tilte.setText(getIntent().getStringExtra("title"));
+        status.setText(getIntent().getStringExtra("status"));
+        objectiveText.setText(getIntent().getStringExtra("objective"));
     }
 
     private void observeViewModel() {
