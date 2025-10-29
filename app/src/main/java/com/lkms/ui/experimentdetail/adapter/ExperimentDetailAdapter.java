@@ -116,7 +116,7 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                     // TODO: Mở Activity riêng (dấu cộng)
                     Intent separateIntent = new Intent(context, AddLogActivity.class);
-                    int stepId = stepWrapper.getProtocolStep().getProtocolStepId();
+                    int stepId = stepWrapper.getExperimentStep().getExperimentStepId();
                     separateIntent.putExtra("stepId", stepId);
                     context.startActivity(separateIntent);
                 }
