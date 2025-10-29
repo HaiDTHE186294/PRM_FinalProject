@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.Experiment;
 import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.model.java.LogEntry;
+import com.lkms.data.model.java.Project;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
@@ -275,5 +276,63 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
             }
         }).start();
     }
+
+    @Override
+    public void getExperimentById(int experimentId, ExperimentCallback callback) {
+        new Thread(() -> {
+            try {
+                // placeholder_SUPABASE_URL: Constant for the Supabase project URL
+                String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*&experimentId=eq." + experimentId;
+
+                // placeholder_HttpHelper: Utility class for making HTTP requests
+                String json = HttpHelper.getJson(endpoint);
+
+                // Note: Supabase 'eq' filters still return a JSON array (list),
+                // even if it's empty or has only one item.
+                Type listType = new TypeToken<List<Experiment>>() {}.getType(); // placeholder_Experiment: Model class
+
+                // placeholder_gson: Gson instance for JSON serialization/deserialization
+                List<Experiment> experiments = gson.fromJson(json, listType);
+
+                if (experiments != null && !experiments.isEmpty()) {
+                    // Experiment found, return the first item
+                    callback.onSuccess(experiments.get(0));
+                } else {
+                    // Experiment not found
+                    callback.onError("Error getting experiment: " + experimentId);
+                }
+            } catch (Exception e) {
+                callback.onError("Error getting experiment: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @Override
+    public void getExperimentProject(int projectId, ProjectCallBack callback) {
+        new Thread(() -> {
+            try {
+                // Tạo endpoint Supabase REST
+                // projectId=eq.<id> -> filter theo projectId
+                String endpoint = SUPABASE_URL + "/rest/v1/Project?select=*&projectId=eq." + projectId;
+
+                // Gửi GET request
+                String json = HttpHelper.getJson(endpoint);
+
+                // Vì Supabase API trả về array JSON
+                Type listType = new TypeToken<List<Project>>() {}.getType();
+                List<Project> projects = gson.fromJson(json, listType);
+
+                if (projects != null && !projects.isEmpty()) {
+                    callback.onSuccess(projects.get(0));
+                } else {
+                    callback.onError("No project found with ID: " + projectId);
+                }
+
+            } catch (Exception e) {
+                callback.onError("Error getting project: " + e.getMessage());
+            }
+        }).start();
+    }
+
 
 }
