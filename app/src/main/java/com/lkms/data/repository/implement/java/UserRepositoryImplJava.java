@@ -4,6 +4,7 @@ import static com.lkms.BuildConfig.SUPABASE_URL;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.lkms.data.model.java.Item;
 import com.lkms.data.model.java.User;
 import com.lkms.data.repository.IUserRepository;
 
@@ -13,6 +14,13 @@ import java.util.List;
 public class UserRepositoryImplJava implements IUserRepository {
 
     private static final Gson gson = new Gson();
+
+
+    @Override
+    public void addUser(String fullName, String email, String password, UserCallback callback)
+    {
+        //TODO: Ask someone to work with this.
+    }
 
     @Override
     public void getUserById(int userId, UserCallback callback) {

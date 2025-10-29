@@ -1,8 +1,7 @@
-package com.lkms.ui.user_profile;
+package com.lkms.ui.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 //import android.widget.Toast;
@@ -12,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lkms.R;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 import com.lkms.domain.UserProfileUseCase;
-import com.lkms.ui.user_profile.view.UserProfileHeader;
+import com.lkms.ui.user.view.UserProfileHeader;
 
 //For debugging
 //import android.util.Log;

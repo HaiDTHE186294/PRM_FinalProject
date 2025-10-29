@@ -34,6 +34,15 @@ public interface IUserRepository {
 //    void getUser(String email, String password);
 
     /**
+     * Tạo người dùng mới
+     *
+     * @param fullName Họ tên người dùng
+     * @param email Email người dùng
+     * @param password Mật khẩu người dùng
+     */
+    void addUser(String fullName, String email, String password, UserCallback callback);
+
+    /**
      * UC14: Lấy dữ liệu người dùng dựa trên ID của người dùng đó
      *
      * @param userId Id của người dùng

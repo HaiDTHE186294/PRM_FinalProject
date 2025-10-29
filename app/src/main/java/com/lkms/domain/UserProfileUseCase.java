@@ -21,6 +21,52 @@ public class UserProfileUseCase
         return _user;
     }
 
+    public void addNewUser(String fullName, String email, String password) {
+        //Validation
+//        if (fullName == null || fullName.trim().isEmpty()) {
+//            return;
+//        }
+//        if (email == null || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//            return;
+//        }
+//        if (password == null || password.length() < 6) {
+//            return;
+//        }
+//
+//            @Override
+//            public void onSuccess() {
+//                runOnUiThread(() -> {
+//                    setLoading(false);
+//                    Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
+//                    // Navigate to another activity, e.g., LoginActivity
+//                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                    startActivity(intent);
+//                    finish();
+//                });
+//            }
+//
+//            @Override
+//            public void onError(String message) {
+//                runOnUiThread(() -> {
+//                    setLoading(false);
+//                    Toast.makeText(RegisterActivity.this, "Registration failed: " + message, Toast.LENGTH_LONG).show();
+//                });
+//            }
+
+        userRepository.addUser(fullName, email, password, new UserRepositoryImplJava.UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                _user.postValue(user);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                _user.postValue(null);
+            }
+        });
+    }
+
     /**
      * Load user data from the repository based on the provided user ID.
      *

@@ -1,4 +1,4 @@
-package com.lkms.ui.user_profile;
+package com.lkms.ui.user;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lkms.R;
 import com.lkms.data.model.java.User;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
-import com.lkms.ui.user_profile.view.RoleTag;
+import com.lkms.ui.user.view.RoleTag;
 
 import java.util.List;
 

@@ -28,11 +28,12 @@ import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
 import com.lkms.domain.loginmaindashboardusecase.MainDashboardUseCase;
+import com.lkms.ui.equipment.BookingActivity;
 import com.lkms.ui.equipment.EquipmentListActivity;
 import com.lkms.ui.loginmaindashboard.login.SystemLoginViewModel;
 import com.lkms.ui.protocol.ProtocolListActivity;
 import com.lkms.ui.sds.SdsLookupActivity;
-import com.lkms.ui.user_profile.UserProfileActivity;
+import com.lkms.ui.user.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;

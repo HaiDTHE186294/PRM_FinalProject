@@ -21,7 +21,7 @@ import androidx.security.crypto.MasterKey;
 
 import com.lkms.R;
 import com.lkms.ui.loginmaindashboard.login.SystemLoginViewModel;
-import com.lkms.ui.user_profile.MemberListActivity;
+import com.lkms.ui.user.MemberListActivity;
 
 public class ManagerMainDashboardViewModel extends AppCompatActivity {
 
