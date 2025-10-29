@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
+            android:name=".ui.sds.SdsLookupActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.equipment.PdfViewerActivity"
             android:exported="false" />
         <activity
@@ -21,7 +24,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ui.experimentInfo.ExperimentInfoActivity"
             android:exported="false" />
@@ -36,6 +39,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -46,10 +50,10 @@
             android:name=".ui.equipment.EquipmentListActivity"
             android:exported="false">
 
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".ui.protocol.ProtocolListActivity" />
         <activity android:name=".ui.protocol.ProtocolDetailActivity" />
