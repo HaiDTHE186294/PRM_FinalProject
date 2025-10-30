@@ -1,15 +1,11 @@
 package com.lkms.ui.protocol;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,8 +23,14 @@ import com.lkms.data.model.java.Item;
 import com.lkms.data.model.java.Protocol;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.ProtocolStep;
+import com.lkms.ui.protocol.adapter.ItemsDisplayAdapter;
+import com.lkms.ui.protocol.adapter.StepsAdapter;
 import com.lkms.ui.protocol.viewmodel.CreateProtocolViewModel;
 import com.lkms.util.AuthHelper;
+
+// ✨ BƯỚC 2.1: THÊM IMPORT CHO ENUM
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +57,9 @@ public class CreateProtocolActivity extends AppCompatActivity {
     private StepsAdapter stepsAdapter;
     private ItemsDisplayAdapter itemsAdapter;
     private final List<ProtocolStep> stepsList = new ArrayList<>();
-    private final List<ProtocolItem> itemsList = new ArrayList<>(); // List các item ĐÃ được thêm vào protocol
-    private final List<Item> availableItems = new ArrayList<>(); // List TẤT CẢ các item có trong hệ thống
-    private ArrayAdapter<Item> availableItemsSpinnerAdapter; // Adapter cho Spinner MỚI
+    private final List<ProtocolItem> itemsList = new ArrayList<>();
+    private final List<Item> availableItems = new ArrayList<>();
+    private ArrayAdapter<Item> availableItemsSpinnerAdapter;
     private CreateProtocolViewModel viewModel;
 
     @Override
@@ -69,11 +71,10 @@ public class CreateProtocolActivity extends AppCompatActivity {
 
         initViews();
         setupToolbar();
-        setupAdapters(); // Đổi tên hàm
+        setupAdapters();
         setupEventListeners();
         observeViewModel();
 
-        // Bắt đầu tải danh sách vật tư
         viewModel.loadInitialData();
     }
 
@@ -89,7 +90,6 @@ public class CreateProtocolActivity extends AppCompatActivity {
         saveProtocolButton = findViewById(R.id.button_save_protocol);
         progressBar = findViewById(R.id.progress_bar_create);
 
-        // Ánh xạ các view mới
         selectAvailableItemSpinner = findViewById(R.id.spinner_select_available_item);
         selectQuantityInput = findViewById(R.id.edit_text_select_quantity);
         addItemToListButton = findViewById(R.id.button_add_item_to_list);
@@ -104,32 +104,60 @@ public class CreateProtocolActivity extends AppCompatActivity {
     }
 
     private void setupAdapters() {
-        // Adapter cho Steps RecyclerView
         stepsAdapter = new StepsAdapter(stepsList);
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stepsRecyclerView.setAdapter(stepsAdapter);
 
-        // Adapter cho Items RecyclerView (hiển thị item đã chọn)
         itemsAdapter = new ItemsDisplayAdapter(itemsList, availableItems);
         itemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         itemsRecyclerView.setAdapter(itemsAdapter);
 
-        // Adapter cho Spinner chọn vật tư
-        availableItemsSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, this.availableItems);
-        availableItemsSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        availableItemsSpinnerAdapter = new ArrayAdapter<Item>(this, android.R.layout.simple_spinner_item, this.availableItems) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView textView = (TextView) super.getView(position, convertView, parent);
+                Item currentItem = getItem(position);
+                if (currentItem != null) {
+                    String displayText = String.format(
+                            "(Tồn kho: %d %s) %s",
+                            currentItem.getQuantity(),
+                            currentItem.getUnit(),
+                            currentItem.getItemName()
+                    );
+                    textView.setText(displayText);
+                }
+                return textView;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView textView = (TextView) super.getDropDownView(position, convertView, parent);
+                Item currentItem = getItem(position);
+                if (currentItem != null) {
+                    String displayText = String.format(
+                            "(Tồn kho: %d %s) %s",
+                            currentItem.getQuantity(),
+                            currentItem.getUnit(),
+                            currentItem.getItemName()
+                    );
+                    textView.setText(displayText);
+                }
+                return textView;
+            }
+        };
+
         selectAvailableItemSpinner.setAdapter(availableItemsSpinnerAdapter);
     }
 
     private void setupEventListeners() {
         addStepButton.setOnClickListener(v -> {
             ProtocolStep newStep = new ProtocolStep();
-            // Step order sẽ được xử lý trong adapter để đảm bảo luôn đúng
             stepsList.add(newStep);
             stepsAdapter.notifyItemInserted(stepsList.size() - 1);
             stepsRecyclerView.smoothScrollToPosition(stepsList.size() - 1);
         });
 
-        // Logic mới cho nút "Add to List"
         addItemToListButton.setOnClickListener(v -> {
             Item selectedItem = (Item) selectAvailableItemSpinner.getSelectedItem();
             if (selectedItem == null) {
@@ -138,13 +166,26 @@ public class CreateProtocolActivity extends AppCompatActivity {
             }
 
             String quantityStr = selectQuantityInput.getText().toString();
-            if (quantityStr.isEmpty() || Integer.parseInt(quantityStr) <= 0) {
-                selectQuantityInput.setError("Số lượng phải lớn hơn 0");
+            if (quantityStr.isEmpty()) {
+                selectQuantityInput.setError("Số lượng không được để trống");
                 return;
             }
-            int quantity = Integer.parseInt(quantityStr);
+            int quantity;
+            try {
+                quantity = Integer.parseInt(quantityStr);
+                if (quantity <= 0) {
+                    selectQuantityInput.setError("Số lượng phải lớn hơn 0");
+                    return;
+                }
+                if (quantity > selectedItem.getQuantity()) {
+                    selectQuantityInput.setError("Không thể vượt quá tồn kho (" + selectedItem.getQuantity() + ")");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                selectQuantityInput.setError("Số lượng không hợp lệ");
+                return;
+            }
 
-            // Kiểm tra xem item này đã có trong danh sách chưa
             for (ProtocolItem existingItem : itemsList) {
                 if (existingItem.getItemId().equals(selectedItem.getItemId())) {
                     Toast.makeText(this, "Vật tư này đã có trong danh sách.", Toast.LENGTH_SHORT).show();
@@ -160,13 +201,11 @@ public class CreateProtocolActivity extends AppCompatActivity {
             itemsAdapter.notifyItemInserted(itemsList.size() - 1);
             itemsRecyclerView.smoothScrollToPosition(itemsList.size() - 1);
 
-            // Reset ô nhập liệu
             selectQuantityInput.setText("");
-            selectQuantityInput.setError(null); // Xóa lỗi nếu có
+            selectQuantityInput.setError(null);
             selectAvailableItemSpinner.setSelection(0);
         });
 
-        // Sự kiện nhấn nút "Save Protocol"
         saveProtocolButton.setOnClickListener(v -> {
             String protocolName = protocolNameInput.getText().toString().trim();
             String introduction = protocolIntroductionInput.getText().toString().trim();
@@ -182,15 +221,35 @@ public class CreateProtocolActivity extends AppCompatActivity {
                 return;
             }
 
+            List<ProtocolStep> validSteps = new ArrayList<>();
+            for (ProtocolStep step : stepsList) {
+                if (step.getInstruction() != null && !step.getInstruction().trim().isEmpty()) {
+                    validSteps.add(step);
+                }
+            }
+
+            if (validSteps.isEmpty()) {
+                Toast.makeText(this, "Protocol phải có ít nhất một bước hợp lệ.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            for (int i = 0; i < validSteps.size(); i++) {
+                validSteps.get(i).setStepOrder(i + 1);
+            }
+
             Protocol protocolData = new Protocol();
-            // Sử dụng các setter của model Protocol của bạn
             protocolData.setProtocolTitle(protocolName);
             protocolData.setIntroduction(introduction);
             protocolData.setSafetyWarning(safetyWarning);
             protocolData.setVersionNumber(version);
 
+            // ✨ BƯỚC 2.2: GÁN TRẠNG THÁI MẶC ĐỊNH BẰNG ENUM
+            protocolData.setApproveStatus(ProtocolApproveStatus.APPROVED);
+
             int creatorId = AuthHelper.getLoggedInUserId(getApplicationContext());
-            viewModel.createProtocol(protocolData, stepsList, itemsList, creatorId);
+            protocolData.setCreatorUserId(creatorId);
+
+            viewModel.createProtocol(protocolData, validSteps, itemsList, creatorId);
         });
     }
 
@@ -213,15 +272,12 @@ public class CreateProtocolActivity extends AppCompatActivity {
             }
         });
 
-        // Observer cho danh sách vật tư có sẵn
         viewModel.getItems().observe(this, items -> {
             if (items != null) {
                 this.availableItems.clear();
                 this.availableItems.addAll(items);
-                // Cập nhật cho Spinner chọn item
                 this.availableItemsSpinnerAdapter.notifyDataSetChanged();
 
-                // Nếu có vật tư, bật các control lên, nếu không thì vô hiệu hóa
                 boolean hasItems = !items.isEmpty();
                 selectAvailableItemSpinner.setEnabled(hasItems);
                 selectQuantityInput.setEnabled(hasItems);
@@ -237,138 +293,5 @@ public class CreateProtocolActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    // ================================================================
-    // ============ ADAPTER CHO STEPS===============
-    // ================================================================
-    private class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHolder> {
-        private final List<ProtocolStep> localStepsList;
-
-        StepsAdapter(List<ProtocolStep> stepsList) {
-            this.localStepsList = stepsList;
-        }
-
-        @NonNull
-        @Override
-        public StepViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_create_step, parent, false);
-            return new StepViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull StepViewHolder holder, int position) {
-            holder.bind(localStepsList.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return localStepsList.size();
-        }
-
-        class StepViewHolder extends RecyclerView.ViewHolder {
-            TextView stepOrderText;
-            TextInputEditText stepInstructionEdit;
-            ImageButton removeStepButton;
-
-            StepViewHolder(@NonNull View itemView) {
-                super(itemView);
-                stepOrderText = itemView.findViewById(R.id.text_view_step_order);
-                stepInstructionEdit = itemView.findViewById(R.id.edit_text_step_instruction);
-                removeStepButton = itemView.findViewById(R.id.button_remove_step);
-
-                removeStepButton.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        localStepsList.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, localStepsList.size());
-                    }
-                });
-
-                stepInstructionEdit.addTextChangedListener(new TextWatcher() {
-                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            localStepsList.get(position).setInstruction(s.toString());
-                        }
-                    }
-                    @Override public void afterTextChanged(Editable s) {}
-                });
-            }
-
-            void bind(ProtocolStep step) {
-                // Cập nhật số thứ tự dựa trên vị trí trong adapter
-                stepOrderText.setText(String.format("%d.", getAdapterPosition() + 1));
-                step.setStepOrder(getAdapterPosition() + 1);
-                stepInstructionEdit.setText(step.getInstruction());
-            }
-        }
-    }
-
-    // =======================================================================
-    // ====== ADAPTER MỚI ĐỂ HIỂN THỊ ITEM ĐÃ CHỌN (ItemsDisplayAdapter) ======
-    // =======================================================================
-    private class ItemsDisplayAdapter extends RecyclerView.Adapter<ItemsDisplayAdapter.ItemViewHolder> {
-        private final List<ProtocolItem> localItemsList;
-        private final List<Item> localAvailableItems; // Cần list này để tìm tên
-
-        ItemsDisplayAdapter(List<ProtocolItem> itemsList, List<Item> availableItems) {
-            this.localItemsList = itemsList;
-            this.localAvailableItems = availableItems;
-        }
-
-        @NonNull
-        @Override
-        public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_create_item_display, parent, false);
-            return new ItemViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-            ProtocolItem protocolItem = localItemsList.get(position);
-            // Tìm tên của item dựa trên itemId
-            String itemName = "Unknown Item (ID: " + protocolItem.getItemId() + ")";
-            for (Item availableItem : localAvailableItems) {
-                if (availableItem.getItemId().equals(protocolItem.getItemId())) {
-                    itemName = availableItem.getItemName();
-                    break;
-                }
-            }
-            holder.bind(itemName, protocolItem);
-        }
-
-        @Override
-        public int getItemCount() {
-            return localItemsList.size();
-        }
-
-        class ItemViewHolder extends RecyclerView.ViewHolder {
-            TextView itemNameText, itemQuantityText;
-            ImageButton removeItemButton;
-
-            ItemViewHolder(@NonNull View itemView) {
-                super(itemView);
-                itemNameText = itemView.findViewById(R.id.text_view_item_name);
-                itemQuantityText = itemView.findViewById(R.id.text_view_item_quantity);
-                removeItemButton = itemView.findViewById(R.id.button_remove_display_item);
-
-                removeItemButton.setOnClickListener(v -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        localItemsList.remove(position);
-                        notifyItemRemoved(position);
-                    }
-                });
-            }
-
-            void bind(String name, ProtocolItem item) {
-                itemNameText.setText(name);
-                itemQuantityText.setText("x " + item.getQuantity());
-            }
-        }
     }
 }

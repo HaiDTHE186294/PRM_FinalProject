@@ -54,6 +54,12 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         setupFab();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.loadLatestApprovedLibrary();
+    }
+
     /**
      * Ánh xạ các view từ file layout.
      */

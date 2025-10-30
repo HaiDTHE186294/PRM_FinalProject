@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -87,7 +88,8 @@
                     android:id="@+id/edit_text_protocol_version"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    tools:ignore="HardcodedText"
+                    android:inputType="numberDecimal" /> <!-- ✨ ĐÃ SỬA Ở ĐÂY -->
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- 4. Mục quản lý Steps -->
@@ -121,10 +123,6 @@
                 tools:itemCount="2"
                 tools:listitem="@layout/item_create_step" />
 
-            <!-- ============================================================== -->
-            <!-- ✅✅✅ BẮT ĐẦU KHU VỰC ĐÃ SỬA LỖI ✅✅✅ -->
-            <!-- ============================================================== -->
-
             <!-- 5. Mục quản lý Items -->
             <TextView
                 android:layout_width="match_parent"
@@ -141,7 +139,6 @@
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
-                <!-- Spinner để chọn vật tư từ danh sách có sẵn -->
                 <Spinner
                     android:id="@+id/spinner_select_available_item"
                     android:layout_width="0dp"
@@ -149,7 +146,6 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp" />
 
-                <!-- EditText để nhập số lượng -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="wrap_content"
@@ -185,11 +181,7 @@
                 tools:itemCount="1"
                 tools:listitem="@layout/item_create_item_display" />
 
-            <!-- ============================================================== -->
-            <!-- ✅✅✅ KẾT THÚC KHU VỰC ĐÃ SỬA LỖI ✅✅✅ -->
-            <!-- ============================================================== -->
-
-        </LinearLayout> <!-- <<<<<< Dấu đóng của LinearLayout bên trong ScrollView -->
+        </LinearLayout>
 
     </ScrollView>
 
