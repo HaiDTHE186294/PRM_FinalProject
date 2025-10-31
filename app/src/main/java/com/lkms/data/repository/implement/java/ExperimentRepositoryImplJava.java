@@ -109,7 +109,8 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
         new Thread(() -> {
             try {
                 String endpoint = SUPABASE_URL + "/rest/v1/LogEntry?select=*"
-                        + "&experimentStepId=eq." + experimentStepId;
+                        + "&experimentStepId=eq." + experimentStepId
+                        + "&order=logTime.asc";
 
                 String json = HttpHelper.getJson(endpoint);
 
