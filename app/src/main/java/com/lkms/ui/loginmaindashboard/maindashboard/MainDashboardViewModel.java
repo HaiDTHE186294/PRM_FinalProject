@@ -22,8 +22,11 @@ import androidx.security.crypto.MasterKey;
 
 import com.lkms.R;
 import com.lkms.data.model.java.Booking;
+import com.lkms.data.model.java.BookingDisplay;
 import com.lkms.data.model.java.Experiment;
+import com.lkms.data.model.java.InventoryDisplayItem;
 import com.lkms.data.model.java.Item;
+import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
@@ -36,6 +39,7 @@ import com.lkms.ui.user_profile.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class MainDashboardViewModel extends AppCompatActivity {
 
@@ -45,8 +49,8 @@ public class MainDashboardViewModel extends AppCompatActivity {
     private BookingAdapter bookingAdapter;
 
     private List<Experiment> experimentList = new ArrayList<>();
-    private List<Item> alertList = new ArrayList<>();
-    private List<Booking> bookingList = new ArrayList<>();
+    private List<InventoryDisplayItem> alertList = new ArrayList<>();
+    private List<BookingDisplay> bookingList = new ArrayList<>();
     private MainDashboardUseCase useCase;
 
     @Override
@@ -119,14 +123,12 @@ public class MainDashboardViewModel extends AppCompatActivity {
     }
 
     private void loadInventoryAlerts() {
-        useCase.getAllInventoryItems(new InventoryRepositoryImplJava.InventoryListCallback() {
+        useCase.getAllInventoryItems(new InventoryRepositoryImplJava.InventoryDisplayListCallback() {
             @Override
-            public void onSuccess(List<Item> items) {
+            public void onSuccess(List<InventoryDisplayItem> displayItems) {
                 runOnUiThread(() -> {
                     alertList.clear();
-                    for (Item item : items) {
-                        alertList.add(item);
-                    }
+                    alertList.addAll(displayItems);
                     alertAdapter.notifyDataSetChanged();
                 });
             }
@@ -147,9 +149,9 @@ public class MainDashboardViewModel extends AppCompatActivity {
             Toast.makeText(this, "Không tìm thấy userId — vui lòng đăng nhập lại!", Toast.LENGTH_SHORT).show();
             return;
         }
-        useCase.getUpcomingEquipmentBookings(userId, new EquipmentRepositoryImplJava.BookingListCallback() {
+        useCase.getUpcomingEquipmentBookings(userId, new IEquipmentRepository.BookingDisplayListCallback() {
             @Override
-            public void onSuccess(List<Booking> bookings) {
+            public void onSuccess(List<BookingDisplay> bookings) {
                 runOnUiThread(() -> {
                     bookingList.clear();
                     bookingList.addAll(bookings);

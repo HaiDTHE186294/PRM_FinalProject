@@ -44,6 +44,11 @@ public interface IInventoryRepository {
         void onError(String errorMessage);
     }
 
+    public interface InventoryDisplayListCallback {
+        void onSuccess(List<InventoryDisplayItem> displayItems);
+        void onError(String errorMessage);
+    }
+
     // --- Chức năng Tra cứu và Hiển thị Tồn kho (UC7, UC11) ---
 
     /**

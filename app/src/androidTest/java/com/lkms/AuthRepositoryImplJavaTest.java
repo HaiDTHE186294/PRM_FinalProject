@@ -2,6 +2,7 @@ package com.lkms;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.lkms.data.model.java.User;
+import com.lkms.data.model.java.AuthResult;
 import com.lkms.data.repository.IAuthRepository;
 import com.lkms.data.repository.implement.java.AuthRepositoryImplJava; // Giả định tên lớp Java Repository của bạn
 import org.junit.Test;
@@ -24,17 +25,24 @@ public class AuthRepositoryImplJavaTest {
     // ----------------------------------------------------------------------------------
     @Test
     public void testLoginSuccess() throws InterruptedException {
-        // Thay thế bằng thông tin đăng nhập hợp lệ trong DB của bạn
+        // Dữ liệu hợp lệ trong DB (chỉnh theo DB thực tế)
         final String email = "test1@gmail.com";
-        final String password = "1";
+        final String password = "12345678";
 
         repo.login(email, password, new IAuthRepository.AuthCallback() {
             @Override
-            public void onSuccess(User user) {
-                System.out.println("✅ Login success: " + user.getEmail());
-                // Kiểm tra đơn giản: đảm bảo email khớp hoặc ID người dùng không null
-                if (!email.equals(user.getEmail())) {
-                    System.err.println("Kiểm tra thất bại: Email trả về không khớp.");
+            public void onSuccess(AuthResult result) {
+                System.out.println("✅ Login success!");
+                System.out.println("Token: " + result.getAuthToken());
+                System.out.println("User ID: " + result.getUserId());
+                System.out.println("Role ID: " + result.getRoleId());
+
+                // Kiểm tra đơn giản
+                if (result.getUserId() <= 0) {
+                    System.err.println("❌ Kiểm tra thất bại: userId không hợp lệ.");
+                }
+                if (result.getAuthToken() == null || result.getAuthToken().isEmpty()) {
+                    System.err.println("❌ Kiểm tra thất bại: token rỗng.");
                 }
             }
 
@@ -45,9 +53,10 @@ public class AuthRepositoryImplJavaTest {
             }
         });
 
-        // Chặn luồng chính để chờ kết quả từ luồng mạng
+        // Chờ cho thread login chạy xong
         Thread.sleep(SLEEP_TIME_MS);
     }
+
 
     // ----------------------------------------------------------------------------------
     // ❌ 2. Test login thất bại (ví dụ thêm)
@@ -59,8 +68,9 @@ public class AuthRepositoryImplJavaTest {
 
         repo.login(email, password, new IAuthRepository.AuthCallback() {
             @Override
-            public void onSuccess(User user) {
-                System.out.println("❌ Login đáng lẽ phải thất bại, nhưng thành công với: " + user.getEmail());
+            public void onSuccess(AuthResult result) {
+                System.out.println("❌ Login đáng lẽ phải thất bại, nhưng thành công!");
+                System.out.println("Token: " + result.getAuthToken());
                 System.err.println("Kiểm tra thất bại: Login không được phép thành công.");
             }
 

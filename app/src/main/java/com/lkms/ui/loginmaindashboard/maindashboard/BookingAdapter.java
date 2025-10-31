@@ -14,16 +14,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lkms.R;
 import com.lkms.data.model.java.Booking;
+import com.lkms.data.model.java.BookingDisplay;
 import com.lkms.ui.equipment.EquipmentDetailActivity;
 
 import java.util.List;
 
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
 
-    private final List<Booking> bookingList;
+    private final List<BookingDisplay> bookingList;
     private final Context context;
 
-    public BookingAdapter(Context context, List<Booking> bookingList) {
+    public BookingAdapter(Context context, List<BookingDisplay> bookingList) {
         this.context = context;
         this.bookingList = bookingList;
     }
@@ -38,7 +39,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
     @Override
     public void onBindViewHolder(@NonNull BookingViewHolder holder, int position) {
-        Booking booking = bookingList.get(position);
+        BookingDisplay booking = bookingList.get(position);
         holder.tvBookingName.setText(booking.getEquipmentName());
         holder.tvBookingTime.setText(booking.getStartTime() + " - " + booking.getEndTime());
 
