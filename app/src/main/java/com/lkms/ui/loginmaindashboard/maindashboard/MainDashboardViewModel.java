@@ -31,10 +31,10 @@ import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
 import com.lkms.domain.loginmaindashboardusecase.MainDashboardUseCase;
-import com.lkms.ui.equipment.BookingActivity;
 import com.lkms.ui.equipment.EquipmentListActivity;
 import com.lkms.ui.loginmaindashboard.login.SystemLoginViewModel;
 import com.lkms.ui.protocol.ProtocolListActivity;
+import com.lkms.ui.sds.SdsLookupActivity;
 import com.lkms.ui.user_profile.UserProfileActivity;
 
 import java.util.ArrayList;
@@ -237,6 +237,12 @@ public class MainDashboardViewModel extends AppCompatActivity {
 
         if (id == R.id.menu_logout) {
             logout();
+            return true;
+        }
+
+        if (id == R.id.menu_sds) {
+            startActivity(new Intent(this, SdsLookupActivity.class));
+            Log.d("MENU_ACTION", "Navigated to SDS");
             return true;
         }
 
