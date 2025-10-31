@@ -47,7 +47,8 @@ public class ItemsDisplayAdapter extends RecyclerView.Adapter<ItemsDisplayAdapte
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView itemNameText, itemQuantityText;
+        TextView itemNameText;
+        TextView itemQuantityText;
         ImageButton removeItemButton;
 
         ItemViewHolder(@NonNull View itemView) {

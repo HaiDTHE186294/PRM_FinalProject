@@ -35,6 +35,9 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
 
                 callback.onSuccess(protocols);
             } catch (Exception e) {
+                android.util.Log.e("ProtocolRepo", "Lỗi khi tải danh sách protocol", e);
+
+                // 2. Vẫn trả về thông báo lỗi cho lớp gọi nó (UI)
                 callback.onError("Lỗi khi tải danh sách protocol: " + e.getMessage());
             }
         }).start();

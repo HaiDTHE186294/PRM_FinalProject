@@ -27,12 +27,11 @@ import com.lkms.ui.protocol.adapter.ItemsDisplayAdapter;
 import com.lkms.ui.protocol.adapter.StepsAdapter;
 import com.lkms.ui.protocol.viewmodel.CreateProtocolViewModel;
 import com.lkms.util.AuthHelper;
-
-// ✨ BƯỚC 2.1: THÊM IMPORT CHO ENUM
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CreateProtocolActivity extends AppCompatActivity {
 
@@ -72,6 +71,7 @@ public class CreateProtocolActivity extends AppCompatActivity {
         initViews();
         setupToolbar();
         setupAdapters();
+        // Sửa ở đây: Hàm setupEventListeners đã được chia nhỏ
         setupEventListeners();
         observeViewModel();
 
@@ -116,23 +116,19 @@ public class CreateProtocolActivity extends AppCompatActivity {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                TextView textView = (TextView) super.getView(position, convertView, parent);
-                Item currentItem = getItem(position);
-                if (currentItem != null) {
-                    String displayText = String.format(
-                            "(Tồn kho: %d %s) %s",
-                            currentItem.getQuantity(),
-                            currentItem.getUnit(),
-                            currentItem.getItemName()
-                    );
-                    textView.setText(displayText);
-                }
-                return textView;
+                return createSpinnerView(position, convertView, parent, false);
             }
 
             @Override
             public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                TextView textView = (TextView) super.getDropDownView(position, convertView, parent);
+                return createSpinnerView(position, convertView, parent, true);
+            }
+
+            private View createSpinnerView(int position, @Nullable View convertView, @NonNull ViewGroup parent, boolean isDropDown) {
+                TextView textView = (TextView) (isDropDown ?
+                        super.getDropDownView(position, convertView, parent) :
+                        super.getView(position, convertView, parent));
+
                 Item currentItem = getItem(position);
                 if (currentItem != null) {
                     String displayText = String.format(
@@ -150,14 +146,36 @@ public class CreateProtocolActivity extends AppCompatActivity {
         selectAvailableItemSpinner.setAdapter(availableItemsSpinnerAdapter);
     }
 
+    // =================================================================================
+    // 🔥 BẮT ĐẦU PHẦN TÁI CẤU TRÚC (REFACTOR)
+    // =================================================================================
+
+    /**
+     * Hàm điều phối, gọi các hàm con để đăng ký sự kiện cho từng nút.
+     * Phương thức này giờ đây có Độ phức tạp nhận thức (Cognitive Complexity) rất thấp.
+     */
     private void setupEventListeners() {
+        setupAddStepButtonListener();
+        setupAddItemButtonListener();
+        setupSaveProtocolButtonListener();
+    }
+
+    /**
+     * Xử lý sự kiện cho nút "Thêm bước".
+     */
+    private void setupAddStepButtonListener() {
         addStepButton.setOnClickListener(v -> {
-            ProtocolStep newStep = new ProtocolStep();
-            stepsList.add(newStep);
+            stepsList.add(new ProtocolStep());
             stepsAdapter.notifyItemInserted(stepsList.size() - 1);
             stepsRecyclerView.smoothScrollToPosition(stepsList.size() - 1);
         });
+    }
 
+    /**
+     * Xử lý sự kiện cho nút "Thêm vật tư vào danh sách".
+     * Logic validate và thêm vật tư được gói gọn trong hàm này.
+     */
+    private void setupAddItemButtonListener() {
         addItemToListButton.setOnClickListener(v -> {
             Item selectedItem = (Item) selectAvailableItemSpinner.getSelectedItem();
             if (selectedItem == null) {
@@ -165,93 +183,152 @@ public class CreateProtocolActivity extends AppCompatActivity {
                 return;
             }
 
-            String quantityStr = selectQuantityInput.getText().toString();
-            if (quantityStr.isEmpty()) {
-                selectQuantityInput.setError("Số lượng không được để trống");
-                return;
+            // Sử dụng Optional để xử lý việc parse số lượng một cách an toàn và gọn gàng hơn
+            Optional<Integer> quantityOptional = getValidQuantity(selectedItem);
+            if (!quantityOptional.isPresent()) {
+                return; // Dừng lại nếu số lượng không hợp lệ
             }
-            int quantity;
-            try {
-                quantity = Integer.parseInt(quantityStr);
-                if (quantity <= 0) {
-                    selectQuantityInput.setError("Số lượng phải lớn hơn 0");
-                    return;
-                }
-                if (quantity > selectedItem.getQuantity()) {
-                    selectQuantityInput.setError("Không thể vượt quá tồn kho (" + selectedItem.getQuantity() + ")");
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                selectQuantityInput.setError("Số lượng không hợp lệ");
+            int quantity = quantityOptional.get();
+
+            // Kiểm tra xem vật tư đã tồn tại trong danh sách chưa
+            boolean itemExists = itemsList.stream().anyMatch(item -> item.getItemId().equals(selectedItem.getItemId()));
+            if (itemExists) {
+                Toast.makeText(this, "Vật tư này đã có trong danh sách.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            for (ProtocolItem existingItem : itemsList) {
-                if (existingItem.getItemId().equals(selectedItem.getItemId())) {
-                    Toast.makeText(this, "Vật tư này đã có trong danh sách.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
-
-            ProtocolItem newItem = new ProtocolItem();
-            newItem.setItemId(selectedItem.getItemId());
-            newItem.setQuantity(quantity);
-
-            itemsList.add(newItem);
-            itemsAdapter.notifyItemInserted(itemsList.size() - 1);
-            itemsRecyclerView.smoothScrollToPosition(itemsList.size() - 1);
-
-            selectQuantityInput.setText("");
-            selectQuantityInput.setError(null);
-            selectAvailableItemSpinner.setSelection(0);
+            // Nếu tất cả đều hợp lệ, thêm vào danh sách và cập nhật UI
+            addNewProtocolItem(selectedItem, quantity);
         });
+    }
 
+    /**
+     * Xử lý sự kiện cho nút "Lưu Protocol".
+     * Logic validate toàn bộ form và gọi ViewModel được gói gọn trong hàm này.
+     */
+    private void setupSaveProtocolButtonListener() {
         saveProtocolButton.setOnClickListener(v -> {
             String protocolName = protocolNameInput.getText().toString().trim();
-            String introduction = protocolIntroductionInput.getText().toString().trim();
-            String safetyWarning = safetyWarningInput.getText().toString().trim();
             String version = versionInput.getText().toString().trim();
 
-            if (protocolName.isEmpty()) {
-                protocolNameInput.setError("Tên protocol không được để trống");
-                return;
-            }
-            if (version.isEmpty()) {
-                versionInput.setError("Phiên bản không được để trống");
+            // Validate các trường bắt buộc
+            if (!isProtocolInfoValid(protocolName, version)) {
                 return;
             }
 
-            List<ProtocolStep> validSteps = new ArrayList<>();
-            for (ProtocolStep step : stepsList) {
-                if (step.getInstruction() != null && !step.getInstruction().trim().isEmpty()) {
-                    validSteps.add(step);
-                }
-            }
-
+            // Lọc và đánh số thứ tự các bước hợp lệ
+            List<ProtocolStep> validSteps = getValidSteps();
             if (validSteps.isEmpty()) {
                 Toast.makeText(this, "Protocol phải có ít nhất một bước hợp lệ.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            for (int i = 0; i < validSteps.size(); i++) {
-                validSteps.get(i).setStepOrder(i + 1);
-            }
-
-            Protocol protocolData = new Protocol();
-            protocolData.setProtocolTitle(protocolName);
-            protocolData.setIntroduction(introduction);
-            protocolData.setSafetyWarning(safetyWarning);
-            protocolData.setVersionNumber(version);
-
-            // ✨ BƯỚC 2.2: GÁN TRẠNG THÁI MẶC ĐỊNH BẰNG ENUM
-            protocolData.setApproveStatus(ProtocolApproveStatus.APPROVED);
-
-            int creatorId = AuthHelper.getLoggedInUserId(getApplicationContext());
-            protocolData.setCreatorUserId(creatorId);
-
-            viewModel.createProtocol(protocolData, validSteps, itemsList, creatorId);
+            // Tạo đối tượng Protocol và gọi ViewModel để lưu
+            Protocol protocolData = createProtocolData(protocolName, version);
+            viewModel.createProtocol(protocolData, validSteps, itemsList, protocolData.getCreatorUserId());
         });
     }
+
+    // --- Các hàm trợ giúp (Helper Methods) được tách ra từ logic phức tạp ---
+
+    /**
+     * Kiểm tra và trả về số lượng hợp lệ từ người dùng.
+     * @param selectedItem Item được chọn để kiểm tra tồn kho.
+     * @return Optional chứa số lượng nếu hợp lệ, ngược lại trả về Optional rỗng.
+     */
+    private Optional<Integer> getValidQuantity(Item selectedItem) {
+        String quantityStr = selectQuantityInput.getText().toString();
+        if (quantityStr.isEmpty()) {
+            selectQuantityInput.setError("Số lượng không được để trống");
+            return Optional.empty();
+        }
+        try {
+            int quantity = Integer.parseInt(quantityStr);
+            if (quantity <= 0) {
+                selectQuantityInput.setError("Số lượng phải lớn hơn 0");
+                return Optional.empty();
+            }
+            if (quantity > selectedItem.getQuantity()) {
+                selectQuantityInput.setError("Không thể vượt quá tồn kho (" + selectedItem.getQuantity() + ")");
+                return Optional.empty();
+            }
+            selectQuantityInput.setError(null); // Xóa lỗi nếu hợp lệ
+            return Optional.of(quantity);
+        } catch (NumberFormatException e) {
+            selectQuantityInput.setError("Số lượng không hợp lệ");
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Thêm một vật tư mới vào danh sách và cập nhật UI.
+     */
+    private void addNewProtocolItem(Item selectedItem, int quantity) {
+        ProtocolItem newItem = new ProtocolItem();
+        newItem.setItemId(selectedItem.getItemId());
+        // Giả sử bạn cần cả tên item trong ProtocolItem để hiển thị, nếu không có thì có thể bỏ dòng này
+        // newItem.setItemName(selectedItem.getItemName());
+        newItem.setQuantity(quantity);
+
+        itemsList.add(newItem);
+        itemsAdapter.notifyItemInserted(itemsList.size() - 1);
+        itemsRecyclerView.smoothScrollToPosition(itemsList.size() - 1);
+
+        // Reset các trường nhập liệu
+        selectQuantityInput.setText("");
+        selectQuantityInput.clearFocus();
+        selectAvailableItemSpinner.setSelection(0);
+    }
+
+    /**
+     * Kiểm tra thông tin cơ bản của Protocol (tên và phiên bản).
+     */
+    private boolean isProtocolInfoValid(String protocolName, String version) {
+        if (protocolName.isEmpty()) {
+            protocolNameInput.setError("Tên protocol không được để trống");
+            return false;
+        }
+        if (version.isEmpty()) {
+            versionInput.setError("Phiên bản không được để trống");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Lấy danh sách các bước hợp lệ (có nội dung) và đánh số thứ tự cho chúng.
+     */
+    private List<ProtocolStep> getValidSteps() {
+        List<ProtocolStep> validSteps = new ArrayList<>();
+        for (ProtocolStep step : stepsList) {
+            if (step.getInstruction() != null && !step.getInstruction().trim().isEmpty()) {
+                validSteps.add(step);
+            }
+        }
+        // Đánh số thứ tự cho các bước hợp lệ
+        for (int i = 0; i < validSteps.size(); i++) {
+            validSteps.get(i).setStepOrder(i + 1);
+        }
+        return validSteps;
+    }
+
+    /**
+     * Tạo đối tượng Protocol từ dữ liệu người dùng nhập.
+     */
+    private Protocol createProtocolData(String protocolName, String version) {
+        Protocol protocolData = new Protocol();
+        protocolData.setProtocolTitle(protocolName);
+        protocolData.setIntroduction(protocolIntroductionInput.getText().toString().trim());
+        protocolData.setSafetyWarning(safetyWarningInput.getText().toString().trim());
+        protocolData.setVersionNumber(version);
+        protocolData.setApproveStatus(ProtocolApproveStatus.APPROVED);
+        protocolData.setCreatorUserId(AuthHelper.getLoggedInUserId(getApplicationContext()));
+        return protocolData;
+    }
+
+    // =================================================================================
+    // 🔥 KẾT THÚC PHẦN TÁI CẤU TRÚC
+    // =================================================================================
 
     private void observeViewModel() {
         viewModel.isLoading().observe(this, isLoading -> {
@@ -261,7 +338,7 @@ public class CreateProtocolActivity extends AppCompatActivity {
 
         viewModel.getCreationSuccess().observe(this, protocolId -> {
             if (protocolId != null) {
-                Toast.makeText(this, "Tạo protocol thành công với ID: " + protocolId, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Tạo protocol thành công!", Toast.LENGTH_LONG).show();
                 finish();
             }
         });
