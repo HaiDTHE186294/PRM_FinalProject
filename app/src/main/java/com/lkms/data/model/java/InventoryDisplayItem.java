@@ -1,17 +1,15 @@
 package com.lkms.data.model.java;
 
 import com.google.gson.annotations.SerializedName;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
-/**
- * Đại diện cho một hàng trong bảng "Item".
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Item {
+public class InventoryDisplayItem {
 
     @SerializedName("itemId")
     private Integer itemId;
@@ -36,4 +34,7 @@ public class Item {
 
     @SerializedName("expirationDate")
     private String expirationDate;
+
+    @SerializedName("daysLeft")
+    private int daysLeft;
 }

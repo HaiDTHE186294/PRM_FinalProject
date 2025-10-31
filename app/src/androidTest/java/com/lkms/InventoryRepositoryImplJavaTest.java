@@ -99,7 +99,7 @@ public class InventoryRepositoryImplJavaTest {
     public void testAddNewInventoryItem() throws InterruptedException {
         final String uniqueName = "Test Item " + System.currentTimeMillis();
 
-        final Item newItem = new Item(
+        final Item newItem =  new Item(
                 null, // auto-increment
                 uniqueName,
                 "9876-54-3",
