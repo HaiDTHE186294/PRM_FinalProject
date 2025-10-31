@@ -21,27 +21,24 @@ import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
 import com.lkms.R;
-import com.lkms.data.model.java.Booking;
 import com.lkms.data.model.java.BookingDisplay;
 import com.lkms.data.model.java.Experiment;
 import com.lkms.data.model.java.InventoryDisplayItem;
-import com.lkms.data.model.java.Item;
 import com.lkms.data.repository.IEquipmentRepository;
-import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
 import com.lkms.domain.loginmaindashboardusecase.MainDashboardUseCase;
 import com.lkms.ui.equipment.EquipmentListActivity;
-import com.lkms.ui.loginmaindashboard.login.SystemLoginViewModel;
+import com.lkms.ui.loginmaindashboard.login.SystemLoginActivity;
 import com.lkms.ui.protocol.ProtocolListActivity;
 import com.lkms.ui.sds.SdsLookupActivity;
+import com.lkms.ui.user_profile.MemberListActivity;
 import com.lkms.ui.user_profile.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.WeakHashMap;
 
-public class MainDashboardViewModel extends AppCompatActivity {
+public class MainDashboardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerExperiments, recyclerAlerts, recyclerBookings;
     private OngoingExperimentAdapter experimentAdapter;
@@ -116,7 +113,7 @@ public class MainDashboardViewModel extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() ->
-                        Toast.makeText(MainDashboardViewModel.this, "Lỗi tải dữ liệu: " + message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(MainDashboardActivity.this, "Lỗi tải dữ liệu: " + message, Toast.LENGTH_SHORT).show()
                 );
             }
         });
@@ -136,7 +133,7 @@ public class MainDashboardViewModel extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() ->
-                        Toast.makeText(MainDashboardViewModel.this, "Lỗi tải tồn kho: " + message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(MainDashboardActivity.this, "Lỗi tải tồn kho: " + message, Toast.LENGTH_SHORT).show()
                 );
             }
         });
@@ -162,7 +159,7 @@ public class MainDashboardViewModel extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() ->
-                        Toast.makeText(MainDashboardViewModel.this, "Lỗi tải booking: " + message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(MainDashboardActivity.this, "Lỗi tải booking: " + message, Toast.LENGTH_SHORT).show()
                 );
             }
         });
@@ -204,9 +201,12 @@ public class MainDashboardViewModel extends AppCompatActivity {
 
         int roleId = getRoleIdFromSecurePrefs();
 
-        if (roleId != 1) {
-            // Ẩn menu "New Experiment" nếu không phải roleId 1
-            menu.findItem(R.id.menu_new_experiment).setVisible(false);
+        if (roleId == 2) {
+            menu.findItem(R.id.menu_create_log).setVisible(false);
+        }
+
+        if (roleId != 0) {
+            menu.findItem(R.id.menu_approve).setVisible(false);
         }
 
         return true;
@@ -246,6 +246,12 @@ public class MainDashboardViewModel extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.menu_role) {
+            startActivity(new Intent(this, MemberListActivity.class));
+            Log.d("MENU_ACTION", "Navigated to MemberListActivity");
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -261,7 +267,7 @@ public class MainDashboardViewModel extends AppCompatActivity {
             editor.remove("user_id");
             editor.apply();
 
-            Intent intent = new Intent(this, SystemLoginViewModel.class);
+            Intent intent = new Intent(this, SystemLoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
 

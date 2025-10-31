@@ -26,19 +26,16 @@
             android:name=".ui.equipment.EquipmentDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel"
-            android:exported="false" />
-        <activity
             android:name=".ui.experimentInfo.ExperimentInfoActivity"
             android:exported="false" />
         <activity
             android:name=".ui.experimentdetail.ExperimentDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.loginmaindashboard.maindashboard.MainDashboardViewModel"
+            android:name=".ui.loginmaindashboard.maindashboard.MainDashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.loginmaindashboard.login.SystemLoginViewModel"
+            android:name=".ui.loginmaindashboard.login.SystemLoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

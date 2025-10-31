@@ -3,13 +3,11 @@ package com.lkms.ui.loginmaindashboard.login;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.lkms.data.model.java.AuthResult;
-import com.lkms.data.model.java.User;
 import com.lkms.data.repository.IAuthRepository;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,10 +19,9 @@ import androidx.security.crypto.MasterKey;
 
 import com.lkms.R;
 import com.lkms.domain.loginmaindashboardusecase.SystemLoginUseCase;
-import com.lkms.ui.loginmaindashboard.maindashboard.MainDashboardViewModel;
-import com.lkms.ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel;
+import com.lkms.ui.loginmaindashboard.maindashboard.MainDashboardActivity;
 
-public class SystemLoginViewModel extends AppCompatActivity {
+public class SystemLoginActivity extends AppCompatActivity {
 
     private EditText edtEmail, edtPassword;
     private Button btnLogin;
@@ -55,7 +52,7 @@ public class SystemLoginViewModel extends AppCompatActivity {
                 @Override
                 public void onSuccess(AuthResult result) {
                     runOnUiThread(() -> {
-                        Toast.makeText(SystemLoginViewModel.this,
+                        Toast.makeText(SystemLoginActivity.this,
                                 "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
 
                         try {
@@ -69,17 +66,13 @@ public class SystemLoginViewModel extends AppCompatActivity {
                             editor.putInt("user_id", result.getUserId());
                             editor.apply();
 
-                            int savedRole = sharedPreferences.getInt("user_role", -1);
+                        //    int savedRole = sharedPreferences.getInt("user_role", -1);
 
-                            if (savedRole == 1 || savedRole == 2) {
-                                startActivity(new Intent(SystemLoginViewModel.this, MainDashboardViewModel.class));
-                            } else {
-                                startActivity(new Intent(SystemLoginViewModel.this, ManagerMainDashboardViewModel.class));
-                            }
+                            startActivity(new Intent(SystemLoginActivity.this, MainDashboardActivity.class));
                             finish();
 
                         } catch (Exception e) {
-                            Toast.makeText(SystemLoginViewModel.this, "Lưu token thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SystemLoginActivity.this, "Lưu token thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -87,7 +80,7 @@ public class SystemLoginViewModel extends AppCompatActivity {
                 @Override
                 public void onError(String message) {
                     runOnUiThread(() -> {
-                        Toast.makeText(SystemLoginViewModel.this, message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SystemLoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     });
                 }
             });
