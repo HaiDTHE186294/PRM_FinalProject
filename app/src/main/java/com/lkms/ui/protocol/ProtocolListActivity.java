@@ -54,6 +54,12 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         setupFab();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.loadLatestApprovedLibrary();
+    }
+
     /**
      * Ánh xạ các view từ file layout.
      */
@@ -126,9 +132,9 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
      * ✅ BƯỚC 5: TẠO HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
      * Cài đặt sự kiện click cho nút FloatingActionButton.
      */
-    private void setupFab() {
-        fabNewProtocol.setOnClickListener(view -> {
-            Toast.makeText(this, "Mở màn hình tạo protocol mới...", Toast.LENGTH_SHORT).show();
+    private void setupFab() {fabNewProtocol.setOnClickListener(view -> {
+        Intent intent = new Intent(ProtocolListActivity.this, CreateProtocolActivity.class);
+        startActivity(intent);
         });
     }
 

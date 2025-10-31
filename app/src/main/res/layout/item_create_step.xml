@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <!-- ID: text_view_step_order -->
+    <TextView
+        android:id="@+id/text_view_step_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="1."
+        android:textAppearance="?attr/textAppearanceBody1" />
+
+    <!-- ID: edit_text_step_instruction -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Instruction">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_text_step_instruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- ID: button_remove_step -->
+    <!-- ✅ SỬA LỖI: Tăng kích thước vùng nhấn lên 48dp x 48dp -->
+    <ImageButton
+        android:id="@+id/button_remove_step"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Remove Step"
+        android:src="@drawable/ic_delete" />
+    <!-- Gợi ý: Thay thế icon mặc định bằng icon bạn đã tạo (ic_delete) để đồng bộ giao diện -->
+
+</LinearLayout>
