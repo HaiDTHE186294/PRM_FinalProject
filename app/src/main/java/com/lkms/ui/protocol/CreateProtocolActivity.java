@@ -266,8 +266,6 @@ public class CreateProtocolActivity extends AppCompatActivity {
     private void addNewProtocolItem(Item selectedItem, int quantity) {
         ProtocolItem newItem = new ProtocolItem();
         newItem.setItemId(selectedItem.getItemId());
-        // Giả sử bạn cần cả tên item trong ProtocolItem để hiển thị, nếu không có thì có thể bỏ dòng này
-        // newItem.setItemName(selectedItem.getItemName());
         newItem.setQuantity(quantity);
 
         itemsList.add(newItem);
