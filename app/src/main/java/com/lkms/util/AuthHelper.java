@@ -52,9 +52,7 @@ public class AuthHelper {
             // Đọc giá trị số nguyên từ key "user_id", nếu không có thì trả về giá trị mặc định là -1
             return sharedPreferences.getInt(KEY_USER_ID, -1);
         } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            // Trong trường hợp có lỗi (không giải mã được, file bị lỗi...),
-            // trả về -1 để tránh làm ứng dụng bị crash.
+            android.util.Log.e("AuthHelper", "Lỗi khi lấy user ID từ SharedPreferences", e);
             return -1;
         }
     }
