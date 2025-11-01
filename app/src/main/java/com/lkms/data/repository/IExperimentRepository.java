@@ -41,6 +41,7 @@ public interface IExperimentRepository {
 
     interface CommentCallback {
         void onSuccess(Comment comment);
+
         void onError(String errorMessage);
     }
 

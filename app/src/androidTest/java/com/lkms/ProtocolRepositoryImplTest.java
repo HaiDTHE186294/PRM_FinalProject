@@ -18,6 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.*;
+import com.lkms.data.model.java.Item;
+import com.lkms.data.repository.IInventoryRepository;
+import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class ProtocolRepositoryImplTest {
@@ -289,5 +294,60 @@ public class ProtocolRepositoryImplTest {
             fail("Test hết thời gian chờ mà không nhận được callback từ filterProtocols.");
         }
     }
+    // ===============================================================================
+    // ✅✅✅ BÀI TEST CHẨN ĐOÁN LỖI VẬT TƯ ✅✅✅
+    // ===============================================================================
+    @Test
+    public void testGetAllInventoryItems() throws InterruptedException {
+        // In ra để biết test nào đang chạy
+        System.out.println("🧪 Bắt đầu test: Lấy tất cả vật tư (Items)...");
+
+        // Khởi tạo một Repository cho Inventory
+        IInventoryRepository inventoryRepository = new InventoryRepositoryImplJava();
+
+        // Sử dụng CountDownLatch để buộc bài test phải chờ callback hoàn thành
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Gọi hàm getAllInventoryItems từ repository
+        inventoryRepository.getAllInventoryItems(new IInventoryRepository.InventoryListCallback() {
+            @Override
+            public void onSuccess(List<Item> items) {
+                // Nếu thành công, in ra kết quả
+                System.out.println("✅ [Thành công] Lấy danh sách vật tư thành công. Số lượng: " + items.size());
+                assertNotNull("Danh sách vật tư không được là null", items);
+
+                // In chi tiết vài vật tư đầu tiên để kiểm tra
+                for (int i = 0; i < Math.min(items.size(), 5); i++) {
+                    Item item = items.get(i);
+                    System.out.println("   - ID: " + item.getItemId() + ", Tên: " + item.getItemName());
+                }
+
+                // Dòng quan trọng: Kiểm tra xem danh sách có thực sự rỗng không
+                if (items.isEmpty()) {
+                    System.out.println("⚠️ [Cảnh báo] Lấy dữ liệu thành công nhưng danh sách vật tư RỖNG. Vui lòng kiểm tra bảng 'Item' trên Supabase.");
+                }
+
+                // Báo cho latch biết là callback đã hoàn thành
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Nếu thất bại, in ra lỗi và làm cho bài test thất bại
+                System.out.println("❌ [Thất bại] Lỗi khi lấy vật tư: " + errorMessage);
+                fail("Thất bại khi lấy danh sách vật tư: " + errorMessage);
+
+                // Báo cho latch biết là callback đã hoàn thành
+                latch.countDown();
+            }
+        });
+
+        // Chờ tối đa 10 giây để callback được thực thi.
+        // Nếu sau 10 giây mà không có kết quả, bài test sẽ thất bại.
+        if (!latch.await(10, TimeUnit.SECONDS)) {
+            fail("Test hết thời gian chờ mà không nhận được callback từ getAllInventoryItems.");
+        }
+    }
+
 
 }

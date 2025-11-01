@@ -9,7 +9,7 @@ import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
-import com.lkms.domain.EquipmentBookingUseCase;
+import com.lkms.domain.booking.EquipmentBookingUseCase;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

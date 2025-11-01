@@ -1,4 +1,4 @@
-package com.lkms.domain;
+package com.lkms.domain.booking;
 
 import android.os.Build;
 
