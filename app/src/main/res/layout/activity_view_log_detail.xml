@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewLogTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log Time: YYYY - MM - DD"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/simple_border"/>
+    <TextView
+    android:id="@+id/textViewContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="100dp"
+    android:text="Content: Lorem iuasdhfiuasoidhasiojdhoiasjdoias"
+    android:textSize="14sp"
+    android:padding="12dp"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/simple_border"/>
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerFiles"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/simple_border"
+        tools:layout="@layout/fragment_view_file" />
+</LinearLayout>

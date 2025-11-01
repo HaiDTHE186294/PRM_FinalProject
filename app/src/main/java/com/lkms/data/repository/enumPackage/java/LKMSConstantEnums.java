@@ -133,10 +133,12 @@ public class LKMSConstantEnums {
      * Được ghi trong màn hình Manage Active Experiment Logbook [12, 13].
      */
     public enum LogType {
-        NOTE,             // Ghi chú văn bản
-        IMAGE_UPLOAD,     // Tải lên hình ảnh (ví dụ: từ camera/gallery) [12].
-        DATA_ATTACHMENT,  // Đính kèm tệp dữ liệu (ví dụ: .csv, .xlsx) [14, 15].
-        OBSERVATION       // Quan sát chi tiết
+        TXT,
+        IMAGE,
+        PDF,
+        WEBFILE,
+        OTHER
+
     }
 
     /**

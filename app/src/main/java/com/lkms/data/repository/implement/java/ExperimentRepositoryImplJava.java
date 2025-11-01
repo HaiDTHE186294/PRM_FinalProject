@@ -228,6 +228,7 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
         callback.onError("Chưa được triển khai.");
     }
 
+    //Adding
     @Override
     public void getExperimentIdsByUserId(int userId, IdListCallback callback) {
         new Thread(() -> {
@@ -331,6 +332,61 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
 
             } catch (Exception e) {
                 callback.onError("Error getting project: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @Override
+    public void getLogEntryById(int logEntryId, LogEntryCallback callback) {
+        new Thread(() -> {
+            try {
+                // Tạo endpoint Supabase REST cho bảng LogEntry
+                // Lọc theo logEntryId.
+                // LƯU Ý: Nếu cột khóa chính của bạn trong Supabase tên là "id",
+                // hãy đổi "logEntryId=eq." thành "id=eq."
+                String endpoint = SUPABASE_URL + "/rest/v1/LogEntry?select=*&logId=eq." + logEntryId;
+
+                // Gửi GET request
+                String json = HttpHelper.getJson(endpoint);
+
+                // Vì Supabase API trả về array JSON, kể cả khi chỉ tìm 1 item
+                Type listType = new TypeToken<List<LogEntry>>() {}.getType();
+                List<LogEntry> logEntries = gson.fromJson(json, listType);
+
+                if (logEntries != null && !logEntries.isEmpty()) {
+                    // Trả về item đầu tiên (và duy nhất) tìm thấy
+                    callback.onSuccess(logEntries.get(0));
+                } else {
+                    callback.onError("No log entry found with ID: " + logEntryId);
+                }
+
+            } catch (Exception e) {
+                callback.onError("Error getting log entry: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @Override
+    public void getFile(String url, FileCallBack callback) {
+        if (url == null || url.isEmpty()) {
+            callback.onError("URL không hợp lệ hoặc bị rỗng");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                // Giả định HttpHelper của bạn có một phương thức
+                // 'downloadFile' nhận URL và trả về một đối tượng File
+                // (đã được tải về và lưu tạm).
+                File downloadedFile = HttpHelper.downloadFile(url);
+
+                if (downloadedFile != null && downloadedFile.exists()) {
+                    callback.onSuccess(downloadedFile);
+                } else {
+                    callback.onError("Tải file thất bại hoặc file không tồn tại từ URL.");
+                }
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải file: " + e.getMessage());
             }
         }).start();
     }

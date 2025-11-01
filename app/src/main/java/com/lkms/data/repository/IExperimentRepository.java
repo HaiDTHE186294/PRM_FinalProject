@@ -74,6 +74,11 @@ public interface IExperimentRepository {
         void onError(String errorMessage);
     }
 
+    interface FileCallBack {
+        void onSuccess(File file);
+        void onError(String errorMessage);
+    }
+
 
     // --- Chức năng Quản lý Thí nghiệm (UC5, UC34) ---
 
@@ -172,5 +177,9 @@ public interface IExperimentRepository {
     void getExperimentById(int experimentId, ExperimentCallback callback);
 
     void getExperimentProject(int projectId, ProjectCallBack callback);
+
+    void getLogEntryById(int logEntryId, LogEntryCallback callback);
+
+    void getFile(String url, FileCallBack callback);
 
 }

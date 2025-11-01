@@ -90,8 +90,6 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.github.jan-tennert.supabase:storage-kt")
-    implementation("io.ktor:ktor-client-android:3.3.0")
-
 
 
     // GSON (Dependency for Harium Supabase)
@@ -114,6 +112,9 @@ dependencies {
     
     implementation("com.applandeo:material-calendar-view:1.9.2")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    //PDF Viewer
+    implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.1")
 }
 
 
