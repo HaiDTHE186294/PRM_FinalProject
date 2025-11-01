@@ -1,5 +1,6 @@
 package com.lkms.data.repository;
 
+import com.lkms.data.model.java.AuthResult;
 import com.lkms.data.model.java.User;
 
 /**
@@ -29,8 +30,8 @@ public interface IAuthRepository {
     // Giao diện callback để xử lý kết quả bất đồng bộ trong Java
 
     interface AuthCallback {
-        void onSuccess(User user);
-        //  void onSuccess(AuthResult result);
+       // void onSuccess(User user);
+        void onSuccess(AuthResult result);
         void onError(String errorMessage);
     }
 

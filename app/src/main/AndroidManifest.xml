@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
+            android:name=".ui.inventory.InventoryActivity"
+            android:exported="false" />
+        <activity    
             android:name=".ui.sds.SdsLookupActivity"
             android:exported="false" />
         <activity
@@ -23,19 +26,16 @@
             android:name=".ui.equipment.EquipmentDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.loginmaindashboard.maindashboard.ManagerMainDashboardViewModel"
-            android:exported="false" />
-        <activity
             android:name=".ui.experimentInfo.ExperimentInfoActivity"
             android:exported="false" />
         <activity
             android:name=".ui.experimentdetail.ExperimentDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.loginmaindashboard.maindashboard.MainDashboardViewModel"
+            android:name=".ui.loginmaindashboard.maindashboard.MainDashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.loginmaindashboard.login.SystemLoginViewModel"
+            android:name=".ui.loginmaindashboard.login.SystemLoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,8 +55,18 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".ui.protocol.ProtocolListActivity" />
-        <activity android:name=".ui.protocol.ProtocolDetailActivity" />
+        <activity android:name=".ui.protocol.ProtocolListActivity"
+            android:exported="false"
+            android:label="Protocol List" />
+        <activity android:name=".ui.protocol.ProtocolDetailActivity"
+            android:exported="false"
+            android:label="Protocol Detail"
+            android:parentActivityName=".ui.protocol.ProtocolListActivity" />
+        <activity
+        android:name=".ui.protocol.CreateProtocolActivity"
+        android:exported="false"
+        android:label="Create New Protocol"
+        android:parentActivityName=".ui.protocol.ProtocolListActivity" />
         <activity android:name=".ui.user_profile.UserProfileActivity" />
         <activity android:name=".ui.user_profile.MemberListActivity" />
         <activity android:name=".ui.user_profile.ProfileSettingActivity" />

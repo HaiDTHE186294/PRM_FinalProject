@@ -1,8 +1,12 @@
 package com.lkms.domain.loginmaindashboardusecase;
 
+import android.util.Log;
+
 import com.lkms.data.model.java.Booking;
+import com.lkms.data.model.java.BookingDisplay;
 import com.lkms.data.model.java.Equipment;
 import com.lkms.data.model.java.Experiment;
+import com.lkms.data.model.java.InventoryDisplayItem;
 import com.lkms.data.model.java.Item;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
@@ -11,7 +15,10 @@ import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,7 +35,7 @@ public class MainDashboardUseCase {
     }
 
     // === Dữ liệu thiết bị ===
-    public void getUpcomingEquipmentBookings(int userId, EquipmentRepositoryImplJava.BookingListCallback callback) {
+    public void getUpcomingEquipmentBookings(int userId, EquipmentRepositoryImplJava.BookingDisplayListCallback callback) {
         // Bước 1: Lấy các booking đã được duyệt của user
         equipmentRepository.getBookingApproved(userId, new EquipmentRepositoryImplJava.BookingListCallback() {
             @Override
@@ -38,7 +45,7 @@ public class MainDashboardUseCase {
                     return;
                 }
 
-                List<Booking> resultList = new ArrayList<>();
+                List<BookingDisplay> resultList = new ArrayList<>();
                 AtomicInteger remaining = new AtomicInteger(bookings.size());
 
                 // Bước 2: Lấy thông tin thiết bị cho từng booking
@@ -46,9 +53,8 @@ public class MainDashboardUseCase {
                     equipmentRepository.getEquipmentDetails(booking.getEquipmentId(), new EquipmentRepositoryImplJava.EquipmentCallback() {
                         @Override
                         public void onSuccess(Equipment equipment) {
-                            booking.setEquipmentName(equipment.getEquipmentName());
                             synchronized (resultList) {
-                                resultList.add(booking);
+                                resultList.add(new BookingDisplay(equipment.getEquipmentId(), equipment.getEquipmentName(), booking.getStartTime(), booking.getEndTime()));
                             }
 
                             if (remaining.decrementAndGet() == 0) {
@@ -106,33 +112,33 @@ public class MainDashboardUseCase {
     }
 
     // === Dữ liệu inventory item (mới thêm) ===
-    public void getAllInventoryItems(InventoryRepositoryImplJava.InventoryListCallback callback) {
+    public void getAllInventoryItems(InventoryRepositoryImplJava.InventoryDisplayListCallback callback) {
         inventoryRepository.getAllInventoryItems(new InventoryRepositoryImplJava.InventoryListCallback() {
             @Override
             public void onSuccess(List<Item> items) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date today = new Date();
+                List<InventoryDisplayItem> displayList = new ArrayList<>();
 
                 for (Item item : items) {
+                    int daysLeft;
                     try {
-                        String expirationStr = item.getExpirationDate(); // Lấy ngày hết hạn
+                        String expirationStr = item.getExpirationDate();
                         if (expirationStr != null && !expirationStr.isEmpty()) {
                             Date expirationDate = sdf.parse(expirationStr);
                             long diffMillis = expirationDate.getTime() - today.getTime();
-                            long daysLeft = TimeUnit.MILLISECONDS.toDays(diffMillis);
-
-                            // ⚠️ Cần có trong class Item: setDaysLeft(int)
-                            item.setDaysLeft((int) daysLeft);
+                            daysLeft = (int) TimeUnit.MILLISECONDS.toDays(diffMillis);
                         } else {
-                            item.setDaysLeft(-999); // Không có ngày hết hạn
+                            daysLeft = -999;
                         }
                     } catch (Exception e) {
-                        item.setDaysLeft(-999); // Lỗi parse
+                        daysLeft = -999;
                     }
+                    displayList.add(new InventoryDisplayItem(item.getItemId(), item.getItemName(),item.getCasNumber(), item.getLotNumber(), item.getQuantity(), item.getUnit(), item.getLocation(), item.getExpirationDate(), daysLeft));
+                    Log.d("INVENTORY_DEBUG", "ItemId: " + item.getItemId() + " | Name: " + item.getItemName() + " | DaysLeft: " + daysLeft);
                 }
-                callback.onSuccess(items);
+                callback.onSuccess(displayList);
             }
-
             @Override
             public void onError(String errorMessage) {
                 callback.onError(errorMessage);

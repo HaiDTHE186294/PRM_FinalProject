@@ -1,5 +1,6 @@
 package com.lkms.ui.loginmaindashboard.maindashboard;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,15 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lkms.R;
+import com.lkms.data.model.java.InventoryDisplayItem;
 import com.lkms.data.model.java.Item;
 
 import java.util.List;
+import java.util.Map;
 
 public class InventoryAlertAdapter extends RecyclerView.Adapter<InventoryAlertAdapter.ViewHolder> {
 
-    private final List<Item> alertList;
+    private final List<InventoryDisplayItem> alertList;
+    public InventoryAlertAdapter(List<InventoryDisplayItem> alertList) {
 
-    public InventoryAlertAdapter(List<Item> alertList) {
         this.alertList = alertList;
     }
 
@@ -31,11 +34,13 @@ public class InventoryAlertAdapter extends RecyclerView.Adapter<InventoryAlertAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Item alert = alertList.get(position);
+        InventoryDisplayItem alert = alertList.get(position);
         holder.tvAlertName.setText(alert.getItemName());
 
         String expirationText = alert.getExpirationDate();
         int daysLeft = alert.getDaysLeft();
+
+        Log.d("ADAPTER_DEBUG", "ItemId: " + alert.getItemId() + " | Name: " + alert.getItemName() + " | DaysLeft: " + daysLeft);
 
         // Nếu có số ngày còn lại thì hiển thị thêm
         if (daysLeft != -999) {

@@ -52,6 +52,11 @@ public interface IEquipmentRepository {
         void onError(String errorMessage);
     }
 
+    public interface BookingDisplayListCallback {
+        void onSuccess(List<BookingDisplay> bookingDisplays);
+        void onError(String message);
+    }
+
 
 
     // --- Chức năng Quản lý Thiết bị (Equipment Management) ---
