@@ -85,22 +85,40 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         recyclerView.setAdapter(protocolAdapter);
     }
 
-    /**
-     * Cài đặt listener cho thanh tìm kiếm.
-     */
     private void setupSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            /**
+             * Được gọi khi người dùng nhấn nút "submit" (hoàn thành) trên bàn phím.
+             * Chúng ta có thể để trống hoặc gọi tìm kiếm ở đây.
+             */
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // Gọi tìm kiếm để chắc chắn rằng kết quả cuối cùng được cập nhật
                 viewModel.searchProtocols(query);
+                // Ẩn bàn phím đi cho gọn gàng
+                searchView.clearFocus();
                 return true;
             }
 
+            /**
+             * Được gọi mỗi khi có bất kỳ thay đổi nào trong ô tìm kiếm (thêm/xóa ký tự).
+             * Đây là nơi chúng ta sẽ thực hiện tìm kiếm real-time.
+             */
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.isEmpty()) {
+                // ======================= BẮT ĐẦU SỬA ĐỔI =======================
+                // `trim()` sẽ loại bỏ các dấu cách thừa ở đầu và cuối chuỗi.
+                String trimmedText = newText.trim();
+
+                if (trimmedText.isEmpty()) {
+                    // Nếu sau khi bỏ dấu cách, chuỗi rỗng thì tải lại danh sách gốc.
                     viewModel.loadLatestApprovedLibrary();
+                } else {
+                    // Ngược lại, thực hiện tìm kiếm với nội dung người dùng đang gõ.
+                    // Việc này sẽ xử lý được cả các chuỗi có chứa dấu cách ở giữa.
+                    viewModel.searchProtocols(trimmedText);
                 }
+                // ======================== KẾT THÚC SỬA ĐỔI ========================
                 return true;
             }
         });

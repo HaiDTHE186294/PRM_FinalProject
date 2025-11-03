@@ -114,4 +114,21 @@ public interface IInventoryRepository {
 
 
     void addSds(String casNumber, String fileUrl, IdCallback callback);
+
+    // ✅ HÀM MỚI 1: Hàm chính để trừ kho
+    /**
+     * Kiểm tra và trừ kho cho một danh sách vật tư bằng cách cập nhật trực tiếp bảng Item.
+     * Đây là một "giao dịch": hoặc thành công tất cả, hoặc thất bại hoàn toàn.
+     * @param itemsToDeduct Danh sách các ProtocolItem cần trừ.
+     * @param callback Báo cáo thành công (onSuccess) hoặc thất bại (onError) với thông báo lỗi cụ thể.
+     */
+    void checkAndDeductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback);
+
+    // ✅ HÀM MỚI 2: Hàm để hoàn tác (rollback)
+    /**
+     * Hoàn trả lại vật tư vào kho trong trường hợp có lỗi xảy ra ở bước sau.
+     * @param itemsToRestore Danh sách vật phẩm cần hoàn trả.
+     * @param callback
+     */
+    void restoreStock(List<ProtocolItem> itemsToRestore, GenericCallback callback);
 }

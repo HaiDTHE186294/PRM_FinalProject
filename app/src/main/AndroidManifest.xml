@@ -16,7 +16,7 @@
         <activity
             android:name=".ui.inventory.InventoryActivity"
             android:exported="false" />
-        <activity    
+        <activity
             android:name=".ui.sds.SdsLookupActivity"
             android:exported="false" />
         <activity
@@ -63,10 +63,18 @@
             android:label="Protocol Detail"
             android:parentActivityName=".ui.protocol.ProtocolListActivity" />
         <activity
-        android:name=".ui.protocol.CreateProtocolActivity"
-        android:exported="false"
-        android:label="Create New Protocol"
-        android:parentActivityName=".ui.protocol.ProtocolListActivity" />
+            android:name=".ui.protocol.CreateProtocolActivity"
+            android:exported="false"
+            android:label="Create New Protocol"
+            android:parentActivityName=".ui.protocol.ProtocolListActivity" />
+
+        <!-- =================== THÊM VÀO ĐÂY ===================== -->
+        <activity
+            android:name=".ui.createexperiment.CreateNewExperimentActivity"
+            android:label="Tạo Thí Nghiệm Mới"
+            android:exported="false" />
+        <!-- ======================================================= -->
+
         <activity android:name=".ui.user_profile.UserProfileActivity" />
         <activity android:name=".ui.user_profile.MemberListActivity" />
         <activity android:name=".ui.user_profile.ProfileSettingActivity" />

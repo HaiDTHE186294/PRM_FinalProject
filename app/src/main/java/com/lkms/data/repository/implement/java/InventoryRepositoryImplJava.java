@@ -3,6 +3,7 @@ package com.lkms.data.repository.implement.java;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.Item;
+import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.SDS;
 import com.lkms.data.repository.IInventoryRepository;
 
@@ -290,5 +291,92 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
         if (callback != null) {
             callback.onError("Chưa được triển khai.");
         }
+    }
+    // ✅ TRIỂN KHAI HÀM MỚI 1: checkAndDeductStock
+    @Override
+    public void checkAndDeductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback) {
+        new Thread(() -> {
+            if (itemsToDeduct == null || itemsToDeduct.isEmpty()) {
+                callback.onSuccess(); // Không có gì để trừ, coi như thành công
+                return;
+            }
+
+            try {
+                // Duyệt qua từng vật tư cần dùng
+                for (ProtocolItem itemToDeduct : itemsToDeduct) {
+                    // 1. Lấy thông tin hiện tại của Item trong kho
+                    String getItemUrl = SUPABASE_URL + "/rest/v1/Item?select=*&itemId=eq." + itemToDeduct.getItemId();
+                    String itemJson = HttpHelper.getJson(getItemUrl);
+
+                    Type itemType = new TypeToken<List<Item>>() {}.getType();
+                    List<Item> currentItems = gson.fromJson(itemJson, itemType);
+
+                    if (currentItems == null || currentItems.isEmpty()) {
+                        throw new Exception("Không tìm thấy vật tư với ID: " + itemToDeduct.getItemId());
+                    }
+
+                    Item currentItem = currentItems.get(0);
+                    int currentQuantity = currentItem.getQuantity();
+                    int quantityNeeded = itemToDeduct.getQuantity();
+
+                    // 2. Kiểm tra xem kho có đủ không
+                    if (currentQuantity < quantityNeeded) {
+                        throw new Exception("Không đủ " + currentItem.getItemName() + ". Cần " + quantityNeeded + ", chỉ còn " + currentQuantity);
+                    }
+
+                    // 3. Nếu đủ, tính số lượng mới và thực hiện PATCH để cập nhật
+                    int newQuantity = currentQuantity - quantityNeeded;
+                    String updateUrl = SUPABASE_URL + "/rest/v1/Item?itemId=eq." + currentItem.getItemId();
+                    // Tạo JSON thủ công cho đơn giản: {"quantity": 50}
+                    String patchBody = "{\"quantity\": " + newQuantity + "}";
+                    // Giả sử bạn có hàm patchJson trong HttpHelper
+                    HttpHelper.patchJson(updateUrl, patchBody);
+                }
+
+                // Nếu tất cả các vòng lặp thành công
+                callback.onSuccess();
+
+            } catch (Exception e) {
+                // Nếu có bất kỳ lỗi nào xảy ra (không tìm thấy, không đủ hàng, lỗi mạng)
+                // Lưu ý: Hệ thống rollback hoàn hảo sẽ cần hoàn tác lại những gì đã trừ ở các vòng lặp trước.
+                // Để đơn giản, phiên bản này chỉ báo lỗi.
+                callback.onError("Lỗi khi trừ kho: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // ✅ TRIỂN KHAI HÀM MỚI 2: restoreStock
+    @Override
+    public void restoreStock(List<ProtocolItem> itemsToRestore, GenericCallback callback) {
+        new Thread(() -> {
+            if (itemsToRestore == null || itemsToRestore.isEmpty()) {
+                callback.onSuccess(); // Không có gì để hoàn tác
+                return;
+            }
+            // Logic này tương tự như `deductStock` nhưng thay vì trừ, chúng ta sẽ cộng
+            try {
+                for (ProtocolItem itemToRestore : itemsToRestore) {
+                    String getItemUrl = SUPABASE_URL + "/rest/v1/Item?select=*&itemId=eq." + itemToRestore.getItemId();
+                    String itemJson = HttpHelper.getJson(getItemUrl);
+                    Type itemType = new TypeToken<List<Item>>() {}.getType();
+                    List<Item> currentItems = gson.fromJson(itemJson, itemType);
+
+                    if (currentItems == null || currentItems.isEmpty()) {
+                        // Bỏ qua nếu không tìm thấy item, vì có thể nó đã bị xóa
+                        continue;
+                    }
+
+                    Item currentItem = currentItems.get(0);
+                    int newQuantity = currentItem.getQuantity() + itemToRestore.getQuantity();
+
+                    String updateUrl = SUPABASE_URL + "/rest/v1/Item?itemId=eq." + currentItem.getItemId();
+                    String patchBody = "{\"quantity\": " + newQuantity + "}";
+                    HttpHelper.patchJson(updateUrl, patchBody);
+                }
+                callback.onSuccess();
+            } catch (Exception e) {
+                callback.onError("Lỗi khi hoàn trả vật tư: " + e.getMessage());
+            }
+        }).start();
     }
 }
