@@ -6,7 +6,8 @@
     android:layout_marginBottom="6dp"
     android:foreground="?android:attr/selectableItemBackground"
     app:cardUseCompatPadding="true"
-    app:cardElevation="0dp">
+    app:cardElevation="4dp"
+    android:background="@drawable/item_border">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,29 +31,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Item Location -->
+        <!-- CAS Number -->
         <TextView
-            android:id="@+id/tv_item_location"
+            android:id="@+id/tv_item_cas"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Cabinet 1"
+            android:text="CAS: 7647-01-0"
             android:textSize="14sp"
             android:textColor="#616161"
             app:layout_constraintTop_toBottomOf="@id/tv_item_name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_item_expiry"
-            app:layout_constraintHorizontal_chainStyle="spread_inside" />
-
-        <!-- Expiry Date -->
-        <TextView
-            android:id="@+id/tv_item_expiry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Exp: 2025-06-30"
-            android:textSize="13sp"
-            android:textColor="#616161"
-            app:layout_constraintBaseline_toBaselineOf="@id/tv_item_location"
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

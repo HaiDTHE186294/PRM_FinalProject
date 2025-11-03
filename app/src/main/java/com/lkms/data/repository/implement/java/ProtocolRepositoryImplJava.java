@@ -283,6 +283,34 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
         }).start();
     }
 
+    @Override
+    public void getProtocolById(int protocolId, ProtocolCallBack callback){
+        new Thread(() -> {
+            try {
+                String tableName = "Protocol";
+                String idColumn = "protocolId";
+
+                String endpoint = SUPABASE_URL + "/rest/v1/" + tableName +
+                        "?select=*&" + idColumn + "=eq." + protocolId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                // Supabase luôn trả về mảng JSON
+                Type listType = new TypeToken<List<Protocol>>() {}.getType();
+                List<Protocol> protocols = gson.fromJson(json, listType);
+
+                if (protocols != null && !protocols.isEmpty()) {
+                    callback.onSuccess(protocols.get(0));
+                } else {
+                    callback.onError("Không tìm thấy protocol với id: " + protocolId);
+                }
+
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải protocol: " + e.getMessage());
+            }
+        }).start();
+    }
+
     // -------------------- CLASS PHỤ TRỢ --------------------
     private static class ProtocolApprovalUpdate {
         String approveStatus;
