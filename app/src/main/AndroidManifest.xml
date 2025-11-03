@@ -25,6 +25,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.addlog.AddLogActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.project.projectmanage.ProjectActivity"
             android:exported="false" />
         <activity
@@ -63,26 +65,13 @@
         <activity
             android:name=".ui.equipment.EquipmentListActivity"
             android:exported="false">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".ui.inventory.InventoryItemActivity"
             android:exported="false">
-<!--                <intent-filter>-->
-<!--                    <action android:name="android.intent.action.MAIN" />-->
-<!--                    <category android:name="android.intent.category.LAUNCHER" />-->
-<!--                </intent-filter>-->
         </activity>
         <activity android:name=".ui.user.AddUserActivity"
             android:exported="false">
-<!--                <intent-filter>-->
-<!--                    <action android:name="android.intent.action.MAIN" />-->
-<!--                    <category android:name="android.intent.category.LAUNCHER" />-->
-<!--                </intent-filter>-->
         </activity>
         <activity
             android:name=".ui.protocol.ProtocolListActivity"
@@ -99,15 +88,16 @@
             android:label="Create New Protocol"
             android:parentActivityName=".ui.protocol.ProtocolListActivity" />
         <activity
-            android:name=".ui.user_profile.UserProfileActivity"
+            android:name=".ui.user.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.MemberListActivity"
+            android:name=".ui.user.MemberListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.ProfileSettingActivity"
+            android:name=".ui.user.ProfileSettingActivity"
             android:exported="false" />
 
+        <activity android:name=".ui.user.MemberDetailActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -117,24 +107,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <activity android:name=".ui.user_profile.UserProfileActivity" />
-        <activity android:name=".ui.user_profile.MemberListActivity" />
-        <activity android:name=".ui.user_profile.ProfileSettingActivity" />
 
         <activity
             android:name=".ui.project.projectdetail.ProjectDetailActivity"
             android:exported="false"
             android:parentActivityName=".ui.project.projectmanage.ProjectActivity" >
         </activity>
-        <activity
-            android:name=".ui.protocol.CreateProtocolActivity"
-            android:exported="false"
-            android:label="Create New Protocol"
-            android:parentActivityName=".ui.protocol.ProtocolListActivity" />
-        <activity android:name=".ui.user.UserProfileActivity" />
-        <activity android:name=".ui.user.MemberListActivity" />
-        <activity android:name=".ui.user.MemberDetailActvity" />
-        <activity android:name=".ui.user.ProfileSettingActivity" />
     </application>
 
 </manifest>

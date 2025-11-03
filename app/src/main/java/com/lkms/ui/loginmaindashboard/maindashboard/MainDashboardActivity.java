@@ -257,6 +257,9 @@ public class MainDashboardActivity extends AppCompatActivity {
         if (id == R.id.menu_inventory) {
             startActivity(new Intent(this, InventoryActivity.class));
             Log.d("MENU_ACTION", "Navigated to InventoryActivity");
+            return true;
+        }
+
         if (id == R.id.menu_project) {
             startActivity(new Intent(this, ProjectActivity.class));
             Log.d("MENU_ACTION", "Navigated to Project");

@@ -70,7 +70,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
             Context context = v.getContext();
 
-            Intent intent = new Intent(context, MemberDetailActvity.class);
+            Intent intent = new Intent(context, MemberDetailActivity.class);
             intent.putExtra("MemberId", user.getUserId());
 
             context.startActivity(intent);

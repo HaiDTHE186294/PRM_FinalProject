@@ -14,7 +14,7 @@ import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 import com.lkms.domain.UserProfileUseCase;
 import com.lkms.ui.user.view.UserProfileHeader;
 
-public class MemberDetailActvity extends AppCompatActivity {
+public class MemberDetailActivity extends AppCompatActivity {
 
     private UserProfileUseCase userProfileUseCase = new UserProfileUseCase();
     private UserProfileHeader userProfileHeader;
