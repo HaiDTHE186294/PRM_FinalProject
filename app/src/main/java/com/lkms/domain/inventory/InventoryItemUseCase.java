@@ -62,10 +62,21 @@ public class InventoryItemUseCase {
 
     /**Add a new item into the inventory
      *
-     * @param item
+     *
      */
-    public void addItem(Item item)
+    public void addItem(String name, String casNumber, String lotNumber, String unit, String location, String date)
     {
+        Item item = new Item();
+
+        item.setItemName(name);
+        item.setCasNumber(casNumber);
+        item.setLotNumber(lotNumber);
+        item.setLocation(location);
+        item.setUnit(unit);
+        item.setExpirationDate(date);
+
+        item.setQuantity(0);
+
         _repos.addNewInventoryItem(
             item, new InventoryRepositoryImplJava.InventoryItemCallback () {
                 @Override
@@ -85,22 +96,18 @@ public class InventoryItemUseCase {
 
     /** Update an item inside the inventory
      *
-     * @param itemName
-     * @param lotNum
-     * @param quantity
-     * @param location
-     * @param expirationDate
      */
-    public void updateItem(String itemName, String lotNum, int quantity, String location, String expirationDate)
+    public void updateItem(String itemName, String casNum, String lotNum, String unit, String location, String expirationDate)
     {
         Item item = _item.getValue();
         if (item == null)
             return;
 
         item.setItemName(itemName);
+        item.setCasNumber(casNum);
         item.setLotNumber(lotNum);
-        item.setQuantity(quantity);
         item.setLocation(location);
+        item.setUnit(unit);
         item.setExpirationDate(expirationDate);
 
         _repos.updateInventoryItem(

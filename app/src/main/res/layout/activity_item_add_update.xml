@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.inventory.InventoryItemActivity">
+    tools:context=".ui.inventory.ItemAddUpdateActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -35,6 +35,25 @@
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Cas Number -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/cas_number_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Cas Number"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/item_name_input_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/cas_number_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- Lot Number -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lot_number_input_layout"
@@ -45,7 +64,7 @@
                 android:hint="Lot Number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_name_input_layout">
+                app:layout_constraintTop_toBottomOf="@id/cas_number_input_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lot_number_edit_text"
@@ -54,23 +73,23 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Quantity -->
+            <!-- Unit -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/item_quantity_input_layout"
+                android:id="@+id/unit_input_layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Quantity"
+                android:hint="Unit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lot_number_input_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/item_quantity_edit_text"
+                    android:id="@+id/unit_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number" />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Location -->
@@ -83,7 +102,7 @@
                 android:hint="Location"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_quantity_input_layout">
+                app:layout_constraintTop_toBottomOf="@id/unit_input_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/location_edit_text"
@@ -139,7 +158,7 @@
         android:padding="16dp">
 
         <Button
-            android:id="@+id/check_out_button"
+            android:id="@+id/cancel_button"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -147,16 +166,16 @@
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
-            android:text="Check Out" />
+            android:text="Cancel" />
 
         <Button
-            android:id="@+id/check_in_button"
+            android:id="@+id/add_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:backgroundTint="@color/toolbar_bg"
-            android:text="Check In" />
+            android:text="Add" />
 
     </LinearLayout>
 
