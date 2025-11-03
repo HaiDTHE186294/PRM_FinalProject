@@ -86,6 +86,11 @@
             android:parentActivityName=".ui.protocol.ProtocolListActivity" />
 
         <activity
+            android:name=".ui.createexperiment.CreateNewExperimentActivity"
+            android:label="Tạo Thí Nghiệm Mới"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.user_profile.UserProfileActivity"
             android:exported="false" />
         <activity

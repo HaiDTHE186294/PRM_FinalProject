@@ -3,6 +3,7 @@ package com.lkms.data.repository.implement.java;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.Item;
+import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.SDS;
 import com.lkms.data.repository.IInventoryRepository;
 
@@ -309,6 +310,109 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
                 }
             } catch (Exception e) {
                 callback.onError(e.getMessage() != null ? e.getMessage() : "Error retrieving item details");
+            }
+        }).start();
+    }
+    public void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback) {
+        final String TAG = "DeductStock_OldMethod"; // Đổi Tag để dễ nhận biết
+
+        new Thread(() -> {
+            try {
+                if (itemsToDeduct == null || itemsToDeduct.isEmpty()) {
+                    callback.onSuccess(); // Không có gì để trừ, coi như thành công
+                    return;
+                }
+
+                android.util.Log.i(TAG, "Bắt đầu trừ kho theo phương pháp cũ (GET -> PATCH) cho " + itemsToDeduct.size() + " loại vật tư.");
+
+                // Duyệt qua từng vật tư cần dùng
+                for (ProtocolItem itemToDeduct : itemsToDeduct) {
+                    // 1. Lấy thông tin hiện tại của Item trong kho
+                    String getItemUrl = SUPABASE_URL + "/rest/v1/Item?select=*&itemId=eq." + itemToDeduct.getItemId();
+                    String itemJson = HttpHelper.getJson(getItemUrl);
+
+                    Type itemType = new TypeToken<List<Item>>() {}.getType();
+                    List<Item> currentItems = gson.fromJson(itemJson, itemType);
+
+                    if (currentItems == null || currentItems.isEmpty()) {
+                        // Trong logic mới, ta có thể bỏ qua lỗi này vì đã check trước đó
+                        // nhưng để an toàn, ta vẫn ghi log
+                        android.util.Log.w(TAG, "Không tìm thấy vật tư ID " + itemToDeduct.getItemId() + " khi đang trừ kho.");
+                        continue; // Bỏ qua và xử lý vật tư tiếp theo
+                    }
+
+                    Item currentItem = currentItems.get(0);
+                    int currentQuantity = currentItem.getQuantity();
+                    int quantityNeeded = itemToDeduct.getQuantity();
+
+                    // 2. Kiểm tra lại lần cuối cho chắc chắn (dù không cần thiết vì đã có checkStockAvailability)
+                    if (currentQuantity < quantityNeeded) {
+                        // Nếu vẫn thiếu, báo lỗi. Điều này có thể xảy ra do race condition.
+                        throw new Exception("Không đủ " + currentItem.getItemName() + " (Race Condition?). Cần " + quantityNeeded + ", chỉ còn " + currentQuantity);
+                    }
+
+                    // 3. Nếu đủ, tính số lượng mới và thực hiện PATCH để cập nhật
+                    int newQuantity = currentQuantity - quantityNeeded;
+                    String updateUrl = SUPABASE_URL + "/rest/v1/Item?itemId=eq." + currentItem.getItemId();
+                    String patchBody = "{\"quantity\": " + newQuantity + "}";
+
+                    android.util.Log.d(TAG, "Thực hiện PATCH cho Item ID " + currentItem.getItemId() + " với body: " + patchBody);
+                    HttpHelper.patchJson(updateUrl, patchBody);
+                }
+
+                // Nếu tất cả các vòng lặp thành công
+                android.util.Log.i(TAG, "Trừ kho theo phương pháp cũ thành công.");
+                callback.onSuccess();
+
+            } catch (Exception e) {
+                android.util.Log.e(TAG, "LỖI khi trừ kho theo phương pháp cũ: " + e.getMessage(), e);
+                callback.onError("Lỗi khi trừ kho: " + e.getMessage());
+            }
+        }).start();
+    }
+
+
+
+    @Override
+    public void checkStockAvailability(List<ProtocolItem> itemsToCheck, GenericCallback callback) {
+        // Chạy trên một thread mới để không làm treo giao diện
+        new Thread(() -> {
+            try {
+                if (itemsToCheck == null || itemsToCheck.isEmpty()) {
+                    callback.onSuccess(); // Không yêu cầu vật tư nào, coi như đủ.
+                    return;
+                }
+
+                // Lặp qua TẤT CẢ các vật tư để kiểm tra trước khi hành động
+                for (ProtocolItem requiredItem : itemsToCheck) {
+                    // Lấy thông tin số lượng hiện tại của vật tư từ Supabase
+                    String endpoint = SUPABASE_URL + "/rest/v1/Item?itemId=eq." + requiredItem.getItemId() + "&select=itemName,quantity";
+                    String jsonResponse = HttpHelper.getJson(endpoint);
+
+                    Type listType = new TypeToken<List<Item>>(){}.getType();
+                    List<Item> currentItems = gson.fromJson(jsonResponse, listType);
+
+                    if (currentItems == null || currentItems.isEmpty()) {
+                        callback.onError("Không tìm thấy vật tư có ID: " + requiredItem.getItemId() + " trong kho.");
+                        return; // Dừng lại ngay lập tức
+                    }
+
+                    Item currentItemInStock = currentItems.get(0);
+                    if (currentItemInStock.getQuantity() < requiredItem.getQuantity()) {
+                        // Nếu có bất kỳ vật tư nào không đủ, báo lỗi và dừng lại ngay
+                        callback.onError(
+                                "Không đủ '" + currentItemInStock.getItemName() + "'. Cần " +
+                                        requiredItem.getQuantity() + ", chỉ còn " + currentItemInStock.getQuantity() + "."
+                        );
+                        return; // Dừng lại ngay lập tức
+                    }
+                }
+
+                // Nếu vòng lặp hoàn tất mà không có lỗi, nghĩa là tất cả vật tư đều đủ
+                callback.onSuccess();
+
+            } catch (Exception e) {
+                callback.onError("Lỗi mạng khi kiểm tra kho: " + e.getMessage());
             }
         }).start();
     }
