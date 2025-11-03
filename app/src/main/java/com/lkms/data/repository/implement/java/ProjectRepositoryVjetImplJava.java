@@ -5,15 +5,15 @@ import static com.lkms.BuildConfig.SUPABASE_URL;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.Project;
-import com.lkms.data.repository.IProjectRepository;
+import com.lkms.data.repository.IProjectRepositoryVjet;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Triển khai IProjectRepository sử dụng Supabase REST API.
+ * Triển khai IProjectRepositoryVjet sử dụng Supabase REST API.
  */
-public class ProjectRepositoryImplJava implements IProjectRepository {
+public class ProjectRepositoryVjetImplJava implements IProjectRepositoryVjet {
 
     private static final Gson gson = new Gson();
 

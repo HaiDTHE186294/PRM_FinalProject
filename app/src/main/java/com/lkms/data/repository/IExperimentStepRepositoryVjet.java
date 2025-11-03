@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Interface Repository chịu trách nhiệm quản lý các bản ghi ExperimentStep. * Tách ra từ IExperimentRepository để tuân thủ Nguyên tắc Đơn trách nhiệm (SRP).
  */
-public interface IExperimentStepRepository {
+public interface IExperimentStepRepositoryVjet {
 
     /**
      * Tạo nhiều bản ghi ExperimentStep cùng lúc.

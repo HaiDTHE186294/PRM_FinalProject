@@ -5,10 +5,10 @@ import static com.lkms.BuildConfig.SUPABASE_URL;
 import com.google.gson.Gson;
 import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.repository.IExperimentRepository;
-import com.lkms.data.repository.IExperimentStepRepository;
+import com.lkms.data.repository.IExperimentStepRepositoryVjet;
 import java.util.List;
 
-public class ExperimentStepRepositoryImplJava implements IExperimentStepRepository {
+public class ExperimentStepRepositoryVjetImplJava implements IExperimentStepRepositoryVjet {
     private static final Gson gson = new Gson();
 
     @Override

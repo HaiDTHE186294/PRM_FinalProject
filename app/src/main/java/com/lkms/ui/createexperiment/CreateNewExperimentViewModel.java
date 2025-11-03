@@ -6,18 +6,22 @@ import androidx.lifecycle.ViewModel;
 import com.lkms.data.model.java.Project;
 import com.lkms.data.model.java.Protocol;
 import com.lkms.data.repository.IExperimentRepository;
-import com.lkms.data.repository.IProjectRepository;
+import com.lkms.data.repository.IInventoryRepository;
+import com.lkms.data.repository.IProjectRepositoryVjet;
 import com.lkms.data.repository.IProtocolRepository;
 import com.lkms.domain.createexperiment.CreateFullExperimentUseCase;
 import com.lkms.domain.createexperiment.GetAvailableProjectsUseCase;
-// MỚI: Thêm UseCase để lấy chi tiết một protocol
+import com.lkms.domain.createexperiment.CheckInventoryUseCase;
+import com.lkms.domain.createexperiment.DeductInventoryForExperimentUseCase;
 import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 import java.util.List;
 
 public class CreateNewExperimentViewModel extends ViewModel {
 
-    private final CreateFullExperimentUseCase createFullExperimentUseCase;
-    // MỚI: UseCase để lấy chi tiết protocol
+    // --- Khai báo các UseCase ---
+    private final CreateFullExperimentUseCase createUseCase;
+    private final DeductInventoryForExperimentUseCase deductUseCase;
+    private final CheckInventoryUseCase checkUseCase;
     private final GetProtocolDetailsUseCase getProtocolDetailsUseCase;
     private final GetAvailableProjectsUseCase getProjectsUseCase;
 
@@ -31,51 +35,48 @@ public class CreateNewExperimentViewModel extends ViewModel {
     private final MutableLiveData<Boolean> _creationSuccess = new MutableLiveData<>(false);
     public final LiveData<Boolean> creationSuccess = _creationSuccess;
 
-    // THAY ĐỔI: Không cần danh sách protocols, chỉ cần 1 protocol cụ thể
     private final MutableLiveData<Protocol> _protocol = new MutableLiveData<>();
     public final LiveData<Protocol> protocol = _protocol;
 
     private final MutableLiveData<List<Project>> _projects = new MutableLiveData<>();
     public final LiveData<List<Project>> projects = _projects;
 
-    // Biến để lưu protocolId lại
     private int currentProtocolId = -1;
 
-    // THAY ĐỔI: Cập nhật Constructor
+    // Constructor đã đúng, không cần sửa
     public CreateNewExperimentViewModel(
-            CreateFullExperimentUseCase createFullExperimentUseCase,
-            GetProtocolDetailsUseCase getProtocolDetailsUseCase, // <- Sửa ở đây
+            CreateFullExperimentUseCase createUseCase,
+            DeductInventoryForExperimentUseCase deductUseCase,
+            CheckInventoryUseCase checkUseCase,
+            GetProtocolDetailsUseCase getProtocolDetailsUseCase,
             GetAvailableProjectsUseCase getProjectsUseCase
     ) {
-        this.createFullExperimentUseCase = createFullExperimentUseCase;
-        this.getProtocolDetailsUseCase = getProtocolDetailsUseCase; // <- Sửa ở đây
+        this.createUseCase = createUseCase;
+        this.deductUseCase = deductUseCase;
+        this.checkUseCase = checkUseCase;
+        this.getProtocolDetailsUseCase = getProtocolDetailsUseCase;
         this.getProjectsUseCase = getProjectsUseCase;
     }
 
-    // THAY ĐỔI: Hàm này giờ sẽ nhận protocolId từ Activity
+    // SỬA: Dùng postValue để đảm bảo an toàn thread
     public void loadInitialData(int protocolId) {
         if (protocolId == -1) {
-            _error.setValue("Protocol ID không hợp lệ.");
+            _error.postValue("Protocol ID không hợp lệ.");
             return;
         }
         this.currentProtocolId = protocolId;
-        _isLoading.setValue(true);
+        _isLoading.postValue(true);
 
-        // Bước 1: Tải chi tiết protocol trước
         getProtocolDetailsUseCase.execute(protocolId, new IProtocolRepository.ProtocolContentCallback() {
             @Override
             public void onProtocolReceived(Protocol result) {
                 _protocol.postValue(result);
-                // Bước 2: Sau khi có protocol, tải danh sách project
                 loadProjects();
             }
-
             @Override
-            public void onStepsReceived(List<com.lkms.data.model.java.ProtocolStep> steps) { /* Không cần ở màn này */ }
-
+            public void onStepsReceived(List<com.lkms.data.model.java.ProtocolStep> steps) { /* Không cần */ }
             @Override
-            public void onItemsReceived(List<com.lkms.data.model.java.ProtocolItem> items) { /* Không cần ở màn này */ }
-
+            public void onItemsReceived(List<com.lkms.data.model.java.ProtocolItem> items) { /* Không cần */ }
             @Override
             public void onError(String errorMessage) {
                 _error.postValue("Lỗi tải Protocol: " + errorMessage);
@@ -84,28 +85,79 @@ public class CreateNewExperimentViewModel extends ViewModel {
         });
     }
 
-    // Tải danh sách projects (giữ nguyên)
+    // SỬA: Dùng postValue để đảm bảo an toàn thread
     private void loadProjects() {
-        getProjectsUseCase.execute(new IProjectRepository.ProjectListCallback() {
-            @Override public void onSuccess(List<Project> result) { _projects.postValue(result); _isLoading.postValue(false); }
-            @Override public void onError(String errorMessage) { _error.postValue("Lỗi tải Projects: " + errorMessage); _isLoading.postValue(false); }
+        getProjectsUseCase.execute(new IProjectRepositoryVjet.ProjectListCallback() {
+            @Override public void onSuccess(List<Project> result) {
+                _projects.postValue(result);
+                _isLoading.postValue(false);
+            }
+            @Override public void onError(String errorMessage) {
+                _error.postValue("Lỗi tải Projects: " + errorMessage);
+                _isLoading.postValue(false);
+            }
         });
     }
 
-    // THAY ĐỔI: Hàm tạo thí nghiệm không cần nhận Protocol nữa, vì đã có ID
+    // SỬA: Sửa lại toàn bộ các lệnh cập nhật LiveData thành postValue
     public void createExperiment(String title, String objective, Project selectedProject, int userId) {
-        if (title == null || title.trim().isEmpty()) { _error.setValue("Tên thí nghiệm không được để trống."); return; }
-        if (currentProtocolId == -1) { _error.setValue("Protocol không hợp lệ."); return; }
-        if (selectedProject == null) { _error.setValue("Vui lòng chọn một dự án (Project)."); return; }
-        if (userId == -1) { _error.setValue("Không thể xác thực người dùng. Vui lòng đăng nhập lại."); return; }
+        if (title == null || title.trim().isEmpty()) { _error.postValue("Tên thí nghiệm không được để trống."); return; }
+        if (currentProtocolId == -1) { _error.postValue("Protocol không hợp lệ."); return; }
+        if (selectedProject == null) { _error.postValue("Vui lòng chọn một dự án (Project)."); return; }
+        if (userId == -1) { _error.postValue("Không thể xác thực người dùng. Vui lòng đăng nhập lại."); return; }
 
-        _isLoading.setValue(true);
-        // Dùng `currentProtocolId` đã lưu
-        createFullExperimentUseCase.execute(
+        _isLoading.postValue(true);
+
+        // --- GIAI ĐOẠN 1: KIỂM TRA KHO TRƯỚC TIÊN ---
+        checkUseCase.execute(currentProtocolId, new IInventoryRepository.GenericCallback() {
+            @Override
+            public void onSuccess() {
+                // Kho ĐỦ HÀNG. Bắt đầu giai đoạn tiếp theo.
+                createAndDeduct(title, objective, selectedProject, userId);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Kho KHÔNG ĐỦ HÀNG hoặc có lỗi khi kiểm tra.
+                _error.postValue(errorMessage);
+                _isLoading.postValue(false);
+            }
+        });
+    }
+
+    // SỬA: Sửa lại toàn bộ các lệnh cập nhật LiveData thành postValue
+    private void createAndDeduct(String title, String objective, Project selectedProject, int userId) {
+        // --- GIAI ĐOẠN 2: TẠO EXPERIMENT ---
+        createUseCase.execute(
                 title, objective, currentProtocolId, userId, selectedProject.getProjectId(),
-                new IExperimentRepository.GenericCallback() {
-                    @Override public void onSuccess() { _creationSuccess.postValue(true); _isLoading.postValue(false); }
-                    @Override public void onError(String errorMessage) { _error.postValue(errorMessage); _isLoading.postValue(false); }
+                new IExperimentRepository.IdCallback() {
+                    @Override
+                    public void onSuccess(int newExperimentId) {
+                        // Tạo thành công, bây giờ mới trừ kho.
+                        // --- GIAI ĐOẠN 3: TRỪ KHO ---
+                        deductUseCase.execute(currentProtocolId, new IInventoryRepository.GenericCallback() {
+                            @Override
+                            public void onSuccess() {
+                                // Toàn bộ quá trình hoàn tất thành công!
+                                _creationSuccess.postValue(true);
+                                _isLoading.postValue(false);
+                            }
+
+                            @Override
+                            public void onError(String deductError) {
+                                // Lỗi hiếm gặp (Race Condition).
+                                _error.postValue("Lỗi nghiêm trọng khi trừ kho: " + deductError + ". Thí nghiệm đã được tạo, vui lòng kiểm tra lại kho.");
+                                _isLoading.postValue(false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String createError) {
+                        // Lỗi khi tạo experiment, dừng lại.
+                        _error.postValue("Lỗi khi tạo thí nghiệm: " + createError);
+                        _isLoading.postValue(false);
+                    }
                 }
         );
     }

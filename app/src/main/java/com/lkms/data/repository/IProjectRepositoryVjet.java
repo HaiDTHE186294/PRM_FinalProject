@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Interface Repository cho việc quản lý các Project.
  */
-public interface IProjectRepository {
+public interface IProjectRepositoryVjet {
 
     /**
      * Định nghĩa một Callback để trả về danh sách các Project.

@@ -9,8 +9,8 @@ import com.lkms.data.model.java.Protocol;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.ProtocolStep;
 import com.lkms.data.repository.IProtocolRepository;
-import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 import com.lkms.data.repository.implement.java.ProtocolRepositoryImplJava;
+import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

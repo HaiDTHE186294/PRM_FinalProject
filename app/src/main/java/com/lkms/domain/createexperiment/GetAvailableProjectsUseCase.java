@@ -1,7 +1,7 @@
 package com.lkms.domain.createexperiment;
 
 // Import interface của Repository và Callback tương ứng
-import com.lkms.data.repository.IProjectRepository;
+import com.lkms.data.repository.IProjectRepositoryVjet;
 
 /**
  * UseCase cho chức năng: "Lấy danh sách tất cả các Project đang có".
@@ -9,13 +9,13 @@ import com.lkms.data.repository.IProjectRepository;
  */
 public class GetAvailableProjectsUseCase {
 
-    private final IProjectRepository repository;
+    private final IProjectRepositoryVjet repository;
 
     /**
-     * Hàm khởi tạo (Constructor) nhận vào một IProjectRepository.
-     * @param repository Một đối tượng triển khai IProjectRepository (ví dụ: ProjectRepositoryImplJava).
+     * Hàm khởi tạo (Constructor) nhận vào một IProjectRepositoryVjet.
+     * @param repository Một đối tượng triển khai IProjectRepositoryVjet (ví dụ: ProjectRepositoryVjetImplJava).
      */
-    public GetAvailableProjectsUseCase(IProjectRepository repository) {
+    public GetAvailableProjectsUseCase(IProjectRepositoryVjet repository) {
         this.repository = repository;
     }
 
@@ -23,9 +23,9 @@ public class GetAvailableProjectsUseCase {
      * Hàm chính để thực thi chức năng của UseCase này.
      * @param callback Callback để nhận kết quả trả về (thành công hoặc thất bại).
      */
-    public void execute(IProjectRepository.ProjectListCallback callback) {
+    public void execute(IProjectRepositoryVjet.ProjectListCallback callback) {
         // UseCase này chỉ làm một việc duy nhất là gọi hàm tương ứng từ repository.
-        // Giả định rằng IProjectRepository có hàm getAllProjects().
+        // Giả định rằng IProjectRepositoryVjet có hàm getAllProjects().
         repository.getAllProjects(callback);
     }
 }
