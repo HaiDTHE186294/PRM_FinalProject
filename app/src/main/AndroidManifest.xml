@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
+            android:name=".ui.inventory.ItemDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.inventory.InventoryActivity"
             android:exported="false" />
-        <activity    
+        <activity
             android:name=".ui.sds.SdsLookupActivity"
             android:exported="false" />
         <activity

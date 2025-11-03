@@ -3,10 +3,17 @@ package com.lkms.ui.loginmaindashboard.login;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
+import com.lkms.BuildConfig;
 import com.lkms.data.model.java.AuthResult;
 import com.lkms.data.repository.IAuthRepository;
 import androidx.activity.EdgeToEdge;
@@ -21,6 +28,8 @@ import com.lkms.R;
 import com.lkms.domain.loginmaindashboardusecase.SystemLoginUseCase;
 import com.lkms.ui.loginmaindashboard.maindashboard.MainDashboardActivity;
 
+import java.util.Date;
+
 public class SystemLoginActivity extends AppCompatActivity {
 
     private EditText edtEmail, edtPassword;
@@ -30,6 +39,13 @@ public class SystemLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isUserLoggedIn()) {
+            startActivity(new Intent(this, MainDashboardActivity.class));
+            finish();
+            return;
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_system_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -85,5 +101,56 @@ public class SystemLoginActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+
+    private boolean isUserLoggedIn() {
+        try {
+            MasterKey masterKey = new MasterKey.Builder(getApplicationContext()).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
+            SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(getApplicationContext(), "secure_prefs", masterKey, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+            String token = sharedPreferences.getString("jwt_token", null);
+
+            if (token == null || token.isEmpty()) {
+                return false;
+            }
+
+            // 🔹 Xác minh token bằng Auth0 JWT
+            String SECRET_KEY = BuildConfig.JWT_SECRET;
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
+
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer("LKMS_APP").build();
+
+            DecodedJWT decodedJWT = verifier.verify(token);
+
+            // 🔹 Kiểm tra hạn sử dụng
+            Date expiresAt = decodedJWT.getExpiresAt();
+            if (expiresAt == null || expiresAt.before(new Date())) {
+                return false; // Hết hạn
+            }
+
+            // ✅ Token hợp lệ → có thể đọc thông tin user nếu cần
+            int userId = decodedJWT.getClaim("userId").asInt();
+            int roleId = decodedJWT.getClaim("roleId").asInt();
+
+            return true;
+
+        } catch (JWTVerificationException e) {
+            clearLoginSession();
+            return false;
+        } catch (Exception e) {
+            Log.e("Error", "⚠️ Lỗi khi kiểm tra token: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void clearLoginSession() {
+        try {
+            MasterKey masterKey = new MasterKey.Builder(getApplicationContext()).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
+            SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(getApplicationContext(), "secure_prefs", masterKey, EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+            sharedPreferences.edit().clear().apply();
+
+        } catch (Exception e) {
+            Log.e("Error", "⚠️ Lỗi khi xoá session: " + e.getMessage());
+        }
     }
 }
