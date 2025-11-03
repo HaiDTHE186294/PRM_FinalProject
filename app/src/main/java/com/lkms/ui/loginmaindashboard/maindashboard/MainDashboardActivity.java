@@ -31,6 +31,7 @@ import com.lkms.domain.loginmaindashboardusecase.MainDashboardUseCase;
 import com.lkms.ui.equipment.EquipmentListActivity;
 import com.lkms.ui.inventory.InventoryActivity;
 import com.lkms.ui.loginmaindashboard.login.SystemLoginActivity;
+import com.lkms.ui.project.projectmanage.ProjectActivity;
 import com.lkms.ui.protocol.ProtocolListActivity;
 import com.lkms.ui.sds.SdsLookupActivity;
 import com.lkms.ui.user_profile.MemberListActivity;
@@ -256,6 +257,9 @@ public class MainDashboardActivity extends AppCompatActivity {
         if (id == R.id.menu_inventory) {
             startActivity(new Intent(this, InventoryActivity.class));
             Log.d("MENU_ACTION", "Navigated to InventoryActivity");
+        if (id == R.id.menu_project) {
+            startActivity(new Intent(this, ProjectActivity.class));
+            Log.d("MENU_ACTION", "Navigated to Project");
             return true;
         }
 

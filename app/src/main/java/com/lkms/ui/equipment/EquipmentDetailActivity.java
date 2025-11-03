@@ -19,7 +19,7 @@ import com.lkms.R;
 import com.lkms.data.model.java.Equipment;
 import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
-import com.lkms.domain.EquipmentBookingUseCase;
+import com.lkms.domain.booking.EquipmentBookingUseCase;
 import com.lkms.ui.common.MaintenanceLogFragment;
 import com.lkms.ui.common.QRScannerFragment;
 

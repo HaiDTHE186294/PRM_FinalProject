@@ -25,6 +25,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.addlog.AddLogActivity"
+            android:name=".ui.project.projectmanage.ProjectActivity"
             android:exported="false" />
         <activity
             android:name=".ui.inventory.InventoryActivity"
@@ -62,11 +63,6 @@
         <activity
             android:name=".ui.equipment.EquipmentListActivity"
             android:exported="false">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".ui.protocol.ProtocolListActivity"
@@ -101,6 +97,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        <activity android:name=".ui.user_profile.UserProfileActivity" />
+        <activity android:name=".ui.user_profile.MemberListActivity" />
+        <activity android:name=".ui.user_profile.ProfileSettingActivity" />
+
+        <activity
+            android:name=".ui.project.projectdetail.ProjectDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.project.projectmanage.ProjectActivity" >
+        </activity>
     </application>
 
 </manifest>
