@@ -314,64 +314,64 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
         }).start();
     }
     public void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback) {
-        final String TAG = "DeductStock_OldMethod"; // Đổi Tag để dễ nhận biết
-
+        final String TAG = "DeductStock_OldMethod";
         new Thread(() -> {
             try {
                 if (itemsToDeduct == null || itemsToDeduct.isEmpty()) {
-                    callback.onSuccess(); // Không có gì để trừ, coi như thành công
+                    callback.onSuccess();
                     return;
                 }
-
                 android.util.Log.i(TAG, "Bắt đầu trừ kho theo phương pháp cũ (GET -> PATCH) cho " + itemsToDeduct.size() + " loại vật tư.");
 
-                // Duyệt qua từng vật tư cần dùng
                 for (ProtocolItem itemToDeduct : itemsToDeduct) {
                     // 1. Lấy thông tin hiện tại của Item trong kho
                     String getItemUrl = SUPABASE_URL + "/rest/v1/Item?select=*&itemId=eq." + itemToDeduct.getItemId();
                     String itemJson = HttpHelper.getJson(getItemUrl);
-
                     Type itemType = new TypeToken<List<Item>>() {}.getType();
                     List<Item> currentItems = gson.fromJson(itemJson, itemType);
 
                     if (currentItems == null || currentItems.isEmpty()) {
-                        // Trong logic mới, ta có thể bỏ qua lỗi này vì đã check trước đó
-                        // nhưng để an toàn, ta vẫn ghi log
                         android.util.Log.w(TAG, "Không tìm thấy vật tư ID " + itemToDeduct.getItemId() + " khi đang trừ kho.");
-                        continue; // Bỏ qua và xử lý vật tư tiếp theo
+                        continue;
                     }
 
                     Item currentItem = currentItems.get(0);
                     int currentQuantity = currentItem.getQuantity();
                     int quantityNeeded = itemToDeduct.getQuantity();
 
-                    // 2. Kiểm tra lại lần cuối cho chắc chắn (dù không cần thiết vì đã có checkStockAvailability)
+                    // 2. Kiểm tra lại lần cuối
                     if (currentQuantity < quantityNeeded) {
-                        // Nếu vẫn thiếu, báo lỗi. Điều này có thể xảy ra do race condition.
-                        throw new Exception("Không đủ " + currentItem.getItemName() + " (Race Condition?). Cần " + quantityNeeded + ", chỉ còn " + currentQuantity);
+                        throw new InsufficientStockException("Không đủ " + currentItem.getItemName() + ". Cần " + quantityNeeded + ", chỉ còn " + currentQuantity);
                     }
 
                     // 3. Nếu đủ, tính số lượng mới và thực hiện PATCH để cập nhật
                     int newQuantity = currentQuantity - quantityNeeded;
                     String updateUrl = SUPABASE_URL + "/rest/v1/Item?itemId=eq." + currentItem.getItemId();
                     String patchBody = "{\"quantity\": " + newQuantity + "}";
-
                     android.util.Log.d(TAG, "Thực hiện PATCH cho Item ID " + currentItem.getItemId() + " với body: " + patchBody);
                     HttpHelper.patchJson(updateUrl, patchBody);
                 }
 
-                // Nếu tất cả các vòng lặp thành công
                 android.util.Log.i(TAG, "Trừ kho theo phương pháp cũ thành công.");
                 callback.onSuccess();
-
-            } catch (Exception e) {
-                android.util.Log.e(TAG, "LỖI khi trừ kho theo phương pháp cũ: " + e.getMessage(), e);
-                callback.onError("Lỗi khi trừ kho: " + e.getMessage());
+            } catch (InsufficientStockException stockEx) { // Bắt Exception cụ thể trước
+                android.util.Log.e(TAG, "LỖI không đủ hàng trong kho: " + stockEx.getMessage());
+                callback.onError(stockEx.getMessage());
+            } catch (Exception e) { // Bắt các Exception chung chung khác sau
+                android.util.Log.e(TAG, "LỖI không xác định khi trừ kho: " + e.getMessage(), e);
+                callback.onError("Lỗi không xác định khi trừ kho: " + e.getMessage());
             }
         }).start();
     }
 
-
+    /**
+     * Lớp Exception nội bộ, mô tả lỗi không đủ hàng trong kho.
+     */
+    private static class InsufficientStockException extends Exception {
+        public InsufficientStockException(String message) {
+            super(message);
+        }
+    }
 
     @Override
     public void checkStockAvailability(List<ProtocolItem> itemsToCheck, GenericCallback callback) {

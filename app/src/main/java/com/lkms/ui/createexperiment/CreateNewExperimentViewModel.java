@@ -17,7 +17,6 @@ import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 import java.util.List;
 
 public class CreateNewExperimentViewModel extends ViewModel {
-
     // --- Khai báo các UseCase ---
     private final CreateFullExperimentUseCase createUseCase;
     private final DeductInventoryForExperimentUseCase deductUseCase;
@@ -26,20 +25,17 @@ public class CreateNewExperimentViewModel extends ViewModel {
     private final GetAvailableProjectsUseCase getProjectsUseCase;
 
     // --- LiveData cho giao diện ---
-    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
-    public final LiveData<Boolean> isLoading = _isLoading;
-
-    private final MutableLiveData<String> _error = new MutableLiveData<>();
-    public final LiveData<String> error = _error;
-
-    private final MutableLiveData<Boolean> _creationSuccess = new MutableLiveData<>(false);
-    public final LiveData<Boolean> creationSuccess = _creationSuccess;
-
-    private final MutableLiveData<Protocol> _protocol = new MutableLiveData<>();
-    public final LiveData<Protocol> protocol = _protocol;
-
-    private final MutableLiveData<List<Project>> _projects = new MutableLiveData<>();
-    public final LiveData<List<Project>> projects = _projects;
+    // ⭐ SỬA LỖI SONARQUBE: Đổi tên biến theo quy tắc (bỏ dấu gạch dưới, thay bằng 'm') ⭐
+    private final MutableLiveData<Boolean> mIsLoading = new MutableLiveData<>(false);
+    public final LiveData<Boolean> isLoading = mIsLoading;
+    private final MutableLiveData<String> mError = new MutableLiveData<>();
+    public final LiveData<String> error = mError;
+    private final MutableLiveData<Boolean> mCreationSuccess = new MutableLiveData<>(false);
+    public final LiveData<Boolean> creationSuccess = mCreationSuccess;
+    private final MutableLiveData<Protocol> mProtocol = new MutableLiveData<>();
+    public final LiveData<Protocol> protocol = mProtocol;
+    private final MutableLiveData<List<Project>> mProjects = new MutableLiveData<>();
+    public final LiveData<List<Project>> projects = mProjects;
 
     private int currentProtocolId = -1;
 
@@ -58,19 +54,18 @@ public class CreateNewExperimentViewModel extends ViewModel {
         this.getProjectsUseCase = getProjectsUseCase;
     }
 
-    // SỬA: Dùng postValue để đảm bảo an toàn thread
+    // SỬA: Dùng postValue và biến đã đổi tên
     public void loadInitialData(int protocolId) {
         if (protocolId == -1) {
-            _error.postValue("Protocol ID không hợp lệ.");
+            mError.postValue("Protocol ID không hợp lệ.");
             return;
         }
         this.currentProtocolId = protocolId;
-        _isLoading.postValue(true);
-
+        mIsLoading.postValue(true);
         getProtocolDetailsUseCase.execute(protocolId, new IProtocolRepository.ProtocolContentCallback() {
             @Override
             public void onProtocolReceived(Protocol result) {
-                _protocol.postValue(result);
+                mProtocol.postValue(result);
                 loadProjects();
             }
             @Override
@@ -79,35 +74,33 @@ public class CreateNewExperimentViewModel extends ViewModel {
             public void onItemsReceived(List<com.lkms.data.model.java.ProtocolItem> items) { /* Không cần */ }
             @Override
             public void onError(String errorMessage) {
-                _error.postValue("Lỗi tải Protocol: " + errorMessage);
-                _isLoading.postValue(false);
+                mError.postValue("Lỗi tải Protocol: " + errorMessage);
+                mIsLoading.postValue(false);
             }
         });
     }
 
-    // SỬA: Dùng postValue để đảm bảo an toàn thread
+    // SỬA: Dùng postValue và biến đã đổi tên
     private void loadProjects() {
         getProjectsUseCase.execute(new IProjectRepositoryVjet.ProjectListCallback() {
             @Override public void onSuccess(List<Project> result) {
-                _projects.postValue(result);
-                _isLoading.postValue(false);
+                mProjects.postValue(result);
+                mIsLoading.postValue(false);
             }
             @Override public void onError(String errorMessage) {
-                _error.postValue("Lỗi tải Projects: " + errorMessage);
-                _isLoading.postValue(false);
+                mError.postValue("Lỗi tải Projects: " + errorMessage);
+                mIsLoading.postValue(false);
             }
         });
     }
 
-    // SỬA: Sửa lại toàn bộ các lệnh cập nhật LiveData thành postValue
+    // SỬA: Dùng postValue và biến đã đổi tên
     public void createExperiment(String title, String objective, Project selectedProject, int userId) {
-        if (title == null || title.trim().isEmpty()) { _error.postValue("Tên thí nghiệm không được để trống."); return; }
-        if (currentProtocolId == -1) { _error.postValue("Protocol không hợp lệ."); return; }
-        if (selectedProject == null) { _error.postValue("Vui lòng chọn một dự án (Project)."); return; }
-        if (userId == -1) { _error.postValue("Không thể xác thực người dùng. Vui lòng đăng nhập lại."); return; }
-
-        _isLoading.postValue(true);
-
+        if (title == null || title.trim().isEmpty()) { mError.postValue("Tên thí nghiệm không được để trống."); return; }
+        if (currentProtocolId == -1) { mError.postValue("Protocol không hợp lệ."); return; }
+        if (selectedProject == null) { mError.postValue("Vui lòng chọn một dự án (Project)."); return; }
+        if (userId == -1) { mError.postValue("Không thể xác thực người dùng. Vui lòng đăng nhập lại."); return; }
+        mIsLoading.postValue(true);
         // --- GIAI ĐOẠN 1: KIỂM TRA KHO TRƯỚC TIÊN ---
         checkUseCase.execute(currentProtocolId, new IInventoryRepository.GenericCallback() {
             @Override
@@ -115,17 +108,16 @@ public class CreateNewExperimentViewModel extends ViewModel {
                 // Kho ĐỦ HÀNG. Bắt đầu giai đoạn tiếp theo.
                 createAndDeduct(title, objective, selectedProject, userId);
             }
-
             @Override
             public void onError(String errorMessage) {
                 // Kho KHÔNG ĐỦ HÀNG hoặc có lỗi khi kiểm tra.
-                _error.postValue(errorMessage);
-                _isLoading.postValue(false);
+                mError.postValue(errorMessage);
+                mIsLoading.postValue(false);
             }
         });
     }
 
-    // SỬA: Sửa lại toàn bộ các lệnh cập nhật LiveData thành postValue
+    // SỬA: Dùng postValue và biến đã đổi tên
     private void createAndDeduct(String title, String objective, Project selectedProject, int userId) {
         // --- GIAI ĐOẠN 2: TẠO EXPERIMENT ---
         createUseCase.execute(
@@ -139,24 +131,22 @@ public class CreateNewExperimentViewModel extends ViewModel {
                             @Override
                             public void onSuccess() {
                                 // Toàn bộ quá trình hoàn tất thành công!
-                                _creationSuccess.postValue(true);
-                                _isLoading.postValue(false);
+                                mCreationSuccess.postValue(true);
+                                mIsLoading.postValue(false);
                             }
-
                             @Override
                             public void onError(String deductError) {
                                 // Lỗi hiếm gặp (Race Condition).
-                                _error.postValue("Lỗi nghiêm trọng khi trừ kho: " + deductError + ". Thí nghiệm đã được tạo, vui lòng kiểm tra lại kho.");
-                                _isLoading.postValue(false);
+                                mError.postValue("Lỗi nghiêm trọng khi trừ kho: " + deductError + ". Thí nghiệm đã được tạo, vui lòng kiểm tra lại kho.");
+                                mIsLoading.postValue(false);
                             }
                         });
                     }
-
                     @Override
                     public void onError(String createError) {
                         // Lỗi khi tạo experiment, dừng lại.
-                        _error.postValue("Lỗi khi tạo thí nghiệm: " + createError);
-                        _isLoading.postValue(false);
+                        mError.postValue("Lỗi khi tạo thí nghiệm: " + createError);
+                        mIsLoading.postValue(false);
                     }
                 }
         );

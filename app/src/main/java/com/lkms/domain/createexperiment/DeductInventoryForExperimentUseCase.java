@@ -42,11 +42,11 @@ public class DeductInventoryForExperimentUseCase {
 
             // Các hàm callback này không cần thiết cho nhiệm vụ này
             @Override
-            public void onProtocolReceived(com.lkms.data.model.java.Protocol protocol) {
+            public void onProtocolReceived(com.lkms.data.model.java.Protocol protocol) {// Không cần thiết cho UseCase này, bỏ qua.
             }
 
             @Override
-            public void onStepsReceived(List<com.lkms.data.model.java.ProtocolStep> steps) {
+            public void onStepsReceived(List<com.lkms.data.model.java.ProtocolStep> steps) {// Không cần thiết cho UseCase này, bỏ qua.
             }
         });
     }
