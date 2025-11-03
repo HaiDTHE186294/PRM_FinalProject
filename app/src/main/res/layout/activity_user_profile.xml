@@ -79,6 +79,24 @@
 
             android:clickable="true"
             android:visibility="invisible" />
+
+        <!--Manage team members (Lab Manager only)-->
+        <TextView
+            android:id="@+id/option_add_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="Add new user"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textSize="18sp"
+            app:drawableStartCompat="@drawable/abc_ic_go_search_api_material"
+            app:drawableTint="?attr/colorControlNormal"
+
+            android:clickable="true"
+            android:visibility="invisible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,15 +11,48 @@ import com.lkms.data.repository.IUserRepository;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
+
 public class UserRepositoryImplJava implements IUserRepository {
 
     private static final Gson gson = new Gson();
 
 
     @Override
-    public void addUser(String fullName, String email, String password, UserCallback callback)
+    public void addUser(User user, UserCallback callback)
     {
-        //TODO: Ask someone to work with this.
+        new Thread(() -> {
+            if (callback == null) return;
+            try {
+                if (user == null) {
+                    callback.onError("User cannot be null.");
+                    return;
+                }
+
+                //Hash user's password
+                String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+                user.setPassword(hashedPassword);
+
+                String endpoint = SUPABASE_URL + "/rest/v1/User?select=*";
+                String jsonBody = gson.toJson(user);
+
+                // Supabase POST trả về bản ghi đã tạo
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                Type listType = new TypeToken<List<Item>>() {}.getType();
+                List<User> createdUsers = gson.fromJson(response, listType);
+
+                if (createdUsers != null && !createdUsers.isEmpty()) {
+                    callback.onSuccess(createdUsers.get(0));
+                } else {
+                    callback.onError("Failed to add new user. Server returned empty response.");
+                }
+
+            } catch (Exception e) {
+                callback.onError(e.getMessage() != null ? e.getMessage() : "Failed to add new user");
+            }
+        }).start();
     }
 
     @Override

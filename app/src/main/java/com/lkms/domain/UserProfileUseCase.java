@@ -21,7 +21,7 @@ public class UserProfileUseCase
         return _user;
     }
 
-    public void addNewUser(String fullName, String email, String password) {
+    public void addNewUser(String fullName, String email, String password, LKMSConstantEnums.UserRole role) {
         //Validation
 //        if (fullName == null || fullName.trim().isEmpty()) {
 //            return;
@@ -54,7 +54,14 @@ public class UserProfileUseCase
 //                });
 //            }
 
-        userRepository.addUser(fullName, email, password, new UserRepositoryImplJava.UserCallback() {
+        User newUser = new User();
+        newUser.setName(fullName);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setRoleId(role.ordinal());
+        newUser.setUserStatus("Active");
+
+        userRepository.addUser(newUser, new UserRepositoryImplJava.UserCallback() {
             @Override
             public void onSuccess(User user) {
                 _user.postValue(user);
