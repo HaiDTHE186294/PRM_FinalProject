@@ -7,7 +7,7 @@ public class LogItemWrapper extends LogEntry implements AdapterItem {
 
     public LogItemWrapper(LogEntry entry) {
         setLogId(entry.getLogId());
-        setExperimentStepId(getExperimentStepId());
+        setExperimentStepId(entry.getExperimentStepId());
         setLogType(entry.getLogType());
         setUserId(entry.getUserId());
         setContent(entry.getContent());

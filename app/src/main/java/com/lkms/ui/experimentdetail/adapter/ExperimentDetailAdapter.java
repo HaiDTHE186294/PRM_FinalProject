@@ -1,16 +1,23 @@
 package com.lkms.ui.experimentdetail.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.lkms.R;
 
 
 import com.lkms.data.model.java.*;
+import com.lkms.ui.addlog.AddLogActivity;
+import com.lkms.ui.viewlog.ViewLogDetailActivity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,10 +113,36 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
                 }
             });
 
+            stepHolder.ivAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+
+                    // TODO: Mở Activity riêng (dấu cộng)
+                    Intent separateIntent = new Intent(context, AddLogActivity.class);
+                    int stepId = stepWrapper.getExperimentStep().getExperimentStepId();
+                    String instruction = stepWrapper.getProtocolStep().getStepOrder() + " - " + stepWrapper.getProtocolStep().getInstruction();
+                    separateIntent.putExtra("stepId", stepId);
+                    separateIntent.putExtra("instruction", instruction);
+                    context.startActivity(separateIntent);
+                }
+            });
+
         } else { // TYPE_LOG
             LogViewHolder logHolder = (LogViewHolder) holder;
             LogItemWrapper logWrapper = (LogItemWrapper) item;
             logHolder.bind(logWrapper);
+
+            logHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("AdapterDebug", "Click vào item log với logID = " + logWrapper.getLogId());
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ViewLogDetailActivity.class);
+                    intent.putExtra("logId", logWrapper.getLogId());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -140,7 +173,10 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         StepItemWrapper stepWrapper = (StepItemWrapper) mItems.get(stepPosition);
         stepWrapper.setDownloadLog(downloadedLogs);
-
+        for (LogEntry entry : downloadedLogs) {
+            // ĐẶT BREAKPOINT HOẶC DÒNG LOG NGAY TẠI ĐÂY
+            Log.d("DataSourceCheck", "LogEntry from source - ID: " + entry.getLogId() + ", Content: " + entry.getContent());
+        }
         List<AdapterItem> logsToInsert = new ArrayList<>();
         for (LogEntry entry : downloadedLogs) {
             logsToInsert.add(new LogItemWrapper(entry));

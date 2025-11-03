@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    tools:context=".ui.inventory.ItemDetailActivity">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#1E2A47"
+        app:title="Inventory Detail"
+        app:titleTextColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Item Name -->
+    <TextView
+        android:id="@+id/tv_item_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Item Name"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#111111"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- CAS Number -->
+    <TextView
+        android:id="@+id/tv_item_cas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="CAS: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+
+    <!-- Lot Number -->
+    <TextView
+        android:id="@+id/tv_item_lot_number"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Lot Number: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_cas"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+
+    <!-- Quantity -->
+    <TextView
+        android:id="@+id/tv_item_quantity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Quantity: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_lot_number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+
+    <!-- Unit -->
+    <TextView
+        android:id="@+id/tv_item_unit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Unit: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_quantity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+
+    <!-- Location -->
+    <TextView
+        android:id="@+id/tv_item_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Location: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_unit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+
+    <!-- Expiration Date -->
+    <TextView
+        android:id="@+id/tv_item_expiration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Expiration Date: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tv_item_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
