@@ -29,7 +29,9 @@ import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
 import com.lkms.domain.loginmaindashboardusecase.MainDashboardUseCase;
 import com.lkms.ui.equipment.EquipmentListActivity;
+import com.lkms.ui.inventory.InventoryActivity;
 import com.lkms.ui.loginmaindashboard.login.SystemLoginActivity;
+import com.lkms.ui.project.projectmanage.ProjectActivity;
 import com.lkms.ui.protocol.ProtocolListActivity;
 import com.lkms.ui.sds.SdsLookupActivity;
 import com.lkms.ui.user_profile.MemberListActivity;
@@ -252,8 +254,21 @@ public class MainDashboardActivity extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.menu_inventory) {
+            startActivity(new Intent(this, InventoryActivity.class));
+            Log.d("MENU_ACTION", "Navigated to InventoryActivity");
+            return true;
+        }
+
+        if (id == R.id.menu_project) {
+            startActivity(new Intent(this, ProjectActivity.class));
+            Log.d("MENU_ACTION", "Navigated to Project");
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
+
 
     private void logout() {
         try {
@@ -265,7 +280,10 @@ public class MainDashboardActivity extends AppCompatActivity {
             editor.remove("jwt_token");
             editor.remove("user_role");
             editor.remove("user_id");
+            editor.clear();
             editor.apply();
+
+            Toast.makeText(this, "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(this, SystemLoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

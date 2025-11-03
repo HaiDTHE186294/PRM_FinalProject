@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +17,22 @@
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <activity
+            android:name=".ui.inventory.ItemDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.viewlog.ViewLogDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.addlog.AddLogActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.project.projectmanage.ProjectActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.inventory.InventoryActivity"
             android:exported="false" />
@@ -34,31 +54,28 @@
         <activity
             android:name=".ui.loginmaindashboard.maindashboard.MainDashboardActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.loginmaindashboard.login.SystemLoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.equipment.BookingActivity"
             android:exported="false" />
         <activity
             android:name=".ui.equipment.EquipmentListActivity"
-            android:exported="false">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity android:name=".ui.protocol.ProtocolListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.protocol.ProtocolListActivity"
             android:exported="false"
             android:label="Protocol List" />
-        <activity android:name=".ui.protocol.ProtocolDetailActivity"
+        <activity
+            android:name=".ui.protocol.ProtocolDetailActivity"
             android:exported="false"
             android:label="Protocol Detail"
             android:parentActivityName=".ui.protocol.ProtocolListActivity" />
@@ -68,16 +85,34 @@
             android:label="Create New Protocol"
             android:parentActivityName=".ui.protocol.ProtocolListActivity" />
 
-        <!-- =================== THÊM VÀO ĐÂY ===================== -->
         <activity
             android:name=".ui.createexperiment.CreateNewExperimentActivity"
             android:label="Tạo Thí Nghiệm Mới"
             android:exported="false" />
-        <!-- ======================================================= -->
 
-        <activity android:name=".ui.user_profile.UserProfileActivity" />
-        <activity android:name=".ui.user_profile.MemberListActivity" />
-        <activity android:name=".ui.user_profile.ProfileSettingActivity" />
+        <activity
+            android:name=".ui.user_profile.UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.user_profile.MemberListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.user_profile.ProfileSettingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.project.projectdetail.ProjectDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.project.projectmanage.ProjectActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
-
 </manifest>

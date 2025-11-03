@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvProtocolInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Step Order - Protocol Instruction"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:background="@drawable/simple_border"
+        android:padding="12dp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etLogEntryContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="150dp"
+        android:hint="Log Entry Content..."
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:background="@drawable/simple_border"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnAttachFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Attach File"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvSelectedFileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="tên_file_đã_chọn.pdf"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <Button
+    android:id="@+id/btnUpload"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="UPLOAD"
+    android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

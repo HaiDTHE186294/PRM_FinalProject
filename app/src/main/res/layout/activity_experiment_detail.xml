@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp"
                 android:text="Objective"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         </androidx.cardview.widget.CardView>
 

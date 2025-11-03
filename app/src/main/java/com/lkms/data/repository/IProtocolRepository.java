@@ -42,6 +42,10 @@ public interface IProtocolRepository {
         void onError(String errorMessage);
     }
 
+    interface ProtocolCallBack{
+        void onSuccess(Protocol protocol);
+        void onError(String errorMessage);
+    }
 
 
     // --- Chức năng Tra cứu và Hiển thị Protocols (UC3) ---
@@ -108,4 +112,6 @@ public interface IProtocolRepository {
   
     // --- Chức năng lấy thông tin của protocolStep
     void getProtocolStep(int protocolStepId, ProtocolStepCallback callback);
+
+    void getProtocolById(int protocolId, ProtocolCallBack callback);
 }

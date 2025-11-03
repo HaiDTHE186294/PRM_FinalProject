@@ -60,7 +60,7 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
                     // Tìm kiếm dựa trên trường itemName HOẶC casNumber
                     // Dùng OR filter của Supabase: ?or=(itemName.like.*query*,casNumber.like.*query*)
                     String encodedQuery = query.replace(" ", "%20");
-                    String filter = "or=(itemName.like.*" + encodedQuery + "*,casNumber.like.*" + encodedQuery + "*)";
+                    String filter = "or=(itemName.ilike.*" + encodedQuery + "*,casNumber.ilike.*" + encodedQuery + "*)";
                     endpoint = SUPABASE_URL + "/rest/v1/" + ITEM_TABLE + "?select=*&" + filter;
                 }
 
@@ -292,6 +292,27 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
             callback.onError("Chưa được triển khai.");
         }
     }
+
+    @Override
+    public void getItemById(int itemId, InventoryItemCallback callback) {
+        new Thread(() -> {
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/" + ITEM_TABLE + "?select=*&itemId=eq." + itemId;
+                String json = HttpHelper.getJson(endpoint);
+
+                Type itemType = new TypeToken<List<Item>>() {}.getType();
+                List<Item> result = gson.fromJson(json, itemType);
+
+                if (result != null && !result.isEmpty()) {
+                    callback.onSuccess(result.get(0));
+                } else {
+                    callback.onError("Item not found with ID: " + itemId);
+                }
+            } catch (Exception e) {
+                callback.onError(e.getMessage() != null ? e.getMessage() : "Error retrieving item details");
+            }
+        }).start();
+    }
     public void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback) {
         final String TAG = "DeductStock_OldMethod"; // Đổi Tag để dễ nhận biết
 
@@ -395,5 +416,4 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
             }
         }).start();
     }
-
 }

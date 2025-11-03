@@ -3,6 +3,8 @@ package com.lkms.data.repository.implement.java;
 import static com.lkms.BuildConfig.SUPABASE_ANON_KEY;
 import static com.lkms.BuildConfig.SUPABASE_URL;
 
+import android.webkit.MimeTypeMap;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -109,6 +111,79 @@ public class HttpHelper {
             return SUPABASE_URL + "/storage/v1/object/public/" + bucketName + "/" + path;
         } else {
             throw new IOException("Upload failed (" + responseCode + "): " + response);
+        }
+    }
+
+    // ===============================================================
+    // 🔹 DOWNLOAD FILE - Download file từ Supabase Storage
+    // ===============================================================
+    /**
+     * Tải file từ một URL (thường là public URL của Supabase Storage)
+     * và lưu nó vào một file tạm.
+     *
+     * @param url URL công khai của file cần tải.
+     * @return một đối tượng File trỏ đến file tạm đã được tải về.
+     * @throws IOException nếu có lỗi mạng hoặc lỗi I/O.
+     */
+    public static File downloadFile(String url) throws IOException {
+        URL fileUrl = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) fileUrl.openConnection();
+        conn.setRequestMethod("GET");
+
+        // Lưu ý: Giả định URL là public (do hàm uploadFile trả về).
+        // Nếu URL của bạn yêu cầu xác thực, bạn cần thêm header
+        // 'Authorization' và 'apikey' giống như trong 'uploadFile'.
+
+        int responseCode = conn.getResponseCode();
+
+        if (responseCode >= 200 && responseCode < 300) {
+            // 🔸 Tạo file tạm
+            // File sẽ có tên dạng "supabase_download_12345.tmp"
+            // 1. Lấy đường dẫn (path) từ URL, ví dụ: /storage/.../file.pdf
+            String path = fileUrl.getPath();
+
+            // 2. Tách lấy phần đuôi file (ví dụ: "pdf")
+            // MimeTypeMap sẽ tự động xử lý các query param (như ?token=...)
+            String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+
+            // 3. Tạo suffix. Mặc định là .tmp nếu không tìm thấy
+            String suffix = ".tmp";
+            if (extension != null && !extension.isEmpty()) {
+                suffix = "." + extension;
+            }
+
+            // 4. Tạo file tạm với ĐÚNG đuôi file (ví dụ: "supabase_download_12345.pdf")
+            File tempFile = File.createTempFile("supabase_download_", suffix);
+            // Đảm bảo file tạm bị xóa khi ứng dụng tắt (phòng trường hợp crash)
+            tempFile.deleteOnExit();
+
+            // 🔸 Ghi dữ liệu từ InputStream (network) vào FileOutputStream (disk)
+            try (InputStream is = conn.getInputStream();
+                 FileOutputStream fos = new FileOutputStream(tempFile)) {
+
+                byte[] buffer = new byte[8192]; // Dùng buffer 8K
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+                fos.flush();
+            } finally {
+                conn.disconnect();
+            }
+
+            return tempFile;
+
+        } else {
+            // 🔸 Xử lý lỗi (ví dụ: 404 Not Found)
+            InputStream errorStream = conn.getErrorStream();
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(errorStream, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = br.readLine()) != null) response.append(line);
+            } finally {
+                conn.disconnect();
+            }
+            throw new IOException("Download failed (" + responseCode + "): " + response.toString());
         }
     }
 

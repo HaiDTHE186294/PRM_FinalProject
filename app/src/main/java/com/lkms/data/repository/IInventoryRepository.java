@@ -115,6 +115,15 @@ public interface IInventoryRepository {
 
     void addSds(String casNumber, String fileUrl, IdCallback callback);
 
+    // --- Chức năng Lấy thông tin Item theo itemId ---
+    /**
+     * Lấy thông tin của một item theo itemId.
+     *
+     * @param itemId ID của item cần lấy thông tin.
+     * @param callback Callback để trả về item hoặc thông báo lỗi.
+     */
+    void getItemById(int itemId, InventoryItemCallback callback);
+
     /**
      * [CHỈ KIỂM TRA] - Được dùng bởi CheckInventoryUseCase.
      * Kiểm tra xem kho có đủ số lượng cho TẤT CẢ các vật tư được yêu cầu hay không.
