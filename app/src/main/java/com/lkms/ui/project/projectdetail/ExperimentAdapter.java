@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lkms.R; // Giả định
+import com.lkms.R;
 import com.lkms.data.model.java.Experiment;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.List;
 public class ExperimentAdapter extends RecyclerView.Adapter<ExperimentAdapter.ExperimentViewHolder> {
 
     private List<Experiment> experiments = new ArrayList<>();
-    // Có thể thêm 1 ClickListener ở đây để mở chi tiết Experiment
 
     public void setExperiments(List<Experiment> newExperiments) {
         this.experiments.clear();
@@ -27,7 +26,7 @@ public class ExperimentAdapter extends RecyclerView.Adapter<ExperimentAdapter.Ex
     @Override
     public ExperimentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_project, parent, false); // Tận dụng layout
+                .inflate(R.layout.item_project, parent, false);
         return new ExperimentViewHolder(view);
     }
 

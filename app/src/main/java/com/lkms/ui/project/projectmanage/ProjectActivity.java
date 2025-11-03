@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.app.AlertDialog;
 import android.widget.EditText;
+import android.widget.TextView; // 👈 THÊM: Để xử lý Empty State
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,15 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.lkms.R; // Giả định
+import com.lkms.R;
 import com.lkms.ui.project.projectdetail.ProjectDetailActivity;
+import com.lkms.util.AuthHelper;
 
-// import com.lkms.ui.projectdetail.ProjectDetailActivity; // Màn hình chi tiết (chưa tạo)
-
-/**
- * Màn hình chính cho UC 18: Manage Project.
- * Hiển thị danh sách dự án của người dùng.
- */
 public class ProjectActivity extends AppCompatActivity {
 
     private ProjectViewModel viewModel;
@@ -30,51 +26,57 @@ public class ProjectActivity extends AppCompatActivity {
     private ProjectAdapter projectAdapter;
     private ProgressBar progressBar;
     private FloatingActionButton fabAddProject;
+    private TextView tvEmptyState; // 👈 THÊM: Để hiển thị khi danh sách trống
 
-    // Giả định User ID và Role được truyền qua Intent khi đăng nhập
-    private int currentUserId = 1; // TODO: Lấy ID thật từ Intent
-    private String currentUserRole = "Lab Manager"; // TODO: Lấy Role thật từ Intent (Dùng Enum)
+    private int currentUserId;
+    private int currentUserRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
 
-        // 1. Khởi tạo ViewModel bằng Factory (để inject UseCase)
+        currentUserId = AuthHelper.getLoggedInUserId(getApplicationContext());
+        currentUserRole = AuthHelper.getLoggedInUserRole(getApplicationContext());
+
+        // 🔥 SỬA LỖI 2: KIỂM TRA ĐĂNG NHẬP
+        if (currentUserId == -1) {
+            Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         ProjectViewModelFactory factory = new ProjectViewModelFactory();
         viewModel = new ViewModelProvider(this, factory).get(ProjectViewModel.class);
 
-        // 2. Setup View
+        initViews(); // Đổi tên thành initViews để dễ đọc hơn
         setupViews();
-
-        // 3. Setup Observers để lắng nghe LiveData từ ViewModel
         setupObservers();
-
-        // 4. Setup Click Listeners
         setupClickListeners();
 
-        // 5. Yêu cầu ViewModel tải dữ liệu ban đầu
         viewModel.loadMyProjects(currentUserId);
     }
 
-    private void setupViews() {
+    // Đổi tên thành initViews để rõ ràng hơn
+    private void initViews() {
         progressBar = findViewById(R.id.progressBar);
         fabAddProject = findViewById(R.id.fabAddProject);
         recyclerView = findViewById(R.id.recyclerViewProjects);
+        tvEmptyState = findViewById(R.id.tvEmptyState);
+    }
 
-        // Setup Adapter
+    private void setupViews() {
+        // Khởi tạo Adapter và RecyclerView
         projectAdapter = new ProjectAdapter(project -> {
-            // UC 18: "ấn vào chuyển sang màn Project Detail"
-             Intent intent = new Intent(ProjectActivity.this, ProjectDetailActivity.class);
-             intent.putExtra("PROJECT_ID", project.getProjectId());
-             startActivity(intent);
+            Intent intent = new Intent(ProjectActivity.this, ProjectDetailActivity.class);
+            intent.putExtra("PROJECT_ID", project.getProjectId());
+            startActivity(intent);
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(projectAdapter);
 
-        // UC 18: "Lab manager có thêm nút để khởi tạo Project mới"
-        if ("Lab Manager".equals(currentUserRole)) {
+        if (currentUserRole == 0 || currentUserRole == 1) {
             fabAddProject.setVisibility(View.VISIBLE);
         } else {
             fabAddProject.setVisibility(View.GONE);
@@ -83,65 +85,64 @@ public class ProjectActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         fabAddProject.setOnClickListener(v -> {
-            // "hiển thị form tạo Project"
             showCreateProjectDialog();
         });
     }
 
-    /**
-     * Hiển thị AlertDialog (form) để tạo dự án mới (UC 18)
-     */
     private void showCreateProjectDialog() {
-        // 1. Inflate layout (nạp layout dialog_create_project.xml)
+        // ... (Giữ nguyên logic tạo Dialog)
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_project, null);
         final EditText input = dialogView.findViewById(R.id.etProjectTitle);
 
-        // 2. Xây dựng AlertDialog
         new AlertDialog.Builder(ProjectActivity.this)
-                .setTitle("Tạo Dự án mới")
-                .setView(dialogView) // Gắn layout vào dialog
-                .setPositiveButton("Tạo", (dialog, which) -> {
-                    // Xử lý khi người dùng nhấn "Tạo"
+                .setTitle("Create Project")
+                .setView(dialogView)
+                .setPositiveButton("Create", (dialog, which) -> {
                     String newProjectTitle = input.getText().toString().trim();
 
-                    // Validation (Kiểm tra)
                     if (newProjectTitle.isEmpty()) {
-                        Toast.makeText(ProjectActivity.this, "Tiêu đề không được để trống", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProjectActivity.this, "Title cannot be empty", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Gọi ViewModel để tạo
                         viewModel.createProject(newProjectTitle, currentUserId);
                     }
                 })
-                .setNegativeButton("Hủy", (dialog, which) -> {
+                .setNegativeButton("Cancel", (dialog, which) -> {
                     dialog.cancel();
                 })
                 .show();
     }
 
     private void setupObservers() {
-        // Lắng nghe trạng thái loading
         viewModel.isLoading.observe(this, isLoading -> {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         });
 
-        // Lắng nghe lỗi
         viewModel.errorMessage.observe(this, error -> {
             if (error != null && !error.isEmpty()) {
-                Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
             }
         });
 
-        // UC 18: "Hiển thị những project bản thân tham gia"
         viewModel.myProjects.observe(this, projects -> {
-            if (projects != null) {
-                projectAdapter.setProjects(projects);
+            boolean isEmpty = projects == null || projects.isEmpty();
+
+            // Cập nhật Adapter
+            projectAdapter.setProjects(projects);
+
+            // 🔥 SỬA LỖI 3: Xử lý Trạng thái Trống (Empty State)
+            if (isEmpty) {
+                recyclerView.setVisibility(View.GONE);
+                tvEmptyState.setVisibility(View.VISIBLE);
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                tvEmptyState.setVisibility(View.GONE);
             }
         });
 
-        // Lắng nghe khi project mới được tạo thành công
         viewModel.newProjectId.observe(this, newId -> {
             if (newId != null) {
-                Toast.makeText(this, "Tạo thành công Project ID: " + newId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Create success with Project ID: " + newId, Toast.LENGTH_SHORT).show();
+                // Tải lại danh sách để hiển thị dự án mới
                 viewModel.loadMyProjects(currentUserId);
             }
         });

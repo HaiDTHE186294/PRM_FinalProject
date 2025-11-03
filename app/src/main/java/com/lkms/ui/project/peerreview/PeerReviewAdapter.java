@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lkms.R; // Giả định
+import com.lkms.R;
 import com.lkms.data.model.java.PeerReview;
 import java.util.ArrayList;
 import java.util.List;

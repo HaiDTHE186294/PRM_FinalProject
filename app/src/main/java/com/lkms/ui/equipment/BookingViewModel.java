@@ -40,12 +40,13 @@ public class BookingViewModel extends ViewModel {
     private final MutableLiveData<String> _error = new MutableLiveData<>();
     public LiveData<String> error = _error;
 
-    private final int userId = 1;
+    private final int userId;
     private int equipmentId;
 
-    public BookingViewModel() {
+    public BookingViewModel(int userId) {
         this.useCase = new EquipmentBookingUseCase(new EquipmentRepositoryImplJava());
         this.experimentRepo = new ExperimentRepositoryImplJava();
+        this.userId = userId;
     }
 
     public void setEquipmentId(int equipmentId) {
@@ -89,16 +90,16 @@ public class BookingViewModel extends ViewModel {
         Integer experimentId = _selectedExperimentId.getValue();
 
         if (start == null || end == null) {
-            _error.postValue("Chọn đầy đủ ngày bắt đầu và ngày kết thúc");
+            _error.postValue("Pick start date and end date");
             return;
         }
         if (experimentId == null) {
-            _error.postValue("Chưa chọn experiment");
+            _error.postValue("Missing experiment");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (end.isBefore(start)) {
-                _error.postValue("Ngày kết thúc phải sau ngày bắt đầu");
+                _error.postValue("Start date must before end date");
                 return;
             }
         }

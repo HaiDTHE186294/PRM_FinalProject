@@ -18,6 +18,7 @@ public final class AuthHelper { // Thêm `final` để ngăn kế thừa
     // Các hằng số này được lấy từ code đăng nhập để đảm bảo đọc đúng file và đúng key
     private static final String PREFERENCE_FILE_NAME = "secure_prefs";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USER_ROLE = "user_role";
 
     /**
      * 🔥 SỬA LỖI SONARQUBE: Thêm private constructor để ngăn việc tạo đối tượng.
@@ -62,6 +63,17 @@ public final class AuthHelper { // Thêm `final` để ngăn kế thừa
         } catch (GeneralSecurityException | IOException e) {
             // Sử dụng Log để ghi lỗi, đây là cách làm đúng chuẩn
             Log.e("AuthHelper", "Lỗi khi lấy user ID từ SharedPreferences", e);
+            return -1;
+        }
+    }
+
+    public static int getLoggedInUserRole(Context context) {
+        try {
+            SharedPreferences sharedPreferences = getEncryptedSharedPreferences(context);
+            // Đọc giá trị số nguyên từ key "user_role", nếu không có thì trả về giá trị mặc định là -1
+            return sharedPreferences.getInt(KEY_USER_ROLE, -1);
+        } catch (GeneralSecurityException | IOException e) {
+            Log.e("AuthHelper", "Lỗi khi lấy user Role từ SharedPreferences", e);
             return -1;
         }
     }

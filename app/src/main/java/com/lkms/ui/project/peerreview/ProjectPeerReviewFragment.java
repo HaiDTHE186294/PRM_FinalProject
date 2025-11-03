@@ -100,7 +100,7 @@ public class ProjectPeerReviewFragment extends Fragment {
         // Lắng nghe khi tạo mới thành công
         viewModel.peerReviewCreated.observe(getViewLifecycleOwner(), success -> {
             if (success != null && success) { // Thêm kiểm tra null
-                Toast.makeText(getContext(), "Tạo lịch họp thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Create peer review success", Toast.LENGTH_SHORT).show();
                 // Tải lại danh sách
                 viewModel.loadPeerReviews(projectId);
             }
@@ -131,9 +131,9 @@ public class ProjectPeerReviewFragment extends Fragment {
         // --- KẾT THÚC ---
 
         new AlertDialog.Builder(getContext())
-                .setTitle("Tạo Lịch Peer Review")
+                .setTitle("Create peer review")
                 .setView(dialogView)
-                .setPositiveButton("Tạo", (dialog, which) -> {
+                .setPositiveButton("Create", (dialog, which) -> {
                     String detail = etDetail.getText().toString().trim();
                     String link = etLink.getText().toString().trim();
                     String startTime = etStartTime.getText().toString().trim();
@@ -141,7 +141,7 @@ public class ProjectPeerReviewFragment extends Fragment {
 
                     // Validation (Thời gian kết thúc có thể tùy chọn)
                     if (detail.isEmpty() || startTime.isEmpty()) {
-                        Toast.makeText(getContext(), "Nội dung và thời gian bắt đầu không được để trống", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Content and start time do not be empty", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -163,7 +163,7 @@ public class ProjectPeerReviewFragment extends Fragment {
                     // Gọi ViewModel
                     viewModel.createPeerReview(newReview);
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton("カンセール", null)
                 .show();
     }
 

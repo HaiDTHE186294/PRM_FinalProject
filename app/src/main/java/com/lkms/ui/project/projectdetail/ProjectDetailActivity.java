@@ -28,7 +28,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
 
         projectId = getIntent().getIntExtra(PROJECT_ID_KEY, -1);
         if (projectId == -1) {
-            Toast.makeText(this, "Lỗi: Không tìm thấy Project ID", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Can't find project", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -79,7 +79,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed(); // Xử lý khi nhấn nút Back trên Toolbar
+        onBackPressed();
         return true;
     }
 }

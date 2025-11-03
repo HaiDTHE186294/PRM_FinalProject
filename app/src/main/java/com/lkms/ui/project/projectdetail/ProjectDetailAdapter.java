@@ -8,10 +8,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.lkms.ui.project.peerreview.ProjectPeerReviewFragment;
 
-// import com.lkms.ui.project.tabs.ProjectDiscussionFragment; // Sẽ tạo sau
-// import com.lkms.ui.project.tabs.ProjectPeerReviewFragment; // Sẽ tạo sau
-// KHÔNG CẦN import ProjectInfoFragment vì nó cùng package
-
 public class ProjectDetailAdapter extends FragmentStateAdapter {
 
     private final int projectId;
@@ -31,7 +27,7 @@ public class ProjectDetailAdapter extends FragmentStateAdapter {
             case 1:
                 return ProjectPeerReviewFragment.newInstance(projectId);
             case 2:
-                return new Fragment(); // TẠM THỜI
+                return new Fragment();
             default:
                 return new Fragment();
         }
