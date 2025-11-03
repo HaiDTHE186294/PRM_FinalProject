@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lkms.R;
 import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
-import com.lkms.domain.EquipmentBookingUseCase;
+import com.lkms.domain.booking.EquipmentBookingUseCase;
 
 public class EquipmentListActivity extends AppCompatActivity {
 

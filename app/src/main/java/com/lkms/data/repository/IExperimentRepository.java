@@ -23,6 +23,11 @@ public interface IExperimentRepository {
         void onError(String errorMessage);
     }
 
+    interface ExperimentCallback {
+        void onSuccess(Experiment experiment);
+        void onError(String errorMessage);
+    }
+
     interface ExperimentStepListCallback {
         void onSuccess(List<ExperimentStep> experimentStep);
         void onError(String errorMessage);
@@ -41,6 +46,7 @@ public interface IExperimentRepository {
 
     interface CommentCallback {
         void onSuccess(Comment comment);
+
         void onError(String errorMessage);
     }
 
@@ -63,6 +69,17 @@ public interface IExperimentRepository {
         void onSuccess(List<Integer> experimentIds);
         void onError(String errorMessage);
     }
+
+    interface ProjectCallBack {
+        void onSuccess(Project project);
+        void onError(String errorMessage);
+    }
+
+    interface FileCallBack {
+        void onSuccess(File file);
+        void onError(String errorMessage);
+    }
+
 
     // --- Chức năng Quản lý Thí nghiệm (UC5, UC34) ---
 
@@ -157,4 +174,13 @@ public interface IExperimentRepository {
     void getExperimentIdsByUserId(int userId, IdListCallback callback);
 
     void getOngoingExperimentsByIds(List<Integer> experimentIds, ExperimentListCallback callback);
+
+    void getExperimentById(int experimentId, ExperimentCallback callback);
+
+    void getExperimentProject(int projectId, ProjectCallBack callback);
+
+    void getLogEntryById(int logEntryId, LogEntryCallback callback);
+
+    void getFile(String url, FileCallBack callback);
+
 }
