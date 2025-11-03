@@ -1,5 +1,6 @@
 package com.lkms.domain.loginmaindashboardusecase;
 
+import com.lkms.data.model.java.AuthResult;
 import com.lkms.data.model.java.User;
 import com.lkms.data.repository.IAuthRepository;
 import com.lkms.data.repository.implement.java.AuthRepositoryImplJava;
@@ -27,9 +28,14 @@ public class SystemLoginUseCase {
 
         // Gọi repo xử lý đăng nhập
         authRepository.login(email, password, new IAuthRepository.AuthCallback() {
+//            @Override
+//            public void onSuccess(User user) {
+//                callback.onSuccess(user);
+//            }
+
             @Override
-            public void onSuccess(User user) {
-                callback.onSuccess(user);
+            public void onSuccess(AuthResult result) {
+                callback.onSuccess(result);
             }
 
             @Override
