@@ -133,6 +133,7 @@ public class LKMSConstantEnums {
      * Được ghi trong màn hình Manage Active Experiment Logbook [12, 13].
      */
     public enum LogType {
+        TEXT,
         TXT,
         IMAGE,
         PDF,

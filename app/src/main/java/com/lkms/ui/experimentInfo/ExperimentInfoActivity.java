@@ -2,6 +2,7 @@ package com.lkms.ui.experimentInfo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ public class ExperimentInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_experiment_info);
 
         experimentId = getIntent().getIntExtra("experimentId", -1);
+        Log.d("ExperimentInfoActivity", "experimentId: " + experimentId);
 
         GetExperimentDetailUseCase useCase = new GetExperimentDetailUseCase(new ExperimentRepositoryImplJava(), new UserRepositoryImplJava(), new ProtocolRepositoryImplJava());
         viewModel = new ViewModelProvider(this, new ExperimentInfoViewModelFactory(useCase))
@@ -92,6 +94,7 @@ public class ExperimentInfoActivity extends AppCompatActivity {
             Toast.makeText(this, "Data not loaded yet...", Toast.LENGTH_SHORT).show();
             return;
         }
+        experimentId = getIntent().getIntExtra("experimentId", -1);
         ExperimentUserProjectProtocol experiment = (ExperimentUserProjectProtocol) mExperimentData;
         Intent intent = new Intent(this, ExperimentDetailActivity.class);
         intent.putExtra("experimentId", experimentId);
