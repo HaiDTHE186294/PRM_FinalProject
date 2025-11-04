@@ -209,7 +209,6 @@ public class MainDashboardActivity extends AppCompatActivity {
         }
 
         if (roleId != 0) {
-            menu.findItem(R.id.menu_approve).setVisible(false);
             menu.findItem(R.id.menu_role).setVisible(false);
         }
 
@@ -227,7 +226,7 @@ public class MainDashboardActivity extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.menu_protocol) {
+        if (id == R.id.menu_new_experiment) {
             startActivity(new Intent(this, ProtocolListActivity.class));
             Log.d("MENU_ACTION", "Navigated to ProtocolListActivity");
             return true;
