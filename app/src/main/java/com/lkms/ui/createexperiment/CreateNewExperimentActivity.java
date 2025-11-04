@@ -18,11 +18,13 @@ import com.lkms.util.AuthHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CreateNewExperimentActivity extends AppCompatActivity {
 
     private CreateNewExperimentViewModel viewModel;
-    private EditText etExperimentTitle, etExperimentObjective;
+    private EditText etExperimentTitle;
+    private EditText etExperimentObjective;
     private TextView tvBasedOnProtocol;
     private Spinner spinnerProject;
     private Button btnCreate;
@@ -103,34 +105,34 @@ public class CreateNewExperimentActivity extends AppCompatActivity {
 
         viewModel.protocol.observe(this, protocol -> {
             if (protocol != null) {
-                // Sửa ở đây: Dùng getProtocolTitle() cho Protocol
                 tvBasedOnProtocol.setText(protocol.getProtocolTitle());
                 etExperimentTitle.setText("Thí nghiệm dựa trên: " + protocol.getProtocolTitle());
             }
         });
 
-        viewModel.projects.observe(this, projects -> {
-            ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinnerProject.getAdapter();
-            adapter.clear();
+        // Gọi phương thức con đã được tách ra để giảm độ phức tạp
+        viewModel.projects.observe(this, this::updateProjectsSpinner);
+    }
 
-            if (projects != null && !projects.isEmpty()) {
-                this.projectList = projects;
+    /**
 
-                List<String> projectTitles = new ArrayList<>();
-                for (Project project : projects) {
-                    // ======================= SỬA Ở ĐÂY =======================
-                    //   Sử dụng getProjectTitle() thay vì getTitle()
-                    projectTitles.add(project.getProjectTitle());
-                    // ========================================================
-                }
+     * chịu trách nhiệm cập nhật dữ liệu cho Spinner chứa danh sách dự án.
+     */
+    private void updateProjectsSpinner(List<Project> projects) {
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinnerProject.getAdapter();
+        adapter.clear();
 
-                adapter.addAll(projectTitles);
+        if (projects != null && !projects.isEmpty()) {
+            this.projectList = projects;
+            // Sử dụng Stream API để code ngắn gọn hơn (cũng giúp giảm độ phức tạp)
+            List<String> projectTitles = projects.stream()
+                    .map(Project::getProjectTitle)
+                    .collect(Collectors.toList());
+            adapter.addAll(projectTitles);
+        } else {
+            this.projectList.clear();
+        }
 
-            } else {
-                this.projectList.clear();
-            }
-
-            adapter.notifyDataSetChanged();
-        });
+        adapter.notifyDataSetChanged();
     }
 }
