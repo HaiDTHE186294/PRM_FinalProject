@@ -22,37 +22,6 @@ public class UserProfileUseCase
     }
 
     public void addNewUser(String fullName, String email, String password, LKMSConstantEnums.UserRole role) {
-        //Validation
-//        if (fullName == null || fullName.trim().isEmpty()) {
-//            return;
-//        }
-//        if (email == null || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-//            return;
-//        }
-//        if (password == null || password.length() < 6) {
-//            return;
-//        }
-//
-//            @Override
-//            public void onSuccess() {
-//                runOnUiThread(() -> {
-//                    setLoading(false);
-//                    Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
-//                    // Navigate to another activity, e.g., LoginActivity
-//                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                    finish();
-//                });
-//            }
-//
-//            @Override
-//            public void onError(String message) {
-//                runOnUiThread(() -> {
-//                    setLoading(false);
-//                    Toast.makeText(RegisterActivity.this, "Registration failed: " + message, Toast.LENGTH_LONG).show();
-//                });
-//            }
 
         User newUser = new User();
         newUser.setName(fullName);

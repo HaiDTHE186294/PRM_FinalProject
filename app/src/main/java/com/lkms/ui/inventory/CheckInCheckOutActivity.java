@@ -173,7 +173,7 @@ public class CheckInCheckOutActivity extends AppCompatActivity {
         }
 
         //UPDATE QUANTITY
-        if (newQuantity != -1 && transactionType != "")
+        if (newQuantity != -1 && !transactionType.isEmpty())
             inventoryItemUseCase.updateQuantity(newQuantity, AuthHelper.getLoggedInUserId(this), transactionType);
 
         finish();

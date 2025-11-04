@@ -307,14 +307,12 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
                 String response = HttpHelper.postJson(endpoint, jsonBody);
 
                 // The response will be an array with the newly created object, e.g., [{"transactionId": 123}]
-                //InventoryTransaction createdTransaction = gson.fromJson(response, InventoryTransaction.class);
                 Type listType = new TypeToken<List<InventoryTransaction>>() {}.getType();
                 List<InventoryTransaction> createdTransactions = gson.fromJson(response, listType);
 
                 if (createdTransactions != null && !createdTransactions.isEmpty()) {
                     callback.onSuccess(createdTransactions.get(0).getTransactionId());
                 } else {
-                    //callback.onError("Failed to log transaction. Server returned an empty or invalid response.");
                     callback.onError(jsonBody + "\n" + response);
                 }
             } catch (Exception e) {
