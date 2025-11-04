@@ -203,11 +203,13 @@ public class MainDashboardActivity extends AppCompatActivity {
         int roleId = getRoleIdFromSecurePrefs();
 
         if (roleId == 2) {
-            menu.findItem(R.id.menu_create_log).setVisible(false);
+            menu.findItem(R.id.menu_project).setVisible(false);
+            menu.findItem(R.id.menu_new_experiment).setVisible(false);
         }
 
         if (roleId != 0) {
             menu.findItem(R.id.menu_approve).setVisible(false);
+            menu.findItem(R.id.menu_role).setVisible(false);
         }
 
         return true;
