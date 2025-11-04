@@ -1,6 +1,7 @@
 package com.lkms.domain.protocolusecase; // Khai báo file này thuộc package domain
 
-import com.lkms.data.repository.IProtocolRepository; // Import interface từ package data
+import com.lkms.data.repository.IProtocolRepository;
+
 
 /**
  * Lớp này đại diện cho một chức năng cụ thể: "Tìm kiếm protocol theo tiêu đề".

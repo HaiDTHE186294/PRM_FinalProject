@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.lkms.data.model.java.Protocol;
 import com.lkms.data.repository.IProtocolRepository;
+import com.lkms.data.repository.implement.java.ProtocolRepositoryImplJava;
 import com.lkms.domain.protocolusecase.FilterProtocolsUseCase;
 import com.lkms.domain.protocolusecase.GetAllProtocolsUseCase;
 import com.lkms.domain.protocolusecase.GetLatestApprovedProtocolsUseCase;
 import com.lkms.domain.protocolusecase.SearchProtocolsUseCase;
-import com.lkms.data.repository.implement.java.ProtocolRepositoryImplJava;
 
 import java.util.List;
 

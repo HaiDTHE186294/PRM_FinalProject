@@ -269,6 +269,7 @@ public class MainDashboardActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     private void logout() {
         try {
             MasterKey masterKey = new MasterKey.Builder(getApplicationContext()).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();

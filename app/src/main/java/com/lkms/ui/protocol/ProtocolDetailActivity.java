@@ -103,21 +103,30 @@ public class ProtocolDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ BƯỚC 5: TẠO HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
      * Cài đặt sự kiện click cho nút "Tạo Experiment".
      */
     private void setupFab() {
         fabCreateExperiment.setOnClickListener(view -> {
             // Kiểm tra lại ID để chắc chắn
             if (currentProtocolId != INVALID_ID) {
-                Toast.makeText(this, "Chuẩn bị tạo experiment từ Protocol ID: " + currentProtocolId, Toast.LENGTH_SHORT).show();
 
+                // 1. Tạo một Intent để mở màn hình tạo thí nghiệm mới
+                Intent intent = new Intent(ProtocolDetailActivity.this, com.lkms.ui.createexperiment.CreateNewExperimentActivity.class);
+
+                // 2. Gửi ID của protocol hiện tại sang màn hình mới.
+                // Đây là bước BẮT BUỘC để màn hình tiếp theo biết phải tạo thí nghiệm dựa trên protocol nào.
+                intent.putExtra("SELECTED_PROTOCOL_ID", currentProtocolId);
+
+                // 3. Khởi chạy Activity mới
+                startActivity(intent);
 
             } else {
+                // Nếu không có ID hợp lệ, thông báo cho người dùng
                 Toast.makeText(this, "Không thể tạo experiment, protocol ID không hợp lệ.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void observeViewModel() {
         viewModel.isLoading().observe(this, isLoading -> {
