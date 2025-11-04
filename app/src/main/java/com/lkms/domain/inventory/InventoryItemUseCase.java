@@ -28,6 +28,8 @@ public class InventoryItemUseCase {
         return _item;
     }
 
+    public void overrideItem(Item item) { _item.postValue(item); }
+
     /**Load an item from the list of items (a.k.a Inventory)
      *
      * @param itemId
@@ -115,13 +117,55 @@ public class InventoryItemUseCase {
                 new InventoryRepositoryImplJava.InventoryItemCallback () {
                     @Override
                     public void onSuccess(Item item) {
-                        Log.d("InventoryItemUseCaseDEBUG", "Update success" + item.toString());
+//                        Log.d("InventoryItemUseCaseDEBUG", "Update success" + item.toString());
                         _item.postValue(item);
                     }
 
                     @Override
                     public void onError(String errorMessage) {
-                        Log.e("InventoryItemUseCaseERROR", errorMessage);
+//                        Log.e("InventoryItemUseCaseERROR", errorMessage);
+                        _item.postValue(null);
+                    }
+                }
+        );
+    }
+
+    public void updateQuantity(int newQuantitiy, int userId, String transactionType)
+    {
+        Item item = _item.getValue();
+        if (item == null)
+            return;
+
+        int quantityChange = newQuantitiy - item.getQuantity();
+        item.setQuantity(newQuantitiy);
+
+        _repos.logInventoryTransaction(
+            item.getItemId(), userId, quantityChange, transactionType,
+            new IInventoryRepository.TransactionIdCallback() {
+                @Override
+                public void onSuccess(int transactionId) {
+//                    Log.d("InventoryItemUseCaseDEBUG", "Log success" + transactionId);
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+//                    Log.e("InventoryItemUseCaseERROR", errorMessage);
+                }
+            }
+        );
+
+        _repos.updateInventoryItem(
+                item.getItemId(), item,
+                new InventoryRepositoryImplJava.InventoryItemCallback () {
+                    @Override
+                    public void onSuccess(Item item) {
+//                        Log.d("InventoryItemUseCaseDEBUG", "Update success" + item.toString());
+                        _item.postValue(item);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+//                        Log.e("InventoryItemUseCaseERROR", errorMessage);
                         _item.postValue(null);
                     }
                 }

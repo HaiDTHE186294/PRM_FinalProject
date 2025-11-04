@@ -1,4 +1,4 @@
-package com.lkms.domain.inventoryusecase;
+package com.lkms.domain.inventory;
 
 import com.lkms.data.model.java.Item;
 import com.lkms.data.repository.IInventoryRepository;

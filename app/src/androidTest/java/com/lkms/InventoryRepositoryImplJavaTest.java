@@ -1,8 +1,11 @@
 package com.lkms;
 
+import android.util.Log;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.lkms.data.model.java.InventoryTransaction;
 import com.lkms.data.model.java.Item;
 import com.lkms.data.repository.IInventoryRepository;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
@@ -232,6 +235,55 @@ public class InventoryRepositoryImplJavaTest {
                 System.out.println("❌ Failed to add SDS: " + error);
             }
         });
+
+        Thread.sleep(SLEEP_TIME_MS);
+    }
+
+    // ----------------------------------------------------------------------------------
+    // ✅ 8. Test InventoryTransaction logging
+    // ----------------------------------------------------------------------------------
+    @Test
+    public void testUpdateItemWithTransactionLog() throws InterruptedException {
+        Log.d("testUpdateItemWithTransactionLog", "Pushing log...");
+        repo.logInventoryTransaction(
+                0, 1, 30, "checkin",
+                new IInventoryRepository.TransactionIdCallback() {
+                    @Override
+                    public void onSuccess(int transactionId) {
+                        Log.d("testUpdateItemWithTransactionLog", "Log success" + transactionId);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.e("testUpdateItemWithTransactionLog", errorMessage);
+                    }
+                }
+        );
+
+        Thread.sleep(SLEEP_TIME_MS);
+    }
+
+
+    // ----------------------------------------------------------------------------------
+    // ✅ 8. Test receiving an item's InventoryTransaction
+    // ----------------------------------------------------------------------------------
+    @Test
+    public void testGetInventoryTransaction() throws InterruptedException {
+        Log.d("testGetInventoryTransaction", "Getting transaction log...");
+        repo.getInventoryTransaction(
+                3,
+                new IInventoryRepository.InventoryTransactionListCallback() {
+                    @Override
+                    public void onSuccess(List<InventoryTransaction> transactions) {
+                        Log.d("testGetInventoryTransaction", "List received:\n" + transactions);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.e("testGetInventoryTransaction", errorMessage);
+                    }
+                }
+        );
 
         Thread.sleep(SLEEP_TIME_MS);
     }

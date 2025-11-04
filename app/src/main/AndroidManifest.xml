@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
+            android:name=".ui.inventory.CheckInCheckOutActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.inventory.ItemDetailActivity"
             android:exported="false" />
         <activity
@@ -32,7 +35,7 @@
         <activity
             android:name=".ui.inventory.InventoryActivity"
             android:exported="false" />
-        <activity
+        <activity    
             android:name=".ui.sds.SdsLookupActivity"
             android:exported="false" />
         <activity
@@ -64,15 +67,21 @@
             android:exported="false" />
         <activity
             android:name=".ui.equipment.EquipmentListActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".ui.inventory.ItemAddUpdateActivity"
             android:exported="false">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".ui.user.AddUserActivity"
-            android:exported="false">
-        </activity>
+        <activity
+            android:name=".ui.user.AddUserActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.protocol.ProtocolListActivity"
             android:exported="false"
@@ -117,8 +126,7 @@
         <activity
             android:name=".ui.project.projectdetail.ProjectDetailActivity"
             android:exported="false"
-            android:parentActivityName=".ui.project.projectmanage.ProjectActivity" >
-        </activity>
+            android:parentActivityName=".ui.project.projectmanage.ProjectActivity"></activity>
     </application>
 
 </manifest>

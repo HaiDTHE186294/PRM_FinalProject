@@ -49,6 +49,11 @@ public interface IInventoryRepository {
         void onError(String errorMessage);
     }
 
+    public interface InventoryTransactionListCallback {
+        void onSuccess(List<InventoryTransaction> transactions);
+        void onError(String message);
+    }
+
     // --- Chức năng Tra cứu và Hiển thị Tồn kho (UC7, UC11) ---
 
     /**
@@ -93,6 +98,12 @@ public interface IInventoryRepository {
             String transactionType,
             TransactionIdCallback callback
     );
+
+    /**
+     * UC08: Lấy danh sách giao dịch tồn kho (Check In/Check Out) dựa trên id của 1 item.
+     * Truy vấn bảng "InventoryTransaction" [2]..
+     */
+    void getInventoryTransaction(int itemId, InventoryTransactionListCallback callback);
 
     // --- Chức năng Phê duyệt Tồn kho (Approval - Dành cho Lab Manager) ---
 

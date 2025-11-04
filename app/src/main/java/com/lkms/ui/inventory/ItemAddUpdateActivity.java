@@ -52,24 +52,13 @@ public class ItemAddUpdateActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
         addButton = findViewById(R.id.add_button);
 
-        //TODO: Cho ai sau này làm phần nối sang ItemAddUpdateActivity này:
-        //      Nếu muốn người dùng cập nhật 1 item thì truyền id của item thông qua code:
-        //      intent.putExtra("UPDATE ITEM ID", <id của item ở đây>);
-        //      Còn nếu muốn add item thì không cần truyền id thông qua intent.
-        if (getIntent().hasExtra("UPDATE ITEM ID"))
-        {
+        if (getIntent().hasExtra("UPDATE_ITEM_ID"))
             setupForUpdatingItem(
-                getIntent().getIntExtra("UPDATE ITEM ID", -1)
+                getIntent().getIntExtra("UPDATE_ITEM_ID", -1)
             );
-        }
         else
-        {
             setupForAddingItem();
-        }
 
-        //TODO: For testing purpose, we'll call these method with hardcoded item id
-//        setupForUpdatingItem(1);
-//        setupForAddingItem();
     }
 
 
@@ -143,8 +132,9 @@ public class ItemAddUpdateActivity extends AppCompatActivity {
                 DateTimeFormatter formatter = null;
 
                 nameEditText.setText(item.getItemName());
-                lotNumberEditText.setText(item.getLotNumber());
                 casNumberEditText.setText(String.valueOf(item.getQuantity()));
+                lotNumberEditText.setText(item.getLotNumber());
+                unitEditText.setText(item.getUnit());
                 locationEditText.setText(item.getLocation());
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //Handle build version stuff
