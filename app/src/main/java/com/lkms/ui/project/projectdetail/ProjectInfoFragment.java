@@ -1,5 +1,6 @@
 package com.lkms.ui.project.projectdetail; // Đặt chung package với Activity
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lkms.R;
 import com.lkms.ui.project.projectmanage.ProjectViewModel;
+import com.lkms.ui.protocol.ProtocolListActivity;
 
 public class ProjectInfoFragment extends Fragment {
 
@@ -82,10 +84,8 @@ public class ProjectInfoFragment extends Fragment {
 
     private void setupClickListeners() {
         btnAddNewExperiment.setOnClickListener(v -> {
-            // TODO: Mở Activity/Fragment "Create Experiment (UC 5)"
-            // intent.putExtra("PROJECT_ID", projectId);
-            Toast.makeText(getContext(), "Create Experiment", Toast.LENGTH_SHORT).show();
-        });
+            Intent intent = new Intent(requireContext(), ProtocolListActivity.class);
+            startActivity(intent);});
     }
 
     private void setupObservers() {

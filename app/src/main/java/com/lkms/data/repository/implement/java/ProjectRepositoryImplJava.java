@@ -47,7 +47,7 @@ public class ProjectRepositoryImplJava implements IProjectRepository {
                     projectIds.add(map.get("projectId"));
                 }
 
-                // 2. Lấy các experimentId mà người dùng là thành viên "Team"
+                // 2. Lấy các experimentId mà người dùng là thành viên ""
                 String teamEndpoint = SUPABASE_URL + "/rest/v1/Team?select=experimentId&userId=eq." + userId;
                 String teamJson = HttpHelper.getJson(teamEndpoint);
                 List<Map<String, Integer>> teamExperiments = gson.fromJson(teamJson, idMapListType);

@@ -25,21 +25,10 @@
 
         <menu>
 
-            <!-- Nhóm New Experiment -->
+            <!-- New Experiment -->
             <item
                 android:id="@+id/menu_new_experiment"
-                android:title="New Experiment">
-
-                <!-- Menu con của New Experiment -->
-                <menu>
-                    <item
-                        android:id="@+id/menu_protocol"
-                        android:title="Protocol / SOP Repository" />
-                    <item
-                        android:id="@+id/menu_create_log"
-                        android:title="Create / Log New Experiment" />
-                </menu>
-            </item>
+                android:title="New Protocol / SOP Repository"/>
 
             <!-- Các mục khác -->
             <item
@@ -65,10 +54,6 @@
             <item
                 android:id="@+id/menu_role"
                 android:title="Role Management" />
-
-            <item
-                android:id="@+id/menu_approve"
-                android:title="Approve Checkout / Booking" />
 
             <item
                 android:id="@+id/menu_logout"

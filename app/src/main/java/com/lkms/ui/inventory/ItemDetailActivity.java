@@ -49,13 +49,15 @@ public class ItemDetailActivity extends AppCompatActivity {
             inventoryManagementUseCase.getItemById(itemId, new IInventoryRepository.InventoryItemCallback() {
                 @Override
                 public void onSuccess(Item item) {
-                    tvItemName.setText(item.getItemName());
-                    tvItemCas.setText("CAS: " + item.getCasNumber());
-                    tvItemLotNumber.setText("Lot Number: " + item.getLotNumber());
-                    tvItemQuantity.setText("Quantity: " + item.getQuantity());
-                    tvItemUnit.setText("Unit: " + item.getUnit());
-                    tvItemLocation.setText("Location: " + item.getLocation());
-                    tvItemExpiration.setText("Expiration Date: " + item.getExpirationDate());
+                    runOnUiThread(() -> {
+                        tvItemName.setText(item.getItemName());
+                        tvItemCas.setText("CAS: " + item.getCasNumber());
+                        tvItemLotNumber.setText("Lot Number: " + item.getLotNumber());
+                        tvItemQuantity.setText("Quantity: " + item.getQuantity());
+                        tvItemUnit.setText("Unit: " + item.getUnit());
+                        tvItemLocation.setText("Location: " + item.getLocation());
+                        tvItemExpiration.setText("Expiration Date: " + item.getExpirationDate());
+                    });
                 }
                 @Override
                 public void onError(String errorMessage) {

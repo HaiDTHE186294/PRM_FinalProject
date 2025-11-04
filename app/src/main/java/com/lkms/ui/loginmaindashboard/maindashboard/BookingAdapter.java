@@ -51,7 +51,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
             if (equipmentId != -1) {
                 Intent intent = new Intent(context, EquipmentDetailActivity.class);
-                intent.putExtra("equipmentId", equipmentId);
+                intent.putExtra("EXTRA_EQUIPMENT_ID", equipmentId);
                 context.startActivity(intent);
             } else {
                 Toast.makeText(context, "Equipment ID không hợp lệ!", Toast.LENGTH_SHORT).show();
