@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.lkms.data.model.java.Equipment;
 import com.lkms.data.repository.IEquipmentRepository;
-import com.lkms.domain.EquipmentBookingUseCase;
+import com.lkms.domain.booking.EquipmentBookingUseCase;
 
 import java.util.List;
 

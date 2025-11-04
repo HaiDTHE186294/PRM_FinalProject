@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.*;
 
 import androidx.annotation.Nullable;
@@ -15,8 +16,10 @@ import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
 import com.lkms.R;
 import com.lkms.data.model.java.Experiment;
-import com.lkms.data.repository.IExperimentRepository;
-import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
+// BỎ import các repository không cần thiết
+// import com.lkms.data.repository.IExperimentRepository;
+// import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
+import com.lkms.util.AuthHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class BookingActivity extends AppCompatActivity {
     private int equipmentId;
     private String equipmentName;
 
-    private BookingViewModel viewModel;
+    private BookingViewModel viewModel; // Khai báo
 
     private Button btnSelectStartDate;
     private Button btnSelectEndDate;
@@ -47,10 +50,28 @@ public class BookingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking);
 
+        // --- SỬA LỖI 1: Khởi tạo ViewModel một lần duy nhất ---
+        int userId = AuthHelper.getLoggedInUserId(getApplicationContext());
+        if (userId == -1) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_LONG).show();
+            finish();
+            return; // Đảm bảo thoát ngay
+        }
+
+        // Khởi tạo Factory và ViewModel (Sử dụng 'this.viewModel')
+        BookingViewModelFactory factory = new BookingViewModelFactory(userId);
+        this.viewModel = new ViewModelProvider(this, factory).get(BookingViewModel.class);
+        // --------------------------------------------------------
+
         initUI();
         setupViewModel();
         setupActions();
-        setupExperimentSpinner();
+
+        // KHÔNG CẦN gọi setupExperimentSpinner() ở đây, nó sẽ được gọi trong setupViewModel()
+        // sau khi quan sát LiveData. Tuy nhiên, nếu bạn muốn gọi logic đó ngay,
+        // bạn có thể gọi viewModel.loadExperiments() ở đây
+        this.viewModel.loadExperiments();
+
         startBookingRefresh();
     }
 
@@ -59,7 +80,7 @@ public class BookingActivity extends AppCompatActivity {
         equipmentName = getIntent().getStringExtra(EXTRA_EQUIPMENT_NAME);
 
         ((TextView) findViewById(R.id.tvBookingTitle))
-                .setText("Đặt lịch cho: " + equipmentName);
+                .setText("Booking for: " + equipmentName);
 
         tvStartDate = findViewById(R.id.tvStartDate);
         tvEndDate = findViewById(R.id.tvEndDate);
@@ -68,11 +89,15 @@ public class BookingActivity extends AppCompatActivity {
         btnBook = findViewById(R.id.btnBook);
         spinnerExperiment = findViewById(R.id.spinnerExperiment);
         calendarView = findViewById(R.id.calendarView);
+
+        // Set equipmentId ngay sau khi có
+        viewModel.setEquipmentId(equipmentId);
     }
 
     private void setupViewModel() {
-        viewModel = new ViewModelProvider(this).get(BookingViewModel.class);
-        viewModel.setEquipmentId(equipmentId);
+        // --- SỬA LỖI 1: Xóa dòng khởi tạo sai, chỉ cần sử dụng 'this.viewModel' đã có ---
+        // viewModel = new ViewModelProvider(this).get(BookingViewModel.class); // <--- XÓA DÒNG NÀY
+
         viewModel.loadBookedDays();
 
         viewModel.startDate.observe(this, date ->
@@ -83,11 +108,14 @@ public class BookingActivity extends AppCompatActivity {
                 tvEndDate.setText(date != null ? date.toString() : "")
         );
 
+        // Quan sát LiveData experiments để thiết lập Spinner (SỬA LỖI 2)
+        viewModel.experiments.observe(this, this::setupExperimentSpinner);
+
         viewModel.bookedDays.observe(this, this::highlightBookedDates);
 
         viewModel.bookingResult.observe(this, success ->
                 Toast.makeText(this,
-                        success ? "Đặt lịch thành công!" : "Đặt lịch thất bại!",
+                        success ? "Booking Success!" : "Booking Fail!",
                         Toast.LENGTH_SHORT).show()
         );
 
@@ -102,49 +130,45 @@ public class BookingActivity extends AppCompatActivity {
         btnBook.setOnClickListener(v -> viewModel.bookEquipment());
     }
 
-    private void setupExperimentSpinner() {
-        IExperimentRepository repo = new ExperimentRepositoryImplJava();
-        int userId = 1;
+    // SỬA LỖI 2: Hàm này giờ nhận List<Experiment> từ LiveData
+    private void setupExperimentSpinner(List<Experiment> list) {
+        if (list == null || list.isEmpty()) {
+            Toast.makeText(this, "No ongoing experiments found.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        repo.getOngoingExperiments(userId, new IExperimentRepository.ExperimentListCallback() {
+        experiments = list;
+        ArrayAdapter<Experiment> adapter = new ArrayAdapter<>(
+                BookingActivity.this,
+                android.R.layout.simple_spinner_item,
+                experiments
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerExperiment.setAdapter(adapter);
+
+        spinnerExperiment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onSuccess(List<Experiment> list) {
-                runOnUiThread(() -> {
-                    experiments = list;
-                    ArrayAdapter<Experiment> adapter = new ArrayAdapter<>(
-                            BookingActivity.this,
-                            android.R.layout.simple_spinner_item,
-                            experiments
-                    );
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerExperiment.setAdapter(adapter);
-
-                    spinnerExperiment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, android.view.View view, int pos, long id) {
-                            viewModel.selectExperiment(experiments.get(pos).getExperimentId());
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-                            // intentionally empty
-                        }
-                    });
-                });
+            public void onItemSelected(AdapterView<?> parent, android.view.View view, int pos, long id) {
+                // Đảm bảo experiment tồn tại
+                if (pos >= 0 && pos < experiments.size()) {
+                    viewModel.selectExperiment(experiments.get(pos).getExperimentId());
+                }
             }
 
             @Override
-            public void onError(String message) {
-                runOnUiThread(() -> Toast.makeText(
-                        BookingActivity.this,
-                        "Lỗi tải Experiment: " + message,
-                        Toast.LENGTH_LONG).show()
-                );
+            public void onNothingSelected(AdapterView<?> parent) {
             }
+
         });
+
+        // Chọn Experiment đầu tiên làm mặc định
+        if (!experiments.isEmpty()) {
+            viewModel.selectExperiment(experiments.get(0).getExperimentId());
+        }
     }
 
     private void showCalendar(boolean isStart) {
+        // ... (Giữ nguyên logic showCalendar)
         List<LocalDate> blocked = viewModel.bookedDays.getValue();
         Calendar now = Calendar.getInstance();
 
@@ -155,10 +179,18 @@ public class BookingActivity extends AppCompatActivity {
 
                     LocalDate selected = LocalDate.of(year, month + 1, day);
 
+                    // Kiểm tra xem ngày được chọn có bị block không
                     if (blocked != null && blocked.contains(selected)) {
-                        Toast.makeText(this, "Ngày này đã được đặt!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "This date is booked!", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
+                    // Kiểm tra ngày phải là ngày hiện tại hoặc sau đó
+                    if (selected.isBefore(LocalDate.now())) {
+                        Toast.makeText(this, "Cannot select past date!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
 
                     if (isStart) viewModel.selectStartDate(selected);
                     else viewModel.selectEndDate(selected);
@@ -173,8 +205,10 @@ public class BookingActivity extends AppCompatActivity {
     }
 
     private void highlightBookedDates(List<LocalDate> days) {
+        // ... (Giữ nguyên logic highlightBookedDates)
         if (days == null || days.isEmpty()) {
             calendarView.setEvents(new ArrayList<>());
+            calendarView.setDisabledDays(new ArrayList<>()); // Cần xóa disabled days
             return;
         }
 
@@ -203,10 +237,9 @@ public class BookingActivity extends AppCompatActivity {
             @Override
             public void run() {
                 viewModel.loadBookedDays();
-                handler.postDelayed(this, 3000); //
+                handler.postDelayed(this, 3000); // Tải lại mỗi 3 giây
             }
         };
         handler.post(runnable);
     }
-
 }

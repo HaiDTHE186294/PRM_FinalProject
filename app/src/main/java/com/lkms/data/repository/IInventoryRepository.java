@@ -114,4 +114,31 @@ public interface IInventoryRepository {
 
 
     void addSds(String casNumber, String fileUrl, IdCallback callback);
+
+    // --- Chức năng Lấy thông tin Item theo itemId ---
+    /**
+     * Lấy thông tin của một item theo itemId.
+     *
+     * @param itemId ID của item cần lấy thông tin.
+     * @param callback Callback để trả về item hoặc thông báo lỗi.
+     */
+    void getItemById(int itemId, InventoryItemCallback callback);
+
+    /**
+     * [CHỈ KIỂM TRA] - Được dùng bởi CheckInventoryUseCase.
+     * Kiểm tra xem kho có đủ số lượng cho TẤT CẢ các vật tư được yêu cầu hay không.
+     * Hàm này chỉ đọc dữ liệu và KHÔNG thực hiện bất kỳ thay đổi nào.
+     * @param itemsToCheck Danh sách các ProtocolItem cần kiểm tra.
+     * @param callback Báo cáo thành công (đủ hàng) hoặc thất bại (không đủ hàng hoặc lỗi khác).
+     */
+    void checkStockAvailability(List<ProtocolItem> itemsToCheck, GenericCallback callback);
+
+    /**
+     * [CHỈ HÀNH ĐỘNG] - Được dùng bởi DeductInventoryForExperimentUseCase.
+     * Trừ kho cho một danh sách vật tư. Hàm này giả định việc kiểm tra đã được thực hiện trước đó.
+     * Nhiệm vụ chính của nó là thực hiện các lệnh gọi API để cập nhật số lượng trong DB.
+     * @param itemsToDeduct Danh sách các ProtocolItem cần trừ.
+     * @param callback Báo cáo thành công (trừ kho xong) hoặc thất bại (lỗi khi đang trừ).
+     */
+    void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback);
 }

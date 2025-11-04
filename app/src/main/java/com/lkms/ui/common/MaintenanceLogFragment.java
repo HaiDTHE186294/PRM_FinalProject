@@ -17,7 +17,7 @@ import com.lkms.R;
 import com.lkms.data.model.java.MaintenanceLog;
 import com.lkms.data.repository.IEquipmentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
-import com.lkms.domain.MaintenanceLogUseCase;
+import com.lkms.domain.booking.MaintenanceLogUseCase;
 import com.lkms.ui.equipment.MaintenanceLogAdapter;
 
 import java.util.List;
