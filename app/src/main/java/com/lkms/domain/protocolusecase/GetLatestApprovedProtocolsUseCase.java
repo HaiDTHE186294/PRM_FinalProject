@@ -1,6 +1,7 @@
 package com.lkms.domain.protocolusecase; // ✅ DÒNG 1: Khai báo package phải ở đầu tiên và đúng cú pháp.
 
-import com.lkms.data.repository.IProtocolRepository; // ✅ DÒNG 2: Import các lớp cần thiết.
+import com.lkms.data.repository.IProtocolRepository;
+
 
 /**
  * Lớp này đại diện cho một chức năng cụ thể: "Lấy danh sách các protocol đã được duyệt".

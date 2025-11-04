@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -57,6 +58,8 @@ public class MainDashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_dashboard);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -204,11 +207,13 @@ public class MainDashboardActivity extends AppCompatActivity {
         int roleId = getRoleIdFromSecurePrefs();
 
         if (roleId == 2) {
-            menu.findItem(R.id.menu_create_log).setVisible(false);
+            menu.findItem(R.id.menu_project).setVisible(false);
+            menu.findItem(R.id.menu_new_experiment).setVisible(false);
         }
 
         if (roleId != 0) {
             menu.findItem(R.id.menu_approve).setVisible(false);
+            menu.findItem(R.id.menu_role).setVisible(false);
         }
 
         return true;
