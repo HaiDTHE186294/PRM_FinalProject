@@ -32,8 +32,10 @@ public class CheckInventoryUseCase {
                 callback.onError("Không thể lấy danh sách vật tư để kiểm tra: " + errorMessage);
             }
 
-            @Override public void onProtocolReceived(com.lkms.data.model.java.Protocol p) {}
-            @Override public void onStepsReceived(List<com.lkms.data.model.java.ProtocolStep> s) {}
+            @Override public void onProtocolReceived(com.lkms.data.model.java.Protocol p) {// Không cần thiết cho UseCase này, bỏ qua.
+            }
+            @Override public void onStepsReceived(List<com.lkms.data.model.java.ProtocolStep> s) {// Không cần thiết cho UseCase này, bỏ qua.
+            }
         });
     }
 }
