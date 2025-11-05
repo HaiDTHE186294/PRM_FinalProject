@@ -3,6 +3,7 @@ package com.lkms;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.lkms.data.model.java.*;
+import com.lkms.data.model.java.combine.ExperimentReportData;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 
@@ -191,5 +192,36 @@ public class ExperimentRepositoryImplJavaTest {
         );
 
         Thread.sleep(5000);
+    }
+
+    @Test
+    public void testGetExperimentReportData() throws InterruptedException {
+        // 1. Dùng testId = 1 như ngài yêu cầu
+        int testId = 1;
+
+        // 2. Gọi hàm repo.getExperimentReportData
+        repo.getExperimentReportData(
+                testId,
+                // 3. Implement callback (Giả sử tên là IExperimentRepository.ExperimentReportDataCallback)
+                new IExperimentRepository.ExperimentReportDataCallback() {
+
+                    @Override
+                    public void onSuccess(ExperimentReportData data) {
+                        System.out.println("✅ Experiment Report Data Received for ID: " + testId);
+
+                        // 4. In toàn bộ dữ liệu ra console
+                        // (Lombok @Data sẽ tự động tạo hàm toString() để in ra toàn bộ)
+                        System.out.println(data);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        System.out.println("❌ Error fetching report: " + error);
+                    }
+                }
+        );
+
+        // 5. Chờ 3 giây (giống hệt hàm mẫu) để thread async có thời gian hoàn thành
+        Thread.sleep(3000);
     }
 }

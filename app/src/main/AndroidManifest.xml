@@ -4,12 +4,14 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
     <application
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher2"
@@ -26,16 +28,19 @@
         <activity
             android:name=".ui.viewlog.ViewLogDetailActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.addlog.AddLogActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.project.projectmanage.ProjectActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.inventory.InventoryActivity"
             android:exported="false" />
-        <activity    
+        <activity
             android:name=".ui.sds.SdsLookupActivity"
             android:exported="false" />
         <activity
@@ -53,6 +58,7 @@
         <activity
             android:name=".ui.loginmaindashboard.maindashboard.MainDashboardActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.loginmaindashboard.login.SystemLoginActivity"
             android:exported="true">
@@ -62,6 +68,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.equipment.BookingActivity"
             android:exported="false" />
@@ -103,6 +110,14 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.addmember.AddMemberActivity"
+            android:exported="false"
+            android:label="Add Member to Experiment"
+            android:parentActivityName=".ui.experimentInfo.ExperimentInfoActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            />
+
+        <activity
             android:name=".ui.user.UserProfileActivity"
             android:exported="false" />
         <activity
@@ -128,5 +143,4 @@
             android:exported="false"
             android:parentActivityName=".ui.project.projectmanage.ProjectActivity"></activity>
     </application>
-
 </manifest>

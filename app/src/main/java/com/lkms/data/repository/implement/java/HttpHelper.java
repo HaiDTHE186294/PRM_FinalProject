@@ -245,4 +245,53 @@ public class HttpHelper {
             conn.disconnect();
         }
     }
+
+    // 🔹 GET COUNT - Đếm số lượng bản ghi
+    // ===============================================================
+    /**
+     * Gửi một request GET đến Supabase với header đặc biệt để chỉ đếm số lượng kết quả
+     * thay vì tải toàn bộ dữ liệu.
+     *
+     * @param endpoint URL của API Supabase với các tham số lọc.
+     * @return số lượng bản ghi khớp với điều kiện lọc.
+     * @throws IOException nếu có lỗi mạng hoặc request không thành công.
+     */
+    public static int getCount(String endpoint) throws IOException {
+        HttpURLConnection conn = createConnection(endpoint, "GET");
+
+        // Header đặc biệt để yêu cầu Supabase chỉ đếm và trả về tổng số trong header
+        conn.setRequestProperty("Prefer", "count=exact");
+
+        // Không cần gọi conn.connect() rõ ràng, getResponseCode sẽ tự làm điều đó.
+        int responseCode = conn.getResponseCode();
+
+        // Với request 'count', Supabase sẽ trả về HTTP 200 OK ngay cả khi kết quả là 0.
+        // Dữ liệu thực sự nằm trong header 'Content-Range'.
+        if (responseCode >= 200 && responseCode < 300) {
+            String contentRange = conn.getHeaderField("Content-Range"); // ví dụ: "0-4/5" hoặc "*/0"
+
+            if (contentRange != null && contentRange.contains("/")) {
+                // Lấy phần total, ví dụ "5" từ "0-4/5"
+                String totalStr = contentRange.substring(contentRange.indexOf('/') + 1);
+
+                // Supabase có thể trả về '*' nếu không thể tính toán, coi như là 0
+                if (!totalStr.equals("*")) {
+                    try {
+                        return Integer.parseInt(totalStr);
+                    } catch (NumberFormatException e) {
+                        // Ghi log lỗi nếu cần và trả về 0
+                        return 0;
+                    }
+                }
+            }
+            // Nếu không có header hoặc header không đúng định dạng, trả về 0.
+            return 0;
+        } else {
+            // Ném lỗi nếu request không thành công để bên ngoài có thể xử lý.
+            // Có thể đọc error stream để có thông báo lỗi chi tiết hơn nếu cần.
+            conn.disconnect();
+            throw new IOException("HTTP error code: " + responseCode + " while trying to get count.");
+        }
+    }
+
 }

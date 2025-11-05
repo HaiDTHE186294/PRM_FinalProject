@@ -1,5 +1,9 @@
 package com.lkms.ui.experimentdetail.adapter;
 
+import static android.content.Intent.getIntent;
+
+import static androidx.lifecycle.AndroidViewModel_androidKt.getApplication;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -14,6 +18,7 @@ import com.lkms.R;
 
 
 import com.lkms.data.model.java.*;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 import com.lkms.ui.addlog.AddLogActivity;
 import com.lkms.ui.viewlog.ViewLogDetailActivity;
 
@@ -25,6 +30,8 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     // Danh sách phẳng, sẽ được cập nhật từ ViewModel
     private List<AdapterItem> mItems;
+    private String experimentStatus;
+    private Context mContext;
 
     // Interface để giao tiếp với Activity/ViewModel
     private final OnStepClickListener stepClickListener;
@@ -43,9 +50,11 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
      * Chỉ nhận listener và khởi tạo một danh sách rỗng.
      * Nó không còn tự tải dữ liệu nữa.
      */
-    public ExperimentDetailAdapter(OnStepClickListener listener) {
+    public ExperimentDetailAdapter(Context context, OnStepClickListener listener, String status) {
+        this.mContext = context;
         this.stepClickListener = listener;
-        this.mItems = new ArrayList<>(); // Khởi tạo list rỗng
+        this.mItems = new ArrayList<>();
+        this.experimentStatus = status;
     }
 
     /**
@@ -118,7 +127,12 @@ public class ExperimentDetailAdapter extends RecyclerView.Adapter<RecyclerView.V
                 public void onClick(View v) {
                     Context context = v.getContext();
 
-                    // TODO: Mở Activity riêng (dấu cộng)
+                    if (LKMSConstantEnums.ExperimentStatus.COMPLETED.toString().equals(experimentStatus)) {
+                        Toast.makeText(mContext, "Experiment đã hoàn thành. Không thể thêm log", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
                     Intent separateIntent = new Intent(context, AddLogActivity.class);
                     int stepId = stepWrapper.getExperimentStep().getExperimentStepId();
                     String instruction = stepWrapper.getProtocolStep().getStepOrder() + " - " + stepWrapper.getProtocolStep().getInstruction();

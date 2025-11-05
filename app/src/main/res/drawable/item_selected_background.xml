@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Trạng thái KHI ĐƯỢC CHỌN (khi itemView.setSelected(true)) -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <!-- Màu xanh nhạt khi được chọn -->
+            <solid android:color="#3F51B5" />
+        </shape>
+    </item>
+
+    <!-- Trạng thái MẶC ĐỊNH (khi không được chọn) -->
+    <!-- ⭐ THAY ĐỔI QUAN TRỌNG NẰM Ở ĐÂY ⭐ -->
+    <item>
+        <!-- Thay vì dùng ?attr, chúng ta định nghĩa một hiệu ứng ripple tường minh -->
+        <ripple android:color="#d1d1d1"> <!-- Màu của hiệu ứng gợn sóng -->
+            <item android:id="@android:id/mask">
+                <color android:color="@android:color/white" />
+            </item>
+            <!-- Nền mặc định khi không có hiệu ứng gì -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+
+</selector>
