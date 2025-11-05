@@ -120,6 +120,21 @@ public class ExperimentInfoActivity extends AppCompatActivity {
      * Được gọi khi người dùng nhấn nút "Add Member"
      */
     private void onAddMemberClicked() {
+
+        if (mExperimentData == null) {
+            Toast.makeText(this, "Chưa tải xong dữ liệu, vui lòng đợi...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 2. LẤY STATUS: Lấy status trực tiếp từ biến thành viên 'mExperimentData'
+        String currentStatus = mExperimentData.getExperiment().getExperimentStatus();
+
+        // 3. KIỂM TRA STATUS: Sử dụng biến 'currentStatus'
+        if (LKMSConstantEnums.ExperimentStatus.COMPLETED.toString().equals(currentStatus)) {
+            Toast.makeText(this, "Experiment đã hoàn thành. Không thể thêm member", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // 1. Kiểm tra để chắc chắn rằng chúng ta đã có experimentId hợp lệ.
         //    Biến 'experimentId' đã được bạn lấy từ Intent ở trong onCreate.
         if (experimentId != -1) {
