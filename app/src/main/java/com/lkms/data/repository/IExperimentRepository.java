@@ -1,6 +1,7 @@
 package com.lkms.data.repository;
 
 import com.lkms.data.model.java.*;
+import com.lkms.data.model.java.combine.ExperimentReportData;
 
 import java.io.File;
 import java.util.List;
@@ -79,6 +80,12 @@ public interface IExperimentRepository {
         void onSuccess(File file);
         void onError(String errorMessage);
     }
+
+    interface ExperimentReportDataCallback {
+        void onSuccess(ExperimentReportData data);
+        void onError(String errorMessage);
+    }
+
 
 
     // --- Chức năng Quản lý Thí nghiệm (UC5, UC34) ---
@@ -182,5 +189,9 @@ public interface IExperimentRepository {
     void getLogEntryById(int logEntryId, LogEntryCallback callback);
 
     void getFile(String url, FileCallBack callback);
+
+    void completeExperiment(int experimentId, GenericCallback callback);
+
+    void getExperimentReportData(int experimentId, ExperimentReportDataCallback callback);
 
 }
