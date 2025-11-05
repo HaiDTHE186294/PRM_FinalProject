@@ -16,6 +16,17 @@ android {
         localProperties.load(localPropertiesFile.inputStream())
     }
 
+
+    // Add this packaging block
+    packaging {
+        resources {
+            excludes += "META-INF/native-image/reflect-config.json"
+            excludes += "META-INF/native-image/resource-config.json"
+
+        }
+    }
+
+
     defaultConfig {
         applicationId = "com.lkms"
         minSdk = 24
@@ -115,6 +126,13 @@ dependencies {
 
     //PDF Viewer
     implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.1")
+
+    //PDF Writer
+    implementation("com.itextpdf:itext-core:8.0.4")
+    implementation("com.itextpdf:kernel:8.0.4")
+    implementation("com.itextpdf:layout:8.0.4")
+    // iText yêu cầu một thư viện ghi log, ta dùng bản 'no-op' (không làm gì cả)
+    implementation("org.slf4j:slf4j-nop:1.7.30")
 }
 
 

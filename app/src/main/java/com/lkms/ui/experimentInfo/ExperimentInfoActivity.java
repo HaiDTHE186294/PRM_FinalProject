@@ -41,6 +41,7 @@ public class ExperimentInfoActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_experiment_info);
 
+        pdfGenerator = new PdfGenerator(this);
         experimentId = getIntent().getIntExtra("experimentId", -1);
         Log.d("ExperimentInfoActivity", "experimentId: " + experimentId);
 
@@ -101,17 +102,11 @@ public class ExperimentInfoActivity extends AppCompatActivity {
                 // Chỉ hiển thị thông báo và đổi nút
                 // KHÔNG finish() Activity!
                 Toast.makeText(this, "Experiment completed successfully!", Toast.LENGTH_SHORT).show();
-
-                // Cập nhật lại dữ liệu local (nếu cần)
-                if (mExperimentData != null) {
-                    mExperimentData.getExperiment()
-                            .setExperimentStatus(LKMSConstantEnums.ExperimentStatus.COMPLETED.toString());
-                }
-
-                // Gọi hàm đổi nút
-                setButtonToExportPdf(btnCompleteExperiment);
+                
             }
         });
+
+        observeViewModel();
 
         viewModel.loadExperiment(experimentId);
     }
@@ -248,6 +243,7 @@ public class ExperimentInfoActivity extends AppCompatActivity {
         // 1. Lắng nghe dữ liệu thành công
         viewModel.reportData.observe(this, reportData -> {
             if (reportData != null) {
+                Log.d("ExperimentInfoActivity", "Report data received: " + reportData.getExperimentTitle());
                 Toast.makeText(this, "Đã lấy dữ liệu thành công, đang tạo PDF...", Toast.LENGTH_SHORT).show();
 
                 new Thread(() -> {

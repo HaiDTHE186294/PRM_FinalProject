@@ -1,5 +1,7 @@
 package com.lkms.ui.experimentInfo;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -57,6 +59,7 @@ public class ExperimentInfoViewModel extends ViewModel {
             @Override
             public void onSuccess() {
                 _completionSuccess.postValue(true); // BÁO CÁO THÀNH CÔNG!
+                loadExperiment(experimentId);
             }
 
             @Override
@@ -67,10 +70,11 @@ public class ExperimentInfoViewModel extends ViewModel {
     }
 
     public void generateReport(int experimentId) {
+        Log.d("ExperimentInfoViewModel", "Generating report for experiment ID: " + experimentId);
         getExperimentReportUseCase.execute(experimentId, new GetExperimentReportUseCase.GetExperimentReportCallback() {
             @Override
             public void onSuccess(ExperimentReportData data) {
-                // Đẩy dữ liệu lên LiveData trên Main Thread
+                Log.d("ExperimentInfoViewModel", "Generate Report Success: " + data.getExperimentTitle());
                 _reportData.postValue(data);
             }
 

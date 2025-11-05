@@ -403,10 +403,15 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
                 // 2. Lấy giá trị status mới
                 String status = LKMSConstantEnums.ExperimentStatus.COMPLETED.toString();
 
+                java.util.Date today = new java.util.Date();
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                String todayString = sdf.format(today);
+
                 // 3. Tạo JSON payload để gửi đi
                 // Payload sẽ có dạng: {"experimentStatus": "COMPLETED"}
                 // (Giả sử cột trong Supabase tên là "experimentStatus")
-                String jsonPayload = "{\"experimentStatus\": \"" + status + "\"}";
+                String jsonPayload = "{\"experimentStatus\": \"" + status + "\", " +
+                        "\"finishDate\": \"" + todayString + "\"}";
 
                 // 4. Gửi PATCH request
                 HttpHelper.patchJson(endpoint, jsonPayload);

@@ -1,202 +1,193 @@
-package com.lkms.util; // (Hoặc package của ngài)
+package com.lkms.util;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.pdf.PdfDocument;
-import android.net.Uri;
+import android.content.res.AssetManager;
 import android.os.Build;
-import android.os.Environment; // Cần cho việc lưu file
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.StaticLayout; // Cần cho text ngắt dòng
-import android.text.TextPaint;
+import android.content.ContentValues;
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Link;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.LineSeparator;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.font.constants.StandardFonts; // Thêm dự phòng
 
 import com.lkms.data.model.java.combine.ExperimentReportData;
 import com.lkms.data.model.java.combine.ReportLog;
 import com.lkms.data.model.java.combine.ReportStep;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class PdfGenerator {
 
     private final Context context;
     private static final String TAG = "PdfGenerator";
 
-    // Hằng số cho layout
-    private static final int PAGE_WIDTH = 595; // A4 width in points
-    private static final int PAGE_HEIGHT = 842; // A4 height in points
-    private static final int MARGIN_LEFT = 40;
-    private static final int MARGIN_RIGHT = 40;
-    private static final int MARGIN_TOP = 50;
-    private static final int CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
-
-    // Biến theo dõi vị trí vẽ
-    private int currentY;
-
-    // Các loại bút vẽ
-    private TextPaint titlePaint;
-    private TextPaint headerPaint;
-    private TextPaint bodyPaint;
-    private TextPaint smallPaint;
+    // *** SỬA LẠI: CHỈ CẦN 1 FONT ***
+    private PdfFont fontVietnamese;
 
     public PdfGenerator(Context context) {
         this.context = context;
-        initPaints();
+        try {
+            // *** SỬA LẠI: NẠP FONT TỪ ĐƯỜNG DẪN MỚI CỦA NGÀI ***
+            // 1. Đọc file font từ 'assets/Noto_Sans/...'
+            byte[] fontBytes = loadFontFromAssets("fonts/Noto_Sans/NotoSans-VariableFont_wdth,wght.ttf");
+
+            // 2. Tạo MỘT đối tượng font
+            this.fontVietnamese = PdfFontFactory.createFont(fontBytes,
+                    PdfEncodings.IDENTITY_H,
+                    PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+
+        } catch (IOException e) {
+            Log.e(TAG, "Lỗi nghiêm trọng khi tải font: " + e.getMessage());
+            // (Nếu lỗi, dùng font dự phòng không dấu)
+            try {
+                this.fontVietnamese = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+            } catch (IOException ex) {
+                // Không thể xảy ra với font tiêu chuẩn
+            }
+        }
     }
 
-    // Khởi tạo các loại bút vẽ (Paint)
-    private void initPaints() {
-        titlePaint = new TextPaint();
-        titlePaint.setColor(Color.BLACK);
-        titlePaint.setTextSize(18f);
-        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-
-        headerPaint = new TextPaint();
-        headerPaint.setColor(Color.BLACK);
-        headerPaint.setTextSize(14f);
-        headerPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-
-        bodyPaint = new TextPaint();
-        bodyPaint.setColor(Color.BLACK);
-        bodyPaint.setTextSize(12f);
-
-        smallPaint = new TextPaint();
-        smallPaint.setColor(Color.DKGRAY);
-        smallPaint.setTextSize(10f);
+    // (Hàm loadFontFromAssets giữ nguyên)
+    private byte[] loadFontFromAssets(String path) throws IOException {
+        InputStream is = context.getAssets().open(path);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            baos.write(buffer, 0, len);
+        }
+        is.close();
+        return baos.toByteArray();
     }
 
-    // Phương thức chính mà Activity sẽ gọi
+
     public void createPdfReport(ExperimentReportData data) {
-        // 1. Khởi tạo tài liệu
-        PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, 1).create();
-        PdfDocument.Page page = document.startPage(pageInfo);
-        Canvas canvas = page.getCanvas();
-
-        currentY = MARGIN_TOP; // Reset vị trí Y
+        String fileName = "Experiment_Report_" + data.getExperimentId() + ".pdf";
 
         try {
+            FileOutputStream fos = getFileOutputStream(fileName);
+            if (fos == null) {
+                showToast("Không thể tạo file PDF (không lấy được stream).");
+                return;
+            }
+
+            PdfWriter writer = new PdfWriter(fos);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc);
+
             // --- BẮT ĐẦU VẼ ---
 
-            // Thông tin Project
-            drawMultiLineText(canvas, data.getProjectTitle(), titlePaint);
-            currentY += 10;
-            drawMultiLineText(canvas, "Trưởng dự án: " + data.getProjectLeaderName(), bodyPaint);
+            // *** SỬA LẠI: DÙNG setFont VÀ setBold() ***
+            document.add(new Paragraph(data.getProjectTitle())
+                    .setFont(fontVietnamese).setFontSize(18).setBold()); // .setBold()
+            document.add(new Paragraph("Trưởng dự án: " + data.getProjectLeaderName())
+                    .setFont(fontVietnamese).setFontSize(12)); // (Mặc định là regular)
 
-            drawDivider(canvas);
+            drawDivider(document);
 
-            // Thông tin Experiment
-            drawMultiLineText(canvas, data.getExperimentTitle() + " (ID: " + data.getExperimentId() + ")", headerPaint);
-            currentY += 10;
-            drawMultiLineText(canvas, "Mục tiêu: " + data.getObjective(), bodyPaint);
-            drawMultiLineText(canvas, "Người thực hiện: " + data.getCreatorName(), bodyPaint);
-            drawMultiLineText(canvas, "Bắt đầu: " + data.getStartDate() + " - Kết thúc: " + data.getFinishDate(), bodyPaint);
+            document.add(new Paragraph(data.getExperimentTitle() + " (ID: " + data.getExperimentId() + ")")
+                    .setFont(fontVietnamese).setFontSize(14).setBold()); // .setBold()
+            document.add(new Paragraph("Mục tiêu: " + data.getObjective())
+                    .setFont(fontVietnamese).setFontSize(12));
+            document.add(new Paragraph("Người thực hiện: " + data.getCreatorName())
+                    .setFont(fontVietnamese).setFontSize(12));
+            document.add(new Paragraph("Bắt đầu: " + data.getStartDate() + " - Kết thúc: " + data.getFinishDate())
+                    .setFont(fontVietnamese).setFontSize(12));
 
-            drawDivider(canvas);
+            drawDivider(document);
 
-            // Thông tin Protocol
-            drawMultiLineText(canvas, "Quy trình: " + data.getProtocolTitle() + " (v" + data.getProtocolVersionNumber() + ")", headerPaint);
-            currentY += 10;
-            drawMultiLineText(canvas, "Giới thiệu: " + data.getProtocolIntroduction(), bodyPaint);
+            document.add(new Paragraph("Quy trình: " + data.getProtocolTitle() + " (v" + data.getProtocolVersionNumber() + ")")
+                    .setFont(fontVietnamese).setFontSize(14).setBold()); // .setBold()
+            document.add(new Paragraph("Giới thiệu: " + data.getProtocolIntroduction())
+                    .setFont(fontVietnamese).setFontSize(12));
 
-            drawDivider(canvas);
+            drawDivider(document);
 
-            // Chi tiết các bước
-            drawMultiLineText(canvas, "CHI TIẾT THỰC HIỆN", titlePaint);
-            currentY += 10;
+            document.add(new Paragraph("CHI TIẾT THỰC HIỆN")
+                    .setFont(fontVietnamese).setFontSize(18).setBold() // .setBold()
+                    .setTextAlignment(TextAlignment.CENTER));
 
             if (data.getSteps() != null) {
                 for (ReportStep step : data.getSteps()) {
-                    // (Kiểm tra tràn trang - sẽ làm sau)
-
-                    String stepTitle = "Bước " + step.getStepOrder() + ": " + step.getInstruction();
-                    drawMultiLineText(canvas, stepTitle, headerPaint);
+                    Paragraph stepTitle = new Paragraph("Bước " + step.getStepOrder() + ": " + step.getInstruction())
+                            .setFont(fontVietnamese).setFontSize(12).setBold() // .setBold()
+                            .setMarginTop(10);
+                    document.add(stepTitle);
 
                     if (step.getLogs() != null) {
                         for (ReportLog log : step.getLogs()) {
                             String logText = String.format("[%s] %s (%s): %s",
                                     log.getLogTime(), log.getUserName(), log.getLogType(), log.getContent());
-                            drawMultiLineText(canvas, logText, bodyPaint, MARGIN_LEFT + 15); // Thụt lề cho log
 
-                            // *** NƠI XỬ LÝ FILE ĐÍNH KÈM (BƯỚC 6) SẼ Ở ĐÂY ***
+                            Paragraph logP = new Paragraph(logText)
+                                    .setFont(fontVietnamese).setFontSize(10).setMarginLeft(15);
+                            document.add(logP);
+
                             if (log.getFileUrl() != null && !log.getFileUrl().isEmpty()) {
-                                drawMultiLineText(canvas, "File: " + log.getFileUrl(), smallPaint, MARGIN_LEFT + 15);
+                                String url = log.getFileUrl();
 
-                                // (Tạm thời chỉ hiển thị URL)
+                                PdfAction action = PdfAction.createURI(url);
+                                Link link = new Link(url, action);
 
-                                currentY += 5;
+                                link.setFont(fontVietnamese); // Dùng font TV
+                                link.setFontSize(9);
+                                link.setFontColor(ColorConstants.BLUE);
+                                link.setUnderline();
+
+                                Paragraph linkP = new Paragraph("File: ")
+                                        .setFont(fontVietnamese).setFontSize(9) // Dùng font TV
+                                        .add(link)
+                                        .setMarginLeft(15);
+
+                                document.add(linkP);
                             }
                         }
                     }
-                    currentY += 10; // Khoảng cách giữa các bước
                 }
             }
 
-            // --- KẾT THÚC VẼ ---
-
-            // 2. Hoàn tất trang
-            document.finishPage(page);
-
-            // 3. Lưu file (Bước 7)
-            savePdf(document, "Experiment_Report_" + data.getExperimentId() + ".pdf");
+            document.close();
 
         } catch (Exception e) {
             Log.e(TAG, "Lỗi khi tạo PDF: " + e.getMessage());
             e.printStackTrace();
-            Toast.makeText(context, "Lỗi: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        } finally {
-            // 4. Đóng tài liệu
-            if (document != null) {
-                document.close();
-            }
+            showToast("Lỗi khi tạo PDF: " + e.getMessage());
         }
     }
 
-    // Hàm tiện ích để vẽ text và tự động ngắt dòng
-    private void drawMultiLineText(Canvas canvas, String text, TextPaint paint) {
-        drawMultiLineText(canvas, text, paint, MARGIN_LEFT); // Mặc định không thụt lề
+    // (Hàm này giữ nguyên)
+    private void drawDivider(Document document) {
+        SolidLine line = new SolidLine(1f);
+        line.setColor(ColorConstants.BLACK);
+        LineSeparator ls = new LineSeparator(line);
+        ls.setMarginTop(10);
+        ls.setMarginBottom(10);
+        document.add(ls);
     }
 
-    private void drawMultiLineText(Canvas canvas, String text, TextPaint paint, int leftMargin) {
-        if (text == null) text = "N/A";
-
-        StaticLayout staticLayout = StaticLayout.Builder.obtain(
-                        text, 0, text.length(), paint, CONTENT_WIDTH - (leftMargin - MARGIN_LEFT))
-                .setAlignment(StaticLayout.Alignment.ALIGN_NORMAL)
-                .setLineSpacing(0f, 1.2f) // Tăng khoảng cách dòng
-                .setIncludePad(false)
-                .build();
-
-        canvas.save();
-        canvas.translate(leftMargin, currentY); // Di chuyển canvas đến vị trí
-        staticLayout.draw(canvas);
-        canvas.restore();
-
-        currentY += staticLayout.getHeight() + 5; // Cập nhật vị trí Y
-    }
-
-    // Hàm vẽ đường kẻ ngang
-    private void drawDivider(Canvas canvas) {
-        currentY += 10;
-        canvas.drawLine(MARGIN_LEFT, currentY, PAGE_WIDTH - MARGIN_RIGHT, currentY, bodyPaint);
-        currentY += 20;
-    }
-
-    // Bước 7: Lưu file PDF
-    // Bên trong lớp PdfGenerator
-
-    private void savePdf(PdfDocument document, String fileName) throws IOException {
-        // Kiểm tra phiên bản SDK của thiết bị
+    // (Hàm này giữ nguyên)
+    private FileOutputStream getFileOutputStream(String fileName) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
             ContentValues values = new ContentValues();
             values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
             values.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf");
@@ -206,28 +197,19 @@ public class PdfGenerator {
             Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
 
             if (uri != null) {
-                FileOutputStream fos = (FileOutputStream) resolver.openOutputStream(uri);
-                document.writeTo(fos);
-                fos.close();
-
                 showToast("Đã lưu PDF tại: Thư mục Downloads");
+                return (FileOutputStream) resolver.openOutputStream(uri);
+            } else {
+                return null;
             }
         } else {
-            // --- CÁCH CŨ (Cho Android 9 trở xuống) ---
-            // (Dùng FileOutputStream, yêu cầu quyền WRITE_EXTERNAL_STORAGE)
-
             File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File file = new File(downloadsDir, fileName);
-
-            FileOutputStream fos = new FileOutputStream(file);
-            document.writeTo(fos);
-            fos.close();
-
             showToast("Đã lưu PDF tại: " + file.getAbsolutePath());
+            return new FileOutputStream(file);
         }
     }
 
-    // Hàm helper để hiện Toast trên Main Thread
     private void showToast(String message) {
         ((android.app.Activity) context).runOnUiThread(() -> {
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
