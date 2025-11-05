@@ -21,6 +21,10 @@ public interface IUserRepository {
         void onError(String errorMessage);
     }
 
+    interface MemberExistsCallback {
+        void onResult(boolean exists);
+        void onError(String errorMessage);
+    }
     //endregion
 
     //region //Chức năng Quản lý Hồ sơ Cá nhân (UC14)
@@ -79,4 +83,20 @@ public interface IUserRepository {
     void updateUserRole(int targetUserId, int newRoleId, UserCallback callback);
 
     //endregion
+
+    /**
+     * Tìm kiếm người dùng dựa trên một chuỗi truy vấn (tên hoặc email).
+     * @param query Chuỗi tìm kiếm (ví dụ: "john", "dev")
+     * @param callback Callback để trả về danh sách người dùng tìm thấy.
+     */
+    void searchUsers(String query, UserListCallback callback);
+
+    /**
+     * Kiểm tra xem người dùng có tồn tại trong bảng "User" hay không.
+     *
+     * @param userId
+     * @param experimentId
+     * @param callback
+     */
+    void checkIfMemberExists(int userId, int experimentId, MemberExistsCallback callback);
 }
