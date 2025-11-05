@@ -67,26 +67,25 @@ public class AddMemberActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         adapter = new UserSearchAdapter((user, isNowSelected) -> {
-            // ⭐ SỬA Ở ĐÂY: Thêm dòng này để ra lệnh cho Adapter tự cập nhật trạng thái ⭐
+            // ⭐ SỬA LẠI: Khôi phục logic quan trọng đã bị xóa nhầm
+            // 1. Ra lệnh cho Adapter tự cập nhật trạng thái lựa chọn nội bộ của nó
             adapter.toggleSelection(user);
 
-            // 1. Cập nhật danh sách các user đã chọn trong Activity
+            // 2. Cập nhật danh sách các user đã chọn trong Activity
             if (isNowSelected) {
                 selectedUsers.add(user);
             } else {
                 selectedUsers.remove(user);
             }
 
-            // 2. Yêu cầu adapter vẽ lại CHỈ item vừa được click
+            // 3. Yêu cầu adapter vẽ lại CHỈ item vừa được click để cập nhật UI (checkbox)
             int position = adapter.getUserList().indexOf(user);
             if (position != -1) {
                 adapter.notifyItemChanged(position);
             }
 
-            // 3. Cập nhật lại trạng thái và chữ trên nút "Add"
-            btnAddSelectedMembers.setEnabled(!selectedUsers.isEmpty());
-            int size = selectedUsers.size();
-            btnAddSelectedMembers.setText(size > 0 ? "Add " + size + " Member(s)" : "Add Member");
+            // 4. Cập nhật lại trạng thái và chữ trên nút "Add"
+            updateAddButtonState();
         });
 
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
@@ -94,29 +93,27 @@ public class AddMemberActivity extends AppCompatActivity {
     }
 
     private void observeViewModel() {
-        // Lắng nghe kết quả tìm kiếm đã được lọc
-        viewModel.searchResults.observe(this, users -> {
+        // Gọi qua phương thức getter để truy cập LiveData
+        viewModel.getSearchResults().observe(this, users -> {
             progressBar.setVisibility(View.GONE);
             adapter.setUsers(users); // Hiển thị danh sách đã được lọc
         });
 
-        // Lắng nghe lỗi
-        viewModel.error.observe(this, error -> {
+        viewModel.getError().observe(this, error -> {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
         });
 
-        // Lắng nghe sự kiện thêm thành công
-        viewModel.addMembersSuccess.observe(this, success -> {
-            if (success) {
+        viewModel.getAddMembersSuccess().observe(this, success -> {
+            if (Boolean.TRUE.equals(success)) { // Kiểm tra an toàn hơn
                 Toast.makeText(this, "Members added successfully!", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK); // Gửi tín hiệu thành công về cho màn hình trước
                 finish(); // Đóng màn hình
             }
         });
 
-        // Lắng nghe lỗi khi thêm thành viên
-        viewModel.addMembersError.observe(this, error -> {
+        viewModel.getAddMembersError().observe(this, error -> {
+            progressBar.setVisibility(View.GONE); // Ẩn loading khi thêm lỗi
             Toast.makeText(this, "Error adding members: " + error, Toast.LENGTH_SHORT).show();
         });
     }
@@ -125,7 +122,10 @@ public class AddMemberActivity extends AppCompatActivity {
         // Sự kiện khi người dùng gõ vào ô tìm kiếm
         etSearchUser.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Thêm comment để giải quyết cảnh báo SonarQube
+                // Không cần xử lý ở đây.
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -135,15 +135,30 @@ public class AddMemberActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                // Thêm comment để giải quyết cảnh báo SonarQube
+                // Không cần xử lý ở đây.
+            }
         });
 
         // Sự kiện khi nhấn nút Add
         btnAddSelectedMembers.setOnClickListener(v -> {
             if (!selectedUsers.isEmpty()) {
+                progressBar.setVisibility(View.VISIBLE); // Hiển thị loading khi nhấn Add
                 viewModel.addMembersToTeam(experimentId, selectedUsers);
             }
         });
+    }
+
+    // Tách logic cập nhật nút ra hàm riêng cho rõ ràng
+    private void updateAddButtonState() {
+        boolean hasSelection = !selectedUsers.isEmpty();
+        btnAddSelectedMembers.setEnabled(hasSelection);
+        if (hasSelection) {
+            btnAddSelectedMembers.setText("Add " + selectedUsers.size() + " Member(s)");
+        } else {
+            btnAddSelectedMembers.setText("Add Member");
+        }
     }
 
     /**
@@ -154,3 +169,4 @@ public class AddMemberActivity extends AppCompatActivity {
         viewModel.findAvailableUsers("", experimentId);
     }
 }
+

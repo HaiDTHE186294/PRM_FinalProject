@@ -19,14 +19,15 @@ public class AddMemberUseCase {
 
     private final IUserRepository userRepository;
 
-    private final MutableLiveData<List<User>> _searchResults = new MutableLiveData<>();
+    // Tên biến đã được sửa theo quy chuẩn SonarQube
+    private final MutableLiveData<List<User>> searchResults = new MutableLiveData<>();
     public LiveData<List<User>> getSearchResults() {
-        return _searchResults;
+        return searchResults;
     }
 
-    private final MutableLiveData<String> _error = new MutableLiveData<>();
+    private final MutableLiveData<String> error = new MutableLiveData<>();
     public LiveData<String> getError() {
-        return _error;
+        return error;
     }
 
     public AddMemberUseCase(IUserRepository userRepository) {
@@ -36,62 +37,83 @@ public class AddMemberUseCase {
     /**
      * ⭐ HÀM LOGIC CHÍNH ⭐
      * Thực hiện tìm kiếm người dùng và lọc ra những người chưa có trong team.
-     *
-     * @param query Từ khóa tìm kiếm.
-     * @param experimentId ID của experiment để kiểm tra.
+     * Độ phức tạp đã được giảm bằng cách tách logic ra các hàm con.
      */
     public void findAvailableUsers(String query, int experimentId) {
-        // 1. Tìm tất cả user khớp với query
         userRepository.searchUsers(query, new IUserRepository.UserListCallback() {
             @Override
             public void onSuccess(List<User> users) {
-                if (users == null || users.isEmpty()) {
-                    _searchResults.postValue(new ArrayList<>()); // Trả về ds rỗng nếu không tìm thấy ai
-                    return;
-                }
-
-                // 2. Lọc danh sách user vừa nhận được
-                // Dùng List đã được đồng bộ hóa để an toàn khi thêm từ nhiều luồng
-                final List<User> filteredUsers = Collections.synchronizedList(new ArrayList<>());
-                // Dùng AtomicInteger để đếm các tác vụ bất đồng bộ đã hoàn thành
-                final AtomicInteger counter = new AtomicInteger(users.size());
-
-                for (User user : users) {
-                    // Với mỗi user, kiểm tra xem họ đã tồn tại trong team chưa
-                    userRepository.checkIfMemberExists(user.getUserId(), experimentId, new IUserRepository.MemberExistsCallback() {
-                        @Override
-                        public void onResult(boolean exists) {
-                            if (!exists) {
-                                // Nếu CHƯA TỒN TẠI, thêm vào danh sách kết quả
-                                filteredUsers.add(user);
-                            }
-
-                            // Khi một user được kiểm tra xong, giảm bộ đếm
-                            if (counter.decrementAndGet() == 0) {
-                                // Nếu đã kiểm tra hết tất cả user, cập nhật LiveData
-                                _searchResults.postValue(new ArrayList<>(filteredUsers)); // Tạo bản sao mới để tránh lỗi
-                            }
-                        }
-
-                        @Override
-                        public void onError(String errorMessage) {
-                            // Bỏ qua user bị lỗi và tiếp tục, nhưng vẫn phải giảm bộ đếm
-                            // Bạn có thể post lỗi lên LiveData nếu muốn
-                            // _error.postValue("Lỗi khi kiểm tra user " + user.getUserId() + ": " + errorMessage);
-
-                            if (counter.decrementAndGet() == 0) {
-                                _searchResults.postValue(new ArrayList<>(filteredUsers));
-                            }
-                        }
-                    });
-                }
+                processFoundUsers(users, experimentId);
             }
 
             @Override
             public void onError(String errorMessage) {
-                _error.postValue(errorMessage);
-                _searchResults.postValue(new ArrayList<>()); // Đảm bảo danh sách rỗng khi có lỗi
+                error.postValue(errorMessage);
+                searchResults.postValue(new ArrayList<>()); // Đảm bảo danh sách rỗng khi có lỗi
             }
         });
+    }
+
+    /**
+     * Xử lý danh sách người dùng tìm thấy, lọc ra những người chưa có trong team.
+     * @param users Danh sách người dùng từ kết quả tìm kiếm.
+     * @param experimentId ID của experiment để kiểm tra.
+     */
+    private void processFoundUsers(List<User> users, int experimentId) {
+        if (users == null || users.isEmpty()) {
+            searchResults.postValue(new ArrayList<>());
+            return;
+        }
+
+        final List<User> filteredUsers = Collections.synchronizedList(new ArrayList<>());
+        final AtomicInteger counter = new AtomicInteger(users.size());
+
+        for (User user : users) {
+            checkAndFilterSingleUser(user, experimentId, filteredUsers, counter);
+        }
+    }
+
+    /**
+     * Kiểm tra một người dùng duy nhất xem đã tồn tại trong team chưa và xử lý kết quả.
+     * @param user Người dùng cần kiểm tra.
+     * @param experimentId ID của experiment.
+     * @param filteredUsers Danh sách (đã đồng bộ) để thêm người dùng nếu hợp lệ.
+     * @param counter Bộ đếm để biết khi nào tất cả các tác vụ hoàn thành.
+     */
+    private void checkAndFilterSingleUser(User user, int experimentId, List<User> filteredUsers, AtomicInteger counter) {
+        userRepository.checkIfMemberExists(user.getUserId(), experimentId, new IUserRepository.MemberExistsCallback() {
+            @Override
+            public void onResult(boolean exists) {
+                if (!exists) {
+                    // Nếu CHƯA TỒN TẠI, thêm vào danh sách kết quả
+                    filteredUsers.add(user);
+                }
+                // Sau khi xử lý, kiểm tra xem đã xong hết chưa
+                finalizeIfAllTasksDone(counter, filteredUsers);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // ⭐ SỬA: Xóa dòng code bị comment theo yêu cầu của SonarQube.
+                // Ghi log lỗi ở đây nếu cần thiết cho việc debug:
+                // Log.e(TAG, "Lỗi khi kiểm tra user " + user.getUserId() + ": " + errorMessage);
+
+                // Bỏ qua lỗi và vẫn kiểm tra xem đã xong hết chưa
+                finalizeIfAllTasksDone(counter, filteredUsers);
+            }
+        });
+    }
+
+    /**
+     * Giảm bộ đếm và cập nhật LiveData nếu tất cả các tác vụ kiểm tra đã hoàn thành.
+     * @param counter Bộ đếm.
+     * @param filteredUsers Danh sách kết quả cuối cùng.
+     */
+    private void finalizeIfAllTasksDone(AtomicInteger counter, List<User> filteredUsers) {
+        // Khi một user được kiểm tra xong (thành công hoặc lỗi), giảm bộ đếm
+        if (counter.decrementAndGet() == 0) {
+            // Nếu đã kiểm tra hết tất cả user, cập nhật LiveData
+            searchResults.postValue(new ArrayList<>(filteredUsers)); // Tạo bản sao mới để tránh lỗi
+        }
     }
 }
