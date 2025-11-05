@@ -23,6 +23,7 @@ import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
 import com.lkms.domain.experimentdetail.GetExperimentDetailUseCase;
 import com.lkms.domain.report.CompleteExperimentUseCase;
 import com.lkms.domain.report.GetExperimentReportUseCase;
+import com.lkms.ui.addmember.AddMemberActivity;
 import com.lkms.ui.experimentdetail.ExperimentDetailActivity;
 import com.lkms.util.PdfGenerator;
 
@@ -119,8 +120,22 @@ public class ExperimentInfoActivity extends AppCompatActivity {
      * Được gọi khi người dùng nhấn nút "Add Member"
      */
     private void onAddMemberClicked() {
-        // TODO: Hiển thị dialog/activity để chọn và thêm thành viên
-        Toast.makeText(this, "Add Member Clicked", Toast.LENGTH_SHORT).show();
+        // 1. Kiểm tra để chắc chắn rằng chúng ta đã có experimentId hợp lệ.
+        //    Biến 'experimentId' đã được bạn lấy từ Intent ở trong onCreate.
+        if (experimentId != -1) {
+            // 2. Tạo một Intent để mở AddMemberActivity.
+            Intent intent = new Intent(ExperimentInfoActivity.this, AddMemberActivity.class);
+
+            // 3. Đính kèm experimentId vào Intent.
+            //    Key "EXPERIMENT_ID" phải khớp với key mà bạn dùng để nhận ở AddMemberActivity.
+            intent.putExtra("EXPERIMENT_ID", experimentId);
+
+            // 4. Khởi chạy Activity mới.
+            startActivity(intent);
+        } else {
+            // 5. Thông báo lỗi nếu không tìm thấy experimentId.
+            Toast.makeText(this, "Error: Could not find Experiment ID to add members.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

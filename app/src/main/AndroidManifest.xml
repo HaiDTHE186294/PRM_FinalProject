@@ -93,6 +93,14 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.addmember.AddMemberActivity"
+            android:exported="false"
+            android:label="Add Member to Experiment"
+            android:parentActivityName=".ui.experimentInfo.ExperimentInfoActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            />
+
+        <activity
             android:name=".ui.user_profile.UserProfileActivity"
             android:exported="false" />
         <activity

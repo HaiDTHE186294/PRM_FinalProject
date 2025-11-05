@@ -89,16 +89,11 @@ public class BookingActivity extends AppCompatActivity {
         btnBook = findViewById(R.id.btnBook);
         spinnerExperiment = findViewById(R.id.spinnerExperiment);
         calendarView = findViewById(R.id.calendarView);
-
-        // Set equipmentId ngay sau khi có
         viewModel.setEquipmentId(equipmentId);
     }
 
     private void setupViewModel() {
-        // --- SỬA LỖI 1: Xóa dòng khởi tạo sai, chỉ cần sử dụng 'this.viewModel' đã có ---
-        // viewModel = new ViewModelProvider(this).get(BookingViewModel.class); // <--- XÓA DÒNG NÀY
-
-        viewModel.loadBookedDays();
+               viewModel.loadBookedDays();
 
         viewModel.startDate.observe(this, date ->
                 tvStartDate.setText(date != null ? date.toString() : "")
@@ -108,7 +103,6 @@ public class BookingActivity extends AppCompatActivity {
                 tvEndDate.setText(date != null ? date.toString() : "")
         );
 
-        // Quan sát LiveData experiments để thiết lập Spinner (SỬA LỖI 2)
         viewModel.experiments.observe(this, this::setupExperimentSpinner);
 
         viewModel.bookedDays.observe(this, this::highlightBookedDates);
