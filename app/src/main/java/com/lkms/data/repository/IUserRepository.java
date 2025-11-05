@@ -71,4 +71,19 @@ public interface IUserRepository {
     void updateUserRole(int targetUserId, int newRoleId, UserCallback callback);
 
     //endregion
+
+    /**
+     * Tìm kiếm người dùng dựa trên một chuỗi truy vấn (tên hoặc email).
+     * @param query Chuỗi tìm kiếm (ví dụ: "john", "dev")
+     * @param callback Callback để trả về danh sách người dùng tìm thấy.
+     */
+    void searchUsers(String query, UserListCallback callback);
+
+    void checkIfMemberExists(int userId, int experimentId, MemberExistsCallback callback);
+
+    // Interface callback mới
+    interface MemberExistsCallback {
+        void onResult(boolean exists);
+        void onError(String errorMessage);
+    }
 }
