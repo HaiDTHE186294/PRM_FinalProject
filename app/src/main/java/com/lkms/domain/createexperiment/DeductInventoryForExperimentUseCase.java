@@ -25,13 +25,13 @@ public class DeductInventoryForExperimentUseCase {
      * @param protocolId ID của protocol được dùng trong thí nghiệm.
      * @param callback Báo cáo kết quả thành công hay thất bại của việc trừ kho.
      */
-    public void execute(int protocolId, IInventoryRepository.GenericCallback callback) {
+    public void execute(int protocolId, int userId, IInventoryRepository.GenericCallback callback) {
         // Bước 1: Lấy danh sách vật tư (items) cần dùng từ Protocol ID
         protocolRepo.getProtocolDetails(protocolId, new IProtocolRepository.ProtocolContentCallback() {
             @Override
             public void onItemsReceived(List<ProtocolItem> items) {
                 //Gọi hàm mới, an toàn, chỉ để trừ kho.
-                inventoryRepo.deductStock(items, callback);
+                inventoryRepo.deductStock(items, userId, callback);
             }
 
             @Override

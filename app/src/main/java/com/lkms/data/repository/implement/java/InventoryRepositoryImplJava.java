@@ -7,6 +7,7 @@ import com.lkms.data.model.java.Item;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.SDS;
 import com.lkms.data.repository.IInventoryRepository;
+import com.lkms.util.AuthHelper;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -18,6 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.lkms.BuildConfig.SUPABASE_URL;
+
+import android.util.Log;
 
 public class InventoryRepositoryImplJava implements IInventoryRepository {
 
@@ -387,7 +390,7 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
         }).start();
     }
 
-    public void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback) {
+    public void deductStock(List<ProtocolItem> itemsToDeduct, int userId, GenericCallback callback) {
         final String TAG = "DeductStock_OldMethod";
         new Thread(() -> {
             try {
@@ -424,6 +427,24 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
                     String patchBody = "{\"quantity\": " + newQuantity + "}";
                     android.util.Log.d(TAG, "Thực hiện PATCH cho Item ID " + currentItem.getItemId() + " với body: " + patchBody);
                     HttpHelper.patchJson(updateUrl, patchBody);
+
+                    // 4. Log giao dịch
+
+                    logInventoryTransaction(
+                            itemToDeduct.getItemId(),
+                            userId,
+                            0 - quantityNeeded,
+                            "Used for Experiment",
+                            new TransactionIdCallback() {
+                                @Override
+                                public void onSuccess(int transactionId) {
+                                }
+
+                                @Override
+                                public void onError(String errorMessage) {
+                                }
+                            }
+                    );
                 }
 
                 android.util.Log.i(TAG, "Trừ kho theo phương pháp cũ thành công.");
