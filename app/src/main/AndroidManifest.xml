@@ -19,7 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-
+        <activity
+            android:name=".ui.inventory.CheckInCheckOutActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.inventory.ItemDetailActivity"
             android:exported="false" />
@@ -62,6 +64,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -71,6 +74,20 @@
             android:exported="false" />
         <activity
             android:name=".ui.equipment.EquipmentListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.inventory.ItemAddUpdateActivity"
+            android:exported="false">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity
+            android:name=".ui.user.AddUserActivity"
             android:exported="false" />
         <activity
             android:name=".ui.protocol.ProtocolListActivity"
@@ -101,20 +118,16 @@
             />
 
         <activity
-            android:name=".ui.user_profile.UserProfileActivity"
+            android:name=".ui.user.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.MemberListActivity"
+            android:name=".ui.user.MemberListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.ProfileSettingActivity"
+            android:name=".ui.user.ProfileSettingActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ui.project.projectdetail.ProjectDetailActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.project.projectmanage.ProjectActivity" />
-
+        <activity android:name=".ui.user.MemberDetailActivity" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -124,5 +137,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <activity
+            android:name=".ui.project.projectdetail.ProjectDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.project.projectmanage.ProjectActivity"></activity>
     </application>
 </manifest>

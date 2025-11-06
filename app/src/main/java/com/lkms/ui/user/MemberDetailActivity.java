@@ -1,4 +1,4 @@
-package com.lkms.ui.user_profile;
+package com.lkms.ui.user;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -8,15 +8,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.lkms.R;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
-import com.lkms.data.repository.implement.java.UserRepositoryImplJava;
 import com.lkms.domain.UserProfileUseCase;
-import com.lkms.ui.user_profile.view.UserProfileHeader;
+import com.lkms.ui.user.view.UserProfileHeader;
 
-public class MemberDetailActvity extends AppCompatActivity {
+public class MemberDetailActivity extends AppCompatActivity {
 
     private UserProfileUseCase userProfileUseCase = new UserProfileUseCase();
     private UserProfileHeader userProfileHeader;

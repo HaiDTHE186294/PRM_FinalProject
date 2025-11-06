@@ -35,8 +35,8 @@ import com.lkms.ui.loginmaindashboard.login.SystemLoginActivity;
 import com.lkms.ui.project.projectmanage.ProjectActivity;
 import com.lkms.ui.protocol.ProtocolListActivity;
 import com.lkms.ui.sds.SdsLookupActivity;
-import com.lkms.ui.user_profile.MemberListActivity;
-import com.lkms.ui.user_profile.UserProfileActivity;
+import com.lkms.ui.user.UserProfileActivity;
+import com.lkms.ui.user.MemberListActivity;
 
 import java.util.ArrayList;
 import java.util.List;

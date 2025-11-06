@@ -1,4 +1,4 @@
-package com.lkms.ui.user_profile.view;
+package com.lkms.ui.user.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

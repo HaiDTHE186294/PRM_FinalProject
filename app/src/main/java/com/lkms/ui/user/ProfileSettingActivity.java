@@ -1,4 +1,4 @@
-package com.lkms.ui.user_profile;
+package com.lkms.ui.user;
 
 import android.os.Bundle;
 import android.util.Log;

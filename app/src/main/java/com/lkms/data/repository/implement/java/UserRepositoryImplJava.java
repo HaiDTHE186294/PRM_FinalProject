@@ -4,6 +4,7 @@ import static com.lkms.BuildConfig.SUPABASE_URL;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.lkms.data.model.java.Item;
 import com.lkms.data.model.java.User;
 import com.lkms.data.repository.IUserRepository;
 
@@ -13,9 +14,49 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
+
 public class UserRepositoryImplJava implements IUserRepository {
 
     private static final Gson gson = new Gson();
+
+
+    @Override
+    public void addUser(User user, UserCallback callback)
+    {
+        new Thread(() -> {
+            if (callback == null) return;
+            try {
+                if (user == null) {
+                    callback.onError("User cannot be null.");
+                    return;
+                }
+
+                //Hash user's password
+                String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+                user.setPassword(hashedPassword);
+
+                String endpoint = SUPABASE_URL + "/rest/v1/User?select=*";
+                String jsonBody = gson.toJson(user);
+
+                // Supabase POST trả về bản ghi đã tạo
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                Type listType = new TypeToken<List<Item>>() {}.getType();
+                List<User> createdUsers = gson.fromJson(response, listType);
+
+                if (createdUsers != null && !createdUsers.isEmpty()) {
+                    callback.onSuccess(createdUsers.get(0));
+                } else {
+                    callback.onError("Failed to add new user. Server returned empty response.");
+                }
+
+            } catch (Exception e) {
+                callback.onError(e.getMessage() != null ? e.getMessage() : "Failed to add new user");
+            }
+        }).start();
+    }
 
     @Override
     public void getUserById(int userId, UserCallback callback) {
@@ -160,5 +201,8 @@ public class UserRepositoryImplJava implements IUserRepository {
                 callback.onError("Lỗi khi kiểm tra thành viên: " + e.getMessage());
             }
         }).start();
+
+
+
     }
 }

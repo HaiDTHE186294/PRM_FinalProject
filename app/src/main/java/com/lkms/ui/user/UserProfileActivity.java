@@ -1,8 +1,7 @@
-package com.lkms.ui.user_profile;
+package com.lkms.ui.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 //import android.widget.Toast;
@@ -12,7 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lkms.R;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 import com.lkms.domain.UserProfileUseCase;
-import com.lkms.ui.user_profile.view.UserProfileHeader;
+import com.lkms.ui.user.view.UserProfileHeader;
+import com.lkms.util.AuthHelper;
 
 //For debugging
 //import android.util.Log;
@@ -23,6 +23,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private UserProfileHeader userProfileHeader;
     private TextView manageTeamOption;
+    private TextView addUserOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +55,17 @@ public class UserProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        //Lab Manager's add user option
+        addUserOption = findViewById(R.id.option_add_user);
+        addUserOption.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfileActivity.this, AddUserActivity.class);
+            startActivity(intent);
+        });
+
         // Setup observer to observe async method to get user's data
         userProfileUseCase.getUser().observe(this, user -> {
 
-            Log.d("UserProfileActivityDEBUG", "Get user: " + user);
+//            Log.d("UserProfileActivityDEBUG", "Get user: " + user);
 
             if (user != null)
             {
@@ -67,15 +75,19 @@ public class UserProfileActivity extends AppCompatActivity {
                 LKMSConstantEnums.UserRole role = LKMSConstantEnums.UserRole.values()[user.getRoleId()];
 
                 //Update Manage Team option (depends on wether the user's role is Lab Manager or not)
-                if (role == LKMSConstantEnums.UserRole.LAB_MANAGER)
+                if (role == LKMSConstantEnums.UserRole.LAB_MANAGER) {
                     manageTeamOption.setVisibility(View.VISIBLE);
-                else
+                    addUserOption.setVisibility(View.VISIBLE);
+                }
+                else {
                     manageTeamOption.setVisibility(View.INVISIBLE);
+                    addUserOption.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
         //Load user
-        userProfileUseCase.loadUser(2);
+        userProfileUseCase.loadUser(AuthHelper.getLoggedInUserId(this));
     }
 
     @Override

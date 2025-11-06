@@ -26,7 +26,7 @@
         android:layout_weight="1" />
 
     <!--Role-->
-    <com.lkms.ui.user_profile.view.RoleTag
+    <com.lkms.ui.user.view.RoleTag
         android:id="@+id/user_role"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
