@@ -29,7 +29,7 @@ public class AuthRepositoryImplJava implements IAuthRepository {
     @Override
     public void login(String email, String password, AuthCallback callback) {
         if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            callback.onError("Email và mật khẩu không được để trống.");
+            callback.onError("Email and password must not be empty.");
             return;
         }
 
@@ -68,17 +68,17 @@ public class AuthRepositoryImplJava implements IAuthRepository {
                         callback.onSuccess(authResult);
 
                     } else {
-                        callback.onError("Email hoặc mật khẩu không đúng.");
+                        callback.onError("Email or password is incorrect.");
                     }
 
                 } else {
-                    callback.onError("Email hoặc mật khẩu không đúng.");
+                    callback.onError("Email or password is incorrect.");
                 }
 
             } catch (IOException e) {
-                callback.onError("Lỗi kết nối Supabase: " + e.getMessage());
+                callback.onError("Supabase connection error: " + e.getMessage());
             } catch (Exception e) {
-                callback.onError("Đăng nhập thất bại: " + e.getMessage());
+                callback.onError("Login failed: " + e.getMessage());
             }
         }).start();
     }
