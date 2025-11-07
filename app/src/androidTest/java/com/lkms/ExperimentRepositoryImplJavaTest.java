@@ -224,4 +224,36 @@ public class ExperimentRepositoryImplJavaTest {
         // 5. Chờ 3 giây (giống hệt hàm mẫu) để thread async có thời gian hoàn thành
         Thread.sleep(3000);
     }
+
+    // ✅ 8. Test lấy danh sách Experiment đang thực hiện theo danh sách ID
+    @Test
+    public void testGetOngoingExperimentsByIds() throws InterruptedException {
+        // Danh sách ID bạn cung cấp
+        List<Integer> experimentIds = List.of(1, 49, 50, 51, 52, 53, 54, 55, 63, 2, 3);
+
+        System.out.println("🔍 Testing getOngoingExperimentsByIds() with IDs: " + experimentIds);
+
+        repo.getOngoingExperimentsByIds(
+                experimentIds,
+                new IExperimentRepository.ExperimentListCallback() {
+                    @Override
+                    public void onSuccess(List<Experiment> experiments) {
+                        System.out.println("✅ Returned " + experiments.size() + " ongoing experiments.");
+                        for (Experiment e : experiments) {
+                            System.out.println(" - ID: " + e.getExperimentId()
+                                    + " | Title: " + e.getExperimentTitle()
+                                    + " | Status: " + e.getExperimentStatus());
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        System.out.println("❌ Error fetching experiments: " + error);
+                    }
+                }
+        );
+
+        // Chờ thread async chạy xong
+        Thread.sleep(4000);
+    }
 }

@@ -71,7 +71,7 @@ public class SystemLoginActivity extends AppCompatActivity {
                 public void onSuccess(AuthResult result) {
                     runOnUiThread(() -> {
                         Toast.makeText(SystemLoginActivity.this,
-                                "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                "Login successful!", Toast.LENGTH_SHORT).show();
 
                         try {
                             MasterKey masterKey = new MasterKey.Builder(getApplicationContext()).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build();
@@ -90,7 +90,7 @@ public class SystemLoginActivity extends AppCompatActivity {
                             finish();
 
                         } catch (Exception e) {
-                            Toast.makeText(SystemLoginActivity.this, "Lưu token thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SystemLoginActivity.this, "Failed to save token: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -127,6 +127,7 @@ public class SystemLoginActivity extends AppCompatActivity {
             // 🔹 Kiểm tra hạn sử dụng
             Date expiresAt = decodedJWT.getExpiresAt();
             if (expiresAt == null || expiresAt.before(new Date())) {
+                clearLoginSession();
                 return false; // Hết hạn
             }
 

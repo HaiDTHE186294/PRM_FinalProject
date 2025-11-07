@@ -178,11 +178,17 @@ public class InventoryActivity extends AppCompatActivity {
                         startActivity(intent);
 
                     } catch (NumberFormatException e) {
-                        Toast.makeText(this, "Mã QR không hợp lệ!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "QR is invalid!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(this, "Scan cancelled", Toast.LENGTH_SHORT).show();
                 }
             });
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadInventoryItems();
+    }
 
 }
