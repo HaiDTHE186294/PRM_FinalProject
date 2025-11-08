@@ -121,7 +121,7 @@ public class CreateNewExperimentViewModel extends ViewModel {
                     public void onSuccess(int newExperimentId) {
                         // Tạo thành công, bây giờ mới trừ kho.
                         // --- GIAI ĐOẠN 3: TRỪ KHO ---
-                        deductUseCase.execute(currentProtocolId, new IInventoryRepository.GenericCallback() {
+                        deductUseCase.execute(currentProtocolId, userId, new IInventoryRepository.GenericCallback() {
                             @Override
                             public void onSuccess() {
                                 // Toàn bộ quá trình hoàn tất thành công!

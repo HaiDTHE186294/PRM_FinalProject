@@ -26,8 +26,7 @@ public class ProjectActivity extends AppCompatActivity {
     private ProjectAdapter projectAdapter;
     private ProgressBar progressBar;
     private FloatingActionButton fabAddProject;
-    private TextView tvEmptyState; // 👈 THÊM: Để hiển thị khi danh sách trống
-
+    private TextView tvEmptyState;
     private int currentUserId;
     private int currentUserRole;
 
@@ -39,7 +38,6 @@ public class ProjectActivity extends AppCompatActivity {
         currentUserId = AuthHelper.getLoggedInUserId(getApplicationContext());
         currentUserRole = AuthHelper.getLoggedInUserRole(getApplicationContext());
 
-        // 🔥 SỬA LỖI 2: KIỂM TRA ĐĂNG NHẬP
         if (currentUserId == -1) {
             Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_LONG).show();
             finish();
@@ -49,7 +47,7 @@ public class ProjectActivity extends AppCompatActivity {
         ProjectViewModelFactory factory = new ProjectViewModelFactory();
         viewModel = new ViewModelProvider(this, factory).get(ProjectViewModel.class);
 
-        initViews(); // Đổi tên thành initViews để dễ đọc hơn
+        initViews();
         setupViews();
         setupObservers();
         setupClickListeners();
@@ -57,7 +55,6 @@ public class ProjectActivity extends AppCompatActivity {
         viewModel.loadMyProjects(currentUserId);
     }
 
-    // Đổi tên thành initViews để rõ ràng hơn
     private void initViews() {
         progressBar = findViewById(R.id.progressBar);
         fabAddProject = findViewById(R.id.fabAddProject);
@@ -66,7 +63,6 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     private void setupViews() {
-        // Khởi tạo Adapter và RecyclerView
         projectAdapter = new ProjectAdapter(project -> {
             Intent intent = new Intent(ProjectActivity.this, ProjectDetailActivity.class);
             intent.putExtra("PROJECT_ID", project.getProjectId());
@@ -90,7 +86,6 @@ public class ProjectActivity extends AppCompatActivity {
     }
 
     private void showCreateProjectDialog() {
-        // ... (Giữ nguyên logic tạo Dialog)
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_project, null);
         final EditText input = dialogView.findViewById(R.id.etProjectTitle);
 
@@ -128,8 +123,6 @@ public class ProjectActivity extends AppCompatActivity {
 
             // Cập nhật Adapter
             projectAdapter.setProjects(projects);
-
-            // 🔥 SỬA LỖI 3: Xử lý Trạng thái Trống (Empty State)
             if (isEmpty) {
                 recyclerView.setVisibility(View.GONE);
                 tvEmptyState.setVisibility(View.VISIBLE);
@@ -142,7 +135,6 @@ public class ProjectActivity extends AppCompatActivity {
         viewModel.newProjectId.observe(this, newId -> {
             if (newId != null) {
                 Toast.makeText(this, "Create success with Project ID: " + newId, Toast.LENGTH_SHORT).show();
-                // Tải lại danh sách để hiển thị dự án mới
                 viewModel.loadMyProjects(currentUserId);
             }
         });

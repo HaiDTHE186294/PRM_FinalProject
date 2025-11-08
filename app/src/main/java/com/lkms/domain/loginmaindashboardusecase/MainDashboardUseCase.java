@@ -58,6 +58,16 @@ public class MainDashboardUseCase {
                             }
 
                             if (remaining.decrementAndGet() == 0) {
+                                resultList.sort((b1, b2) -> {
+                                    try {
+                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                        Date d1 = sdf.parse(b1.getStartTime());
+                                        Date d2 = sdf.parse(b2.getStartTime());
+                                        return d1.compareTo(d2);
+                                    } catch (Exception e) {
+                                        return 0;
+                                    }
+                                });
                                 callback.onSuccess(resultList);
                             }
                         }

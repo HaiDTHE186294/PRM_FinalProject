@@ -2,6 +2,7 @@ package com.lkms.ui.project.projectdetail; // Đặt chung package với Activit
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lkms.R;
+import com.lkms.data.model.java.Experiment;
+import com.lkms.ui.experimentInfo.ExperimentInfoActivity;
 import com.lkms.ui.project.projectmanage.ProjectViewModel;
 import com.lkms.ui.protocol.ProtocolListActivity;
 
-public class ProjectInfoFragment extends Fragment {
+public class ProjectInfoFragment extends Fragment implements ExperimentAdapter.OnExperimentClickListener{
 
     private ProjectViewModel viewModel; // Dùng chung ViewModel của Activity
     private int projectId;
@@ -75,7 +78,7 @@ public class ProjectInfoFragment extends Fragment {
 
         rvExperiments = view.findViewById(R.id.recyclerViewExperiments);
         rvExperiments.setLayoutManager(new LinearLayoutManager(getContext()));
-        experimentAdapter = new ExperimentAdapter();
+        experimentAdapter = new ExperimentAdapter(this);
         rvExperiments.setAdapter(experimentAdapter);
         rvExperiments.setNestedScrollingEnabled(false);
 
@@ -103,5 +106,19 @@ public class ProjectInfoFragment extends Fragment {
 
         viewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
         });
+    }
+
+    @Override
+    public void onExperimentClick(Experiment experiment) {
+        int experimentId = experiment.getExperimentId();
+        Log.d("EXPERIMENT_CLICK", "Clicked Experiment ID: " + experimentId);
+
+        if (experimentId != -1) {
+            Intent intent = new Intent(requireContext(), ExperimentInfoActivity.class);
+            intent.putExtra("experimentId", experimentId);
+            startActivity(intent);
+        } else {
+            Toast.makeText(requireContext(), "Experiment ID không hợp lệ!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

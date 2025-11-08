@@ -2,16 +2,25 @@ package com.lkms.data.repository.implement.java;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.lkms.data.model.java.InventoryTransaction;
 import com.lkms.data.model.java.Item;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.SDS;
 import com.lkms.data.repository.IInventoryRepository;
+import com.lkms.util.AuthHelper;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.lkms.BuildConfig.SUPABASE_URL;
+
+import android.util.Log;
 
 public class InventoryRepositoryImplJava implements IInventoryRepository {
 
@@ -20,6 +29,7 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
     // Tên bảng Supabase
     private static final String ITEM_TABLE = "Item";
     private static final String SDS_TABLE = "SDS";
+    private static final String INVT_TRANS_TABLE = "InventoryTransaction";
 
     // -------------------- GET ALL INVENTORY ITEMS --------------------
     @Override
@@ -267,7 +277,6 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
         }).start();
     }
 
-    // -------------------- NOT IMPLEMENTED YET --------------------
     @Override
     public void logInventoryTransaction(
             int itemId,
@@ -276,11 +285,78 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
             String transactionType,
             TransactionIdCallback callback
     ) {
-        if (callback != null) {
-            callback.onError("Chưa được triển khai.");
-        }
+        new Thread(() -> {
+            if (callback == null) {
+                // Log an error or handle silently if no callback is provided
+                return;
+            }
+            String jsonBody = "";
+            try {
+                String endpoint = SUPABASE_URL + "/rest/v1/" + INVT_TRANS_TABLE + "?select=*";
+
+                // Build request body
+                Map<String, Object> request = new HashMap<>();
+                request.put("transactionType", transactionType);
+                request.put("itemId", itemId);
+                request.put("userId", userId);
+                request.put("quantity", quantityChange);
+                request.put("transactionStatus", "ACCEPT");
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String formattedDate = sdf.format(new Date());
+                request.put("transactionTime", formattedDate);
+
+                jsonBody = gson.toJson(request);
+                String response = HttpHelper.postJson(endpoint, jsonBody);
+
+                // The response will be an array with the newly created object, e.g., [{"transactionId": 123}]
+                Type listType = new TypeToken<List<InventoryTransaction>>() {}.getType();
+                List<InventoryTransaction> createdTransactions = gson.fromJson(response, listType);
+
+                if (createdTransactions != null && !createdTransactions.isEmpty()) {
+                    callback.onSuccess(createdTransactions.get(0).getTransactionId());
+                } else {
+                    callback.onError(jsonBody + "\n" + response);
+                }
+            } catch (Exception e) {
+                callback.onError("Failed to log transaction: " + (e.getMessage() != null ? e : "Unknown error") + "\n Body: " + jsonBody);
+            }
+        }).start();
     }
 
+    @Override
+    public void getInventoryTransaction(int itemId, InventoryTransactionListCallback callback) {
+        new Thread(() -> {
+            if (callback == null) {
+                return; // Silently exit if no callback is provided
+            }
+            try {
+                // Construct the endpoint to get all transactions for a specific itemId
+                String endpoint = SUPABASE_URL + "/rest/v1/" + INVT_TRANS_TABLE + "?select=*&itemId=eq." + itemId;
+
+                // Make the GET request
+                String jsonResponse = HttpHelper.getJson(endpoint);
+
+                // Define the type for a list of InventoryTransaction objects
+                Type listType = new TypeToken<List<InventoryTransaction>>() {}.getType();
+                List<InventoryTransaction> transactions = gson.fromJson(jsonResponse, listType);
+
+                // Check the result and call the appropriate callback method
+                if (transactions != null) {
+                    callback.onSuccess(transactions); // Return the list, even if it's empty
+                } else {
+                    // This case is unlikely with Gson but included for safety
+                    callback.onError("Failed to retrieve transactions. Server returned a null response.");
+                }
+            } catch (Exception e) {
+                // Handle any exceptions during the network call or parsing
+                String errorMessage = "Error fetching inventory transactions: " + (e.getMessage() != null ? e.getMessage() : "Unknown error");
+                callback.onError(errorMessage);
+            }
+        }).start();
+    }
+
+    // -------------------- NOT IMPLEMENTED YET --------------------
     @Override
     public void processInventoryApproval(
             int transactionId,
@@ -313,7 +389,8 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
             }
         }).start();
     }
-    public void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback) {
+
+    public void deductStock(List<ProtocolItem> itemsToDeduct, int userId, GenericCallback callback) {
         final String TAG = "DeductStock_OldMethod";
         new Thread(() -> {
             try {
@@ -350,6 +427,24 @@ public class InventoryRepositoryImplJava implements IInventoryRepository {
                     String patchBody = "{\"quantity\": " + newQuantity + "}";
                     android.util.Log.d(TAG, "Thực hiện PATCH cho Item ID " + currentItem.getItemId() + " với body: " + patchBody);
                     HttpHelper.patchJson(updateUrl, patchBody);
+
+                    // 4. Log giao dịch
+
+                    logInventoryTransaction(
+                            itemToDeduct.getItemId(),
+                            userId,
+                            0 - quantityNeeded,
+                            "Used for Experiment",
+                            new TransactionIdCallback() {
+                                @Override
+                                public void onSuccess(int transactionId) {
+                                }
+
+                                @Override
+                                public void onError(String errorMessage) {
+                                }
+                            }
+                    );
                 }
 
                 android.util.Log.i(TAG, "Trừ kho theo phương pháp cũ thành công.");

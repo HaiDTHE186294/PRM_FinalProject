@@ -15,6 +15,15 @@ import java.util.List;
 public class ExperimentAdapter extends RecyclerView.Adapter<ExperimentAdapter.ExperimentViewHolder> {
 
     private List<Experiment> experiments = new ArrayList<>();
+    private final OnExperimentClickListener listener;
+
+    public interface OnExperimentClickListener {
+        void onExperimentClick(Experiment experiment);
+    }
+
+    public ExperimentAdapter(OnExperimentClickListener listener) {
+        this.listener = listener;
+    }
 
     public void setExperiments(List<Experiment> newExperiments) {
         this.experiments.clear();
@@ -32,7 +41,7 @@ public class ExperimentAdapter extends RecyclerView.Adapter<ExperimentAdapter.Ex
 
     @Override
     public void onBindViewHolder(@NonNull ExperimentViewHolder holder, int position) {
-        holder.bind(experiments.get(position));
+        holder.bind(experiments.get(position), listener);
     }
 
     @Override
@@ -50,9 +59,10 @@ public class ExperimentAdapter extends RecyclerView.Adapter<ExperimentAdapter.Ex
             tvSecondary = itemView.findViewById(R.id.tvProjectLeader);
         }
 
-        public void bind(Experiment experiment) {
+        public void bind(Experiment experiment, OnExperimentClickListener listener) {
             tvPrimary.setText(experiment.getExperimentTitle());
             tvSecondary.setText("Status: " + experiment.getExperimentStatus());
+            itemView.setOnClickListener(v -> listener.onExperimentClick(experiment));
         }
     }
 }

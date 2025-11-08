@@ -21,6 +21,10 @@ public interface IUserRepository {
         void onError(String errorMessage);
     }
 
+    interface MemberExistsCallback {
+        void onResult(boolean exists);
+        void onError(String errorMessage);
+    }
     //endregion
 
     //region //Chức năng Quản lý Hồ sơ Cá nhân (UC14)
@@ -32,6 +36,14 @@ public interface IUserRepository {
 //     * @param password password người dùng nhập vào
 //     */
 //    void getUser(String email, String password);
+
+    /**
+     * Tạo người dùng mới
+     *
+     * @param user Người dùng mới
+     * @param callback Callback để xử lý kết quả
+     */
+    void addUser(User user, UserCallback callback);
 
     /**
      * UC14: Lấy dữ liệu người dùng dựa trên ID của người dùng đó
@@ -79,11 +91,12 @@ public interface IUserRepository {
      */
     void searchUsers(String query, UserListCallback callback);
 
+    /**
+     * Kiểm tra xem người dùng có tồn tại trong bảng "User" hay không.
+     *
+     * @param userId
+     * @param experimentId
+     * @param callback
+     */
     void checkIfMemberExists(int userId, int experimentId, MemberExistsCallback callback);
-
-    // Interface callback mới
-    interface MemberExistsCallback {
-        void onResult(boolean exists);
-        void onError(String errorMessage);
-    }
 }

@@ -2,6 +2,7 @@ package com.lkms.ui.inventory;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,11 +12,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.lkms.R;
 import com.lkms.data.model.java.Item;
 import com.lkms.data.repository.IInventoryRepository;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
-import com.lkms.domain.inventoryusecase.InventoryManagementUseCase;
+import com.lkms.domain.inventory.InventoryManagementUseCase;
 
 public class ItemDetailActivity extends AppCompatActivity {
     private TextView tvItemName, tvItemCas, tvItemLotNumber, tvItemQuantity, tvItemUnit, tvItemLocation, tvItemExpiration;
@@ -62,7 +64,8 @@ public class ItemDetailActivity extends AppCompatActivity {
                 @Override
                 public void onError(String errorMessage) {
                     runOnUiThread(() -> {
-                        Toast.makeText(ItemDetailActivity.this, "Error: " + errorMessage, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(ItemDetailActivity.this, "Error: " + errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("ItemDetailActivityERROR", "Error:" + errorMessage);
                     });
                 }
             });
@@ -70,5 +73,36 @@ public class ItemDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid Item ID", Toast.LENGTH_SHORT).show();
         }
 
+        //Edit button
+        MaterialButton fabEditItem = findViewById(R.id.btn_edit);
+        fabEditItem.setOnClickListener( v -> {
+
+            Intent newIntent = new Intent(ItemDetailActivity.this, ItemAddUpdateActivity.class);
+            newIntent.putExtra("UPDATE_ITEM_ID", itemId);
+
+            startActivity(newIntent);
+        });
+
+        //Checkin button
+        MaterialButton fabCheckinItem = findViewById(R.id.btn_check_in);
+        fabCheckinItem.setOnClickListener( v -> {
+
+            Intent newIntent = new Intent(ItemDetailActivity.this, CheckInCheckOutActivity.class);
+            newIntent.putExtra("MODE", "checkin");
+            newIntent.putExtra("ITEM_ID", itemId);
+
+            startActivity(newIntent);
+        });
+
+        //Edit button
+        MaterialButton fabCheckoutItem = findViewById(R.id.btn_check_out);
+        fabCheckoutItem.setOnClickListener( v -> {
+
+            Intent newIntent = new Intent(ItemDetailActivity.this, CheckInCheckOutActivity.class);
+            newIntent.putExtra("MODE", "checkout");
+            newIntent.putExtra("ITEM_ID", itemId);
+
+            startActivity(newIntent);
+        });
     }
 }
