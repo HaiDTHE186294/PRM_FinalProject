@@ -17,7 +17,7 @@ import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 import java.util.List;
 
 public class CreateNewExperimentViewModel extends ViewModel {
-    // --- Khai báo các UseCase ---
+
     private final CreateFullExperimentUseCase createUseCase;
     private final DeductInventoryForExperimentUseCase deductUseCase;
     private final CheckInventoryUseCase checkUseCase;
@@ -25,7 +25,6 @@ public class CreateNewExperimentViewModel extends ViewModel {
     private final GetAvailableProjectsUseCase getProjectsUseCase;
 
     // --- LiveData cho giao diện ---
-    // ⭐ SỬA LỖI SONARQUBE: Đổi tên biến theo quy tắc (bỏ dấu gạch dưới, thay bằng 'm') ⭐
     private final MutableLiveData<Boolean> mIsLoading = new MutableLiveData<>(false);
     public final LiveData<Boolean> isLoading = mIsLoading;
     private final MutableLiveData<String> mError = new MutableLiveData<>();
@@ -39,7 +38,6 @@ public class CreateNewExperimentViewModel extends ViewModel {
 
     private int currentProtocolId = -1;
 
-    // Constructor đã đúng, không cần sửa
     public CreateNewExperimentViewModel(
             CreateFullExperimentUseCase createUseCase,
             DeductInventoryForExperimentUseCase deductUseCase,
@@ -54,7 +52,6 @@ public class CreateNewExperimentViewModel extends ViewModel {
         this.getProjectsUseCase = getProjectsUseCase;
     }
 
-    // SỬA: Dùng postValue và biến đã đổi tên
     public void loadInitialData(int protocolId) {
         if (protocolId == -1) {
             mError.postValue("Protocol ID không hợp lệ.");
@@ -80,7 +77,6 @@ public class CreateNewExperimentViewModel extends ViewModel {
         });
     }
 
-    // SỬA: Dùng postValue và biến đã đổi tên
     private void loadProjects() {
         getProjectsUseCase.execute(new IProjectRepositoryVjet.ProjectListCallback() {
             @Override public void onSuccess(List<Project> result) {
@@ -94,7 +90,6 @@ public class CreateNewExperimentViewModel extends ViewModel {
         });
     }
 
-    // SỬA: Dùng postValue và biến đã đổi tên
     public void createExperiment(String title, String objective, Project selectedProject, int userId) {
         if (title == null || title.trim().isEmpty()) { mError.postValue("Tên thí nghiệm không được để trống."); return; }
         if (currentProtocolId == -1) { mError.postValue("Protocol không hợp lệ."); return; }
@@ -117,7 +112,6 @@ public class CreateNewExperimentViewModel extends ViewModel {
         });
     }
 
-    // SỬA: Dùng postValue và biến đã đổi tên
     private void createAndDeduct(String title, String objective, Project selectedProject, int userId) {
         // --- GIAI ĐOẠN 2: TẠO EXPERIMENT ---
         createUseCase.execute(

@@ -22,6 +22,4 @@ public interface IProjectRepositoryVjet {
      */
     void getAllProjects(ProjectListCallback callback);
 
-    // Bạn có thể thêm các hàm khác ở đây trong tương lai,
-    // ví dụ: getProjectById, createProject,...
 }

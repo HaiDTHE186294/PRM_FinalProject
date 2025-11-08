@@ -13,7 +13,6 @@ public class AddMemberViewModel extends ViewModel {
     private final AddMemberUseCase addMemberUseCase;
     private final AddMemberToTeamUseCase addMemberToTeamUseCase;
 
-    // ⭐ SỬA 1: Chuyển các LiveData thành private để đảm bảo tính đóng gói
     private final LiveData<List<User>> searchResults;
     private final LiveData<String> error;
     private final LiveData<Boolean> addMembersSuccess;
@@ -30,7 +29,6 @@ public class AddMemberViewModel extends ViewModel {
         this.addMembersError = addMemberToTeamUseCase.getAddMembersError();
     }
 
-    // ⭐ SỬA 2: Cung cấp các phương thức getter công khai (public)
     public LiveData<List<User>> getSearchResults() {
         return searchResults;
     }

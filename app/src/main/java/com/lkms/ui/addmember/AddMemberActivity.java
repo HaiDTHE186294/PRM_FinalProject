@@ -67,7 +67,7 @@ public class AddMemberActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         adapter = new UserSearchAdapter((user, isNowSelected) -> {
-            // ⭐ SỬA LẠI: Khôi phục logic quan trọng đã bị xóa nhầm
+            // Khôi phục logic quan trọng đã bị xóa nhầm
             // 1. Ra lệnh cho Adapter tự cập nhật trạng thái lựa chọn nội bộ của nó
             adapter.toggleSelection(user);
 

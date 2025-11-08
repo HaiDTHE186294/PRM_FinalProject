@@ -2,10 +2,8 @@ package com.lkms.domain;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
 import com.lkms.data.model.java.User;
 import com.lkms.data.repository.IUserRepository;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +33,7 @@ public class AddMemberUseCase {
     }
 
     /**
-     * ⭐ HÀM LOGIC CHÍNH ⭐
+
      * Thực hiện tìm kiếm người dùng và lọc ra những người chưa có trong team.
      * Độ phức tạp đã được giảm bằng cách tách logic ra các hàm con.
      */
@@ -94,9 +92,8 @@ public class AddMemberUseCase {
 
             @Override
             public void onError(String errorMessage) {
-                // ⭐ SỬA: Xóa dòng code bị comment theo yêu cầu của SonarQube.
                 // Ghi log lỗi ở đây nếu cần thiết cho việc debug:
-                // Log.e(TAG, "Lỗi khi kiểm tra user " + user.getUserId() + ": " + errorMessage);
+
 
                 // Bỏ qua lỗi và vẫn kiểm tra xem đã xong hết chưa
                 finalizeIfAllTasksDone(counter, filteredUsers);

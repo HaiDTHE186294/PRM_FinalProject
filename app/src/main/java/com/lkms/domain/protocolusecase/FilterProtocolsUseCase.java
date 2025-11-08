@@ -1,4 +1,4 @@
-package com.lkms.domain.protocolusecase; // Khai báo file này thuộc package domain
+package com.lkms.domain.protocolusecase;
 
 import com.lkms.data.repository.IProtocolRepository;
 

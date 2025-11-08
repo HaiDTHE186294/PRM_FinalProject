@@ -1,7 +1,4 @@
-// File: IProtocolRepository.java
 package com.lkms.data.repository;
-
-// Sử dụng trực tiếp các model ánh xạ DB
 import com.lkms.data.model.java.*;
 import java.util.List;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus;

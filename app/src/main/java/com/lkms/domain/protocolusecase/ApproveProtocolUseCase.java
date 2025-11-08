@@ -17,16 +17,16 @@ public class ApproveProtocolUseCase {
     }
 
     /**
-     * ✅ BƯỚC 2: THAY ĐỔI CHỮ KÝ PHƯƠNG THỨC
+     *  THAY ĐỔI CHỮ KÝ PHƯƠNG THỨC
      * Phương thức execute vẫn nhận vào boolean để giữ cho tầng trên (ViewModel) đơn giản.
      * UseCase sẽ chịu trách nhiệm chuyển đổi sang Enum.
      */
     public void execute(int protocolId, int approverUserId, boolean approved, String reason, IProtocolRepository.GenericCallback callback) {
-        // ✅ BƯỚC 3: THÊM LOGIC CHUYỂN ĐỔI
+        //THÊM LOGIC CHUYỂN ĐỔI
         // Chuyển đổi giá trị boolean thành Enum tương ứng.
         ProtocolApproveStatus newStatus = approved ? ProtocolApproveStatus.APPROVED : ProtocolApproveStatus.REJECTED;
 
-        // ✅ BƯỚC 4: GỌI REPOSITORY VỚI THAM SỐ ENUM
+        // GỌI REPOSITORY VỚI THAM SỐ ENUM
         // Bây giờ, tham số truyền vào đã khớp với chữ ký mới của hàm trong IProtocolRepository.
         repository.approveProtocol(protocolId, approverUserId, newStatus, reason, callback);
     }
