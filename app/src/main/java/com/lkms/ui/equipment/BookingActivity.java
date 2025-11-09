@@ -50,26 +50,19 @@ public class BookingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking);
 
-        // --- SỬA LỖI 1: Khởi tạo ViewModel một lần duy nhất ---
         int userId = AuthHelper.getLoggedInUserId(getApplicationContext());
         if (userId == -1) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_LONG).show();
             finish();
-            return; // Đảm bảo thoát ngay
+            return;
         }
 
-        // Khởi tạo Factory và ViewModel (Sử dụng 'this.viewModel')
         BookingViewModelFactory factory = new BookingViewModelFactory(userId);
         this.viewModel = new ViewModelProvider(this, factory).get(BookingViewModel.class);
-        // --------------------------------------------------------
 
         initUI();
         setupViewModel();
         setupActions();
-
-        // KHÔNG CẦN gọi setupExperimentSpinner() ở đây, nó sẽ được gọi trong setupViewModel()
-        // sau khi quan sát LiveData. Tuy nhiên, nếu bạn muốn gọi logic đó ngay,
-        // bạn có thể gọi viewModel.loadExperiments() ở đây
         this.viewModel.loadExperiments();
 
         startBookingRefresh();
@@ -124,7 +117,6 @@ public class BookingActivity extends AppCompatActivity {
         btnBook.setOnClickListener(v -> viewModel.bookEquipment());
     }
 
-    // SỬA LỖI 2: Hàm này giờ nhận List<Experiment> từ LiveData
     private void setupExperimentSpinner(List<Experiment> list) {
         if (list == null || list.isEmpty()) {
             Toast.makeText(this, "No ongoing experiments found.", Toast.LENGTH_LONG).show();
@@ -143,7 +135,6 @@ public class BookingActivity extends AppCompatActivity {
         spinnerExperiment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int pos, long id) {
-                // Đảm bảo experiment tồn tại
                 if (pos >= 0 && pos < experiments.size()) {
                     viewModel.selectExperiment(experiments.get(pos).getExperimentId());
                 }
@@ -155,14 +146,12 @@ public class BookingActivity extends AppCompatActivity {
 
         });
 
-        // Chọn Experiment đầu tiên làm mặc định
         if (!experiments.isEmpty()) {
             viewModel.selectExperiment(experiments.get(0).getExperimentId());
         }
     }
 
     private void showCalendar(boolean isStart) {
-        // ... (Giữ nguyên logic showCalendar)
         List<LocalDate> blocked = viewModel.bookedDays.getValue();
         Calendar now = Calendar.getInstance();
 
@@ -173,13 +162,11 @@ public class BookingActivity extends AppCompatActivity {
 
                     LocalDate selected = LocalDate.of(year, month + 1, day);
 
-                    // Kiểm tra xem ngày được chọn có bị block không
                     if (blocked != null && blocked.contains(selected)) {
                         Toast.makeText(this, "This date is booked!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    // Kiểm tra ngày phải là ngày hiện tại hoặc sau đó
                     if (selected.isBefore(LocalDate.now())) {
                         Toast.makeText(this, "Cannot select past date!", Toast.LENGTH_SHORT).show();
                         return;
@@ -199,10 +186,9 @@ public class BookingActivity extends AppCompatActivity {
     }
 
     private void highlightBookedDates(List<LocalDate> days) {
-        // ... (Giữ nguyên logic highlightBookedDates)
         if (days == null || days.isEmpty()) {
             calendarView.setEvents(new ArrayList<>());
-            calendarView.setDisabledDays(new ArrayList<>()); // Cần xóa disabled days
+            calendarView.setDisabledDays(new ArrayList<>());
             return;
         }
 
@@ -231,7 +217,7 @@ public class BookingActivity extends AppCompatActivity {
             @Override
             public void run() {
                 viewModel.loadBookedDays();
-                handler.postDelayed(this, 3000); // Tải lại mỗi 3 giây
+                handler.postDelayed(this, 3000);
             }
         };
         handler.post(runnable);
