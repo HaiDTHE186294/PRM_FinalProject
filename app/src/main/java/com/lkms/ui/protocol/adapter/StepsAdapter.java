@@ -58,7 +58,6 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
                 }
             });
 
-            // Sửa lỗi SonarQube bằng cách thêm bình luận giải thích cho các phương thức trống
             stepInstructionEdit.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -82,7 +81,6 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
 
         void bind(ProtocolStep step) {
             stepOrderText.setText(String.format("%d.", getAdapterPosition() + 1));
-            //step.setStepOrder(getAdapterPosition() + 1); // Loại bỏ dòng này để việc gán stepOrder chỉ diễn ra khi lưu
             stepInstructionEdit.setText(step.getInstruction());
         }
     }
