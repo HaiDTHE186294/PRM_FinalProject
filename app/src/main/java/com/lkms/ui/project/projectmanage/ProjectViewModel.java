@@ -135,10 +135,8 @@ public class ProjectViewModel extends ViewModel {
                 _projectExperiments.postValue(experiments);
             }
             @Override
-            public void onError(String error) { /* Bỏ qua hoặc gộp lỗi */ }
+            public void onError(String error) { }
         });
-
-        // Giả định tải xong hết (có thể cải thiện bằng cách đợi tất cả)
         _isLoading.postValue(false);
     }
 

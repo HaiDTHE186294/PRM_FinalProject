@@ -1,5 +1,7 @@
 package com.lkms.data.model.java;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,4 +45,11 @@ public class Experiment {
     // Khóa ngoại đến Project
     @SerializedName("projectId")
     private Integer projectId;
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.experimentTitle;
+    }
+
 }
