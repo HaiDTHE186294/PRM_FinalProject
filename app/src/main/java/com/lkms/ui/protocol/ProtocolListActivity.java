@@ -1,4 +1,4 @@
-// File: ProtocolListActivity.java
+
 package com.lkms.ui.protocol;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-// ✅ BƯỚC 1: THÊM IMPORT CHO FLOATINGACTIONBUTTON
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.lkms.R;
@@ -35,7 +35,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
     private EditText versionNumberInput;
     private Button filterButton;
 
-    // ✅ BƯỚC 2: KHAI BÁO BIẾN CHO NÚT MỚI
+    // KHAI BÁO BIẾN CHO NÚT MỚI
     private FloatingActionButton fabNewProtocol;
 
     @Override
@@ -50,8 +50,14 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         setupViewModel();
         setupFilterControls();
 
-        // ✅ BƯỚC 3: GỌI HÀM SETUP CHO NÚT MỚI
+        //GỌI HÀM SETUP CHO NÚT MỚI
         setupFab();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.loadLatestApprovedLibrary();
     }
 
     /**
@@ -65,7 +71,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         versionNumberInput = findViewById(R.id.edittext_version_number);
         filterButton = findViewById(R.id.button_filter);
 
-        // ✅ BƯỚC 4: ÁNH XẠ NÚT MỚI TỪ LAYOUT
+        // ÁNH XẠ NÚT MỚI TỪ LAYOUT
         fabNewProtocol = findViewById(R.id.fab_new_protocol);
     }
 
@@ -79,22 +85,40 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         recyclerView.setAdapter(protocolAdapter);
     }
 
-    /**
-     * Cài đặt listener cho thanh tìm kiếm.
-     */
     private void setupSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            /**
+             * Được gọi khi người dùng nhấn nút "submit" (hoàn thành) trên bàn phím.
+             * Chúng ta có thể để trống hoặc gọi tìm kiếm ở đây.
+             */
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // Gọi tìm kiếm để chắc chắn rằng kết quả cuối cùng được cập nhật
                 viewModel.searchProtocols(query);
+                // Ẩn bàn phím đi cho gọn gàng
+                searchView.clearFocus();
                 return true;
             }
 
+            /**
+             * Được gọi mỗi khi có bất kỳ thay đổi nào trong ô tìm kiếm (thêm/xóa ký tự).
+             * Đây là nơi chúng ta sẽ thực hiện tìm kiếm real-time.
+             */
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.isEmpty()) {
+                // ======================= BẮT ĐẦU SỬA ĐỔI =======================
+                // `trim()` sẽ loại bỏ các dấu cách thừa ở đầu và cuối chuỗi.
+                String trimmedText = newText.trim();
+
+                if (trimmedText.isEmpty()) {
+                    // Nếu sau khi bỏ dấu cách, chuỗi rỗng thì tải lại danh sách gốc.
                     viewModel.loadLatestApprovedLibrary();
+                } else {
+                    // Ngược lại, thực hiện tìm kiếm với nội dung người dùng đang gõ.
+                    // Việc này sẽ xử lý được cả các chuỗi có chứa dấu cách ở giữa.
+                    viewModel.searchProtocols(trimmedText);
                 }
+                // ======================== KẾT THÚC SỬA ĐỔI ========================
                 return true;
             }
         });
@@ -123,12 +147,12 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
     }
 
     /**
-     * ✅ BƯỚC 5: TẠO HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
+     * HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
      * Cài đặt sự kiện click cho nút FloatingActionButton.
      */
-    private void setupFab() {
-        fabNewProtocol.setOnClickListener(view -> {
-            Toast.makeText(this, "Mở màn hình tạo protocol mới...", Toast.LENGTH_SHORT).show();
+    private void setupFab() {fabNewProtocol.setOnClickListener(view -> {
+        Intent intent = new Intent(ProtocolListActivity.this, CreateProtocolActivity.class);
+        startActivity(intent);
         });
     }
 
@@ -141,7 +165,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
 
         viewModel.getProtocols().observe(this, protocols -> {
             if (protocols != null) {
-                // Lưu ý: Nếu bạn đã áp dụng Enum và thay đổi interface, bạn cần sửa lại Adapter và cả onItemClick bên dưới
+
                 protocolAdapter.submitList(protocols);
             }
         });

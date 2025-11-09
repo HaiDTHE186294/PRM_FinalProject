@@ -2,6 +2,7 @@ package com.lkms.ui.experimentdetail;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,8 +20,7 @@ import com.lkms.ui.experimentdetail.adapter.ExperimentDetailAdapter;
 
 public class ExperimentDetailActivity extends AppCompatActivity implements ExperimentDetailAdapter.OnStepClickListener {
 
-    public static final String EXTRA_EXPERIMENT_ID = "EXTRA_EXPERIMENT_ID";
-    private static final int MOCK_EXPERIMENT_ID = 1;
+    public static final String EXTRA_EXPERIMENT_ID = "experimentId";
 
     private RecyclerView recyclerView;
     private ExperimentDetailAdapter adapter; // Adapter
@@ -42,27 +42,40 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
             return insets;
         });
 
+        String statusText = getIntent().getStringExtra("status");
 
         // 1. Khởi tạo Adapter CHỈ MỘT LẦN
-        adapter = new ExperimentDetailAdapter(this);
+        adapter = new ExperimentDetailAdapter(this, this, statusText);
 
         // 2. Setup RecyclerView
         recyclerView = findViewById(RECYCLER_VIEW_ID);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter); // Gán adapter rỗng vào
+        recyclerView.setAdapter(adapter);
 
-        // 3. Khởi tạo ViewModel (Giả sử Factory đã được sửa)
-        ExperimentDetailViewModelFactory factory = new ExperimentDetailViewModelFactory(
-        );
+        TextView tilte = findViewById(R.id.tilte);
+        TextView status = findViewById(R.id.status);
+        TextView objectiveText = findViewById(R.id.objectiveText);
+
+        // 3. Khởi tạo ViewModel
+        ExperimentDetailViewModelFactory factory = new ExperimentDetailViewModelFactory();
 
         viewModel = new ViewModelProvider(this, factory).get(ExperimentDetailViewModel.class);
 
         // 4. Lắng nghe ViewModel
         observeViewModel();
 
+        int  experimentId = getIntent().getIntExtra(EXTRA_EXPERIMENT_ID, -1);
+        if (experimentId == -1) {
+            Toast.makeText(this, "Không tìm thấy experimentId", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         // 5. Gọi hàm MỚI của ViewModel để tải dữ liệu
-        viewModel.loadExperimentData(getExperimentId());
+        viewModel.loadExperimentData(experimentId);
 
+        tilte.setText(getIntent().getStringExtra("title"));
+        status.setText(statusText);
+        objectiveText.setText(getIntent().getStringExtra("objective"));
     }
 
     private void observeViewModel() {
@@ -93,29 +106,9 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         });
     }
 
-    private int getExperimentId() {
-        String experimentIdStr = getIntent().getStringExtra(EXTRA_EXPERIMENT_ID);
-        if (experimentIdStr == null || experimentIdStr.isEmpty()) {
-            Toast.makeText(this, "Using MOCK Experiment ID: " + MOCK_EXPERIMENT_ID, Toast.LENGTH_SHORT).show();
-            return MOCK_EXPERIMENT_ID;
-        }
-        try {
-            return Integer.parseInt(experimentIdStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Error: Invalid ID format. Using MOCK ID.", Toast.LENGTH_LONG).show();
-            return MOCK_EXPERIMENT_ID;
-        }
-    }
-
-
     @Override
     public void onStepExpandClicked(int stepId, int adapterPosition) {
-        Toast.makeText(this, "Clicked: " + stepId, Toast.LENGTH_SHORT).show();
-        // TODO: Gọi logic expand/collapse
-        // Ví dụ: viewModel.loadLogsForStep(stepId, adapterPosition);
-        // Sau đó, khi có kết quả, gọi: adapter.insertLogsForStep(logList, adapterPosition);
         viewModel.loadLogFromStep(stepId, adapterPosition);
     }
-
 
 }

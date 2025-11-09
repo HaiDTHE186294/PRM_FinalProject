@@ -3,7 +3,6 @@ package com.lkms.data.repository;
 import com.lkms.data.model.java.*;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +41,16 @@ public interface IInventoryRepository {
     interface GenericCallback {
         void onSuccess();
         void onError(String errorMessage);
+    }
+
+    public interface InventoryDisplayListCallback {
+        void onSuccess(List<InventoryDisplayItem> displayItems);
+        void onError(String errorMessage);
+    }
+
+    public interface InventoryTransactionListCallback {
+        void onSuccess(List<InventoryTransaction> transactions);
+        void onError(String message);
     }
 
     // --- Chức năng Tra cứu và Hiển thị Tồn kho (UC7, UC11) ---
@@ -89,6 +98,12 @@ public interface IInventoryRepository {
             TransactionIdCallback callback
     );
 
+    /**
+     * UC08: Lấy danh sách giao dịch tồn kho (Check In/Check Out) dựa trên id của 1 item.
+     * Truy vấn bảng "InventoryTransaction" [2]..
+     */
+    void getInventoryTransaction(int itemId, InventoryTransactionListCallback callback);
+
     // --- Chức năng Phê duyệt Tồn kho (Approval - Dành cho Lab Manager) ---
 
     /**
@@ -109,4 +124,33 @@ public interface IInventoryRepository {
 
 
     void addSds(String casNumber, String fileUrl, IdCallback callback);
+
+    // --- Chức năng Lấy thông tin Item theo itemId ---
+    /**
+     * Lấy thông tin của một item theo itemId.
+     *
+     * @param itemId ID của item cần lấy thông tin.
+     * @param callback Callback để trả về item hoặc thông báo lỗi.
+     */
+    void getItemById(int itemId, InventoryItemCallback callback);
+
+    /**
+     * [CHỈ KIỂM TRA] - Được dùng bởi CheckInventoryUseCase.
+     * Kiểm tra xem kho có đủ số lượng cho TẤT CẢ các vật tư được yêu cầu hay không.
+     * Hàm này chỉ đọc dữ liệu và KHÔNG thực hiện bất kỳ thay đổi nào.
+     * @param itemsToCheck Danh sách các ProtocolItem cần kiểm tra.
+     * @param callback Báo cáo thành công (đủ hàng) hoặc thất bại (không đủ hàng hoặc lỗi khác).
+     */
+    void checkStockAvailability(List<ProtocolItem> itemsToCheck, GenericCallback callback);
+
+    /**
+     * [CHỈ HÀNH ĐỘNG] - Được dùng bởi DeductInventoryForExperimentUseCase.
+     * Trừ kho cho một danh sách vật tư. Hàm này giả định việc kiểm tra đã được thực hiện trước đó.
+     * Nhiệm vụ chính của nó là thực hiện các lệnh gọi API để cập nhật số lượng trong DB.
+     *
+     * @param itemsToDeduct Danh sách các ProtocolItem cần trừ.
+     * @param userId
+     * @param callback      Báo cáo thành công (trừ kho xong) hoặc thất bại (lỗi khi đang trừ).
+     */
+    void deductStock(List<ProtocolItem> itemsToDeduct, int userId, GenericCallback callback);
 }

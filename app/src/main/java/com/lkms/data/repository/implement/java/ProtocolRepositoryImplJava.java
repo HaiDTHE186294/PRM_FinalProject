@@ -35,6 +35,9 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
 
                 callback.onSuccess(protocols);
             } catch (Exception e) {
+                android.util.Log.e("ProtocolRepo", "Lỗi khi tải danh sách protocol", e);
+
+                // 2. Vẫn trả về thông báo lỗi cho lớp gọi nó (UI)
                 callback.onError("Lỗi khi tải danh sách protocol: " + e.getMessage());
             }
         }).start();
@@ -48,7 +51,7 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
                 // Xây dựng URL với hai điều kiện lọc:
                 // 1. approveStatus phải bằng 'Approved'
                 // 2. isLatestVersion phải bằng 'true' (Giả định cột này tồn tại trong DB)
-                String endpoint = SUPABASE_URL + "/rest/v1/Protocol?select=*&approveStatus=eq.Approved";
+                String endpoint = SUPABASE_URL + "/rest/v1/Protocol?select=*&approveStatus=eq.APPROVED";
 
                 String json = HttpHelper.getJson(endpoint);
                 Type listType = new TypeToken<List<Protocol>>() {}.getType();
@@ -164,9 +167,9 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
     ) {
         new Thread(() -> {
             try {
-                // Gán thông tin người tạo và trạng thái ban đầu
+                // SỬA 1: Ghi đè trạng thái thành APPROVED và gán người tạo
                 protocolData.setCreatorUserId(creatorUserId);
-                protocolData.setApproveStatus(ProtocolApproveStatus.PENDING);
+                protocolData.setApproveStatus(ProtocolApproveStatus.APPROVED);
 
                 // Bước 1️⃣: Gửi POST tạo Protocol
                 String protocolUrl = SUPABASE_URL + "/rest/v1/Protocol?select=*";
@@ -190,14 +193,14 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
                 // Bước 2️⃣: Gán protocolId cho từng Step
                 if (steps != null && !steps.isEmpty()) {
                     for (ProtocolStep s : steps) s.setProtocolId(newProtocolId);
-                    String stepUrl = SUPABASE_URL + "/rest/v1/ProtocolStep?select=*";
+                    String stepUrl = SUPABASE_URL + "/rest/v1/ProtocolStep"; // Sửa: Bỏ `?select=*` cho hiệu năng
                     HttpHelper.postJson(stepUrl, gson.toJson(steps));
                 }
 
                 // Bước 3️⃣: Gán protocolId cho từng Item
                 if (items != null && !items.isEmpty()) {
                     for (ProtocolItem i : items) i.setProtocolId(newProtocolId);
-                    String itemUrl = SUPABASE_URL + "/rest/v1/ProtocolItem?select=*";
+                    String itemUrl = SUPABASE_URL + "/rest/v1/ProtocolItem"; // Sửa: Bỏ `?select=*` cho hiệu năng
                     HttpHelper.postJson(itemUrl, gson.toJson(items));
                 }
 
@@ -205,6 +208,8 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
                 callback.onSuccess(newProtocolId);
 
             } catch (Exception e) {
+                // Ghi log lỗi để dễ dàng gỡ rối
+                android.util.Log.e("CreateProtocol", "Lỗi nghiêm trọng khi tạo protocol", e);
                 callback.onError("Lỗi khi tạo protocol: " + e.getMessage());
             }
         }).start();
@@ -274,6 +279,34 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
 
             } catch (Exception e) {
                 callback.onError("Lỗi khi tải protocol step: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @Override
+    public void getProtocolById(int protocolId, ProtocolCallBack callback){
+        new Thread(() -> {
+            try {
+                String tableName = "Protocol";
+                String idColumn = "protocolId";
+
+                String endpoint = SUPABASE_URL + "/rest/v1/" + tableName +
+                        "?select=*&" + idColumn + "=eq." + protocolId;
+
+                String json = HttpHelper.getJson(endpoint);
+
+                // Supabase luôn trả về mảng JSON
+                Type listType = new TypeToken<List<Protocol>>() {}.getType();
+                List<Protocol> protocols = gson.fromJson(json, listType);
+
+                if (protocols != null && !protocols.isEmpty()) {
+                    callback.onSuccess(protocols.get(0));
+                } else {
+                    callback.onError("Không tìm thấy protocol với id: " + protocolId);
+                }
+
+            } catch (Exception e) {
+                callback.onError("Lỗi khi tải protocol: " + e.getMessage());
             }
         }).start();
     }

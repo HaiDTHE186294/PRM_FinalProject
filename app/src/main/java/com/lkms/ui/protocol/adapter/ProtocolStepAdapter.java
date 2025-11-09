@@ -1,5 +1,5 @@
-// File: ProtocolStepAdapter.java
-package com.lkms.ui.protocol.adapter; // <-- Đảm bảo đúng package
+
+package com.lkms.ui.protocol.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lkms.R;
 import com.lkms.data.model.java.ProtocolStep;
 
-// Quan trọng: Kế thừa từ ListAdapter thay vì RecyclerView.Adapter
+// Kế thừa từ ListAdapter thay vì RecyclerView.Adapter
 public class ProtocolStepAdapter extends ListAdapter<ProtocolStep, ProtocolStepAdapter.StepViewHolder> {
 
     // 1. Khởi tạo Adapter với DiffUtil.ItemCallback

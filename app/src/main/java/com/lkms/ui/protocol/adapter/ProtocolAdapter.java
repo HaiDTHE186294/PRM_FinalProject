@@ -1,10 +1,8 @@
-// File: ProtocolAdapter.java
 package com.lkms.ui.protocol.adapter;
 
 
 import android.content.Context;
 import androidx.core.content.ContextCompat;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +19,9 @@ import com.lkms.data.model.java.Protocol;
 
 import java.util.Objects;
 
-// ✅ SỬA ĐỔI 1: Nâng cấp lên ListAdapter để có hiệu năng cao
 public class ProtocolAdapter extends ListAdapter<Protocol, ProtocolAdapter.ProtocolViewHolder> {
 
-    // ✅ SỬA ĐỔI 2: Interface để xử lý sự kiện click
+    //Interface để xử lý sự kiện click
     private final OnItemClickListener listener;
 
     // Hàm khởi tạo nhận vào listener
@@ -76,7 +73,7 @@ public class ProtocolAdapter extends ListAdapter<Protocol, ProtocolAdapter.Proto
             title.setText(protocol.getProtocolTitle());
             version.setText("Version: " + protocol.getVersionNumber());
 
-            // ✅ : LÀM VIỆC VỚI ENUM
+            //LÀM VIỆC VỚI ENUM
             ProtocolApproveStatus approveStatusEnum = protocol.getApproveStatus();
 
             // Hiển thị tên của Enum (ví dụ: "PENDING", "APPROVED")
@@ -86,7 +83,7 @@ public class ProtocolAdapter extends ListAdapter<Protocol, ProtocolAdapter.Proto
             updateStatusColor(approveStatusEnum);
         }
 
-        // ✅ BƯỚC 5: CẬP NHẬT HÀM UPDATE MÀU, NHẬN VÀO ENUM
+        // CẬP NHẬT HÀM UPDATE MÀU, NHẬN VÀO ENUM
         private void updateStatusColor(ProtocolApproveStatus approveStatus) {
             GradientDrawable background = (GradientDrawable) status.getBackground().mutate();
             if (approveStatus == null) return;
@@ -112,7 +109,7 @@ public class ProtocolAdapter extends ListAdapter<Protocol, ProtocolAdapter.Proto
 
     }
 
-    // ✅ SỬA ĐỔI 4: DiffUtil để tăng hiệu năng cho ListAdapter
+    // DiffUtil để tăng hiệu năng cho ListAdapter
     // Nó giúp ListAdapter biết item nào đã thay đổi để cập nhật một cách thông minh
     private static final DiffUtil.ItemCallback<Protocol> DIFF_CALLBACK = new DiffUtil.ItemCallback<Protocol>() {
         @Override
@@ -124,7 +121,6 @@ public class ProtocolAdapter extends ListAdapter<Protocol, ProtocolAdapter.Proto
         @Override
         public boolean areContentsTheSame(@NonNull Protocol oldItem, @NonNull Protocol newItem) {
             // So sánh nội dung để biết item có cần vẽ lại không
-            // Giả định model Protocol của bạn đã có hàm equals() (ví dụ từ Lombok @Data)
             return oldItem.equals(newItem);
         }
     };

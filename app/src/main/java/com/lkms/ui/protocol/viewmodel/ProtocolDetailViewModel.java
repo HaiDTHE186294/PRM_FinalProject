@@ -1,4 +1,4 @@
-// File: ProtocolDetailViewModel.java
+
 package com.lkms.ui.protocol.viewmodel;
 
 import androidx.lifecycle.LiveData;
@@ -9,8 +9,8 @@ import com.lkms.data.model.java.Protocol;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.ProtocolStep;
 import com.lkms.data.repository.IProtocolRepository;
-import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 import com.lkms.data.repository.implement.java.ProtocolRepositoryImplJava;
+import com.lkms.domain.protocolusecase.GetProtocolDetailsUseCase;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,7 +58,7 @@ public class ProtocolDetailViewModel extends ViewModel {
 
         getProtocolDetailsUseCase.execute(protocolId, new IProtocolRepository.ProtocolContentCallback() {
             private void checkAndTurnOffLoading() {
-                // Hợp nhất hai câu lệnh if bằng toán tử &&
+
                 if (dataPacketCounter.decrementAndGet() == 0 && loadingOffSignal.compareAndSet(0, 1)) {
                     isLoading.postValue(false);
                 }

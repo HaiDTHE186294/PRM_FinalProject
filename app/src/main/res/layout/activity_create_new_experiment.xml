@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.createexperiment.CreateNewExperimentActivity">
+
+    <!-- TextView cho tiêu đề "Tạo thí nghiệm mới" -->
+    <TextView
+        android:id="@+id/tvTitleHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create New Experiment"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- EditText cho Tên thí nghiệm -->
+    <EditText
+        android:id="@+id/etExperimentTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="Experiment Name (required)"
+        android:inputType="textCapWords"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitleHeader" />
+
+    <!-- EditText cho Mục tiêu thí nghiệm -->
+
+    <!-- ======================= BẮT ĐẦU THAY ĐỔI ======================= -->
+
+    <!-- TextView nhãn cho Protocol -->
+    <EditText
+        android:id="@+id/etExperimentObjective"
+        android:layout_width="373dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="8dp"
+        android:gravity="top"
+        android:hint="Objective (optional)"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etExperimentTitle" />
+
+    <TextView
+        android:id="@+id/tvLabelProtocol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Based on the process of (Protocol):"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etExperimentObjective" />
+
+    <!-- MỚI: TextView để hiển thị tên Protocol thay cho Spinner -->
+    <TextView
+        android:id="@+id/tvBasedOnProtocol"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_rounded_grey_light"
+        android:text="Loading..."
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelProtocol" />
+
+    <!-- TextView nhãn cho Spinner Project -->
+    <TextView
+        android:id="@+id/tvLabelProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seclect Project:"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBasedOnProtocol" />
+
+    <!-- ======================== KẾT THÚC THAY ĐỔI ======================== -->
+
+
+    <!-- Spinner để chọn Project -->
+    <Spinner
+        android:id="@+id/spinnerProject"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelProject" />
+
+    <!-- Button để tạo thí nghiệm -->
+    <Button
+        android:id="@+id/btnCreate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Create Experiment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- ProgressBar để hiển thị khi đang tải -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

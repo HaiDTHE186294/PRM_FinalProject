@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "332869789945",
+    "firebase_url": "https://lkms-57852-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "lkms-57852",
+    "storage_bucket": "lkms-57852.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332869789945:android:4e04d3379fe3e832695a28",
+        "android_client_info": {
+          "package_name": "com.lkms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDm0J-II8ga8d75iHnGrNJ9iewxx-vKKJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

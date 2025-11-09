@@ -1,5 +1,6 @@
 package com.lkms.data.model.java;
 
+import com.google.gson.annotations.SerializedName;
 import com.lkms.data.model.java.Role;
 
 import lombok.AllArgsConstructor;
@@ -10,10 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResult {
+        // 🔹 Token xác thực (JWT)
+        @SerializedName("auth_token")
+        private String authToken;
 
-        private String authToken; // Authentication token (e.g., JWT)
+        // 🔹 ID của vai trò người dùng
+        @SerializedName("role_id")
+        private int roleId;
 
-        private Role userRole; // User's role
-
-        private int userId; // userId (int)
+        // 🔹 ID người dùng
+        @SerializedName("user_id")
+        private int userId;
 }

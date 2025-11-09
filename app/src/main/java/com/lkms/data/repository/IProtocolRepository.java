@@ -1,7 +1,4 @@
-// File: IProtocolRepository.java
 package com.lkms.data.repository;
-
-// Sử dụng trực tiếp các model ánh xạ DB
 import com.lkms.data.model.java.*;
 import java.util.List;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus;
@@ -42,6 +39,10 @@ public interface IProtocolRepository {
         void onError(String errorMessage);
     }
 
+    interface ProtocolCallBack{
+        void onSuccess(Protocol protocol);
+        void onError(String errorMessage);
+    }
 
 
     // --- Chức năng Tra cứu và Hiển thị Protocols (UC3) ---
@@ -108,4 +109,6 @@ public interface IProtocolRepository {
   
     // --- Chức năng lấy thông tin của protocolStep
     void getProtocolStep(int protocolStepId, ProtocolStepCallback callback);
+
+    void getProtocolById(int protocolId, ProtocolCallBack callback);
 }

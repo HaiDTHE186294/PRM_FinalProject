@@ -11,27 +11,28 @@ import org.jetbrains.annotations.Contract;
 
 public class StepViewHolder extends RecyclerView.ViewHolder {
 
-    private final TextView placeholder_tvStepTitle;
-    private final ImageView placeholder_ivArrow; // ImageView cho mũi tên
+    private final TextView tvStepTitle;
+    private final ImageView ivArrow; // ImageView cho mũi tên
+    final ImageView ivAdd;
 
     public StepViewHolder(View itemView) {
         super(itemView);
         // Thay thế bằng ID từ item_step.xml của bạn
-        placeholder_tvStepTitle = itemView.findViewById(R.id.placeholder_tvStepTitle);
-        placeholder_ivArrow = itemView.findViewById(R.id.placeholder_ivArrow);
+        tvStepTitle = itemView.findViewById(R.id.step_instruction_textview);
+        ivArrow = itemView.findViewById(R.id.placeholder_ivArrow);
+        ivAdd = itemView.findViewById(R.id.placeholder_ivAdd);
     }
 
 
     public void bind(StepItemWrapper item) {
         // Gán tiêu đề Step
-        placeholder_tvStepTitle.setText(String.valueOf(item.getProtocolStep().getStepOrder()));
+        tvStepTitle.setText(String.valueOf(item.getProtocolStep().getInstruction()));
 
         // Cập nhật trạng thái icon mũi tên (Tùy thuộc vào trạng thái mở rộng)
         if (item.isExpanded()) {
-            placeholder_ivArrow.setImageResource(R.drawable.ic_arrow_down); // Biểu tượng mũi tên xuống
-            // Có thể thêm logic xoay icon ở đây nếu muốn Animation mượt hơn
+            ivArrow.setImageResource(R.drawable.ic_arrow_down); // Biểu tượng mũi tên xuống
         } else {
-            placeholder_ivArrow.setImageResource(R.drawable.ic_arrow_right); // Biểu tượng mũi tên sang phải
+            ivArrow.setImageResource(R.drawable.ic_arrow_right); // Biểu tượng mũi tên sang phải
         }
     }
 }

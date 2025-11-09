@@ -1,4 +1,4 @@
-// File: ProtocolDetailActivity.java
+
 package com.lkms.ui.protocol;
 
 import android.content.Intent;
@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.core.content.ContextCompat; // Dùng để lấy màu từ file colors.xml một cách an toàn.
+import androidx.core.content.ContextCompat;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus; // Để code có thể "hiểu" được Enum ProtocolApproveStatus là gì.
 
 
@@ -43,10 +43,10 @@ public class ProtocolDetailActivity extends AppCompatActivity {
     private ProtocolStepAdapter stepAdapter;
     private ProtocolItemAdapter itemAdapter;
 
-    // ✅ BƯỚC 2: KHAI BÁO BIẾN CHO NÚT MỚI
+
     private FloatingActionButton fabCreateExperiment;
 
-    // ✅ BƯỚC 3: TẠO BIẾN LƯU ID CỦA PROTOCOL HIỆN TẠI
+    // TẠO BIẾN LƯU ID CỦA PROTOCOL HIỆN TẠI
     private int currentProtocolId = INVALID_ID;
 
     @Override
@@ -73,7 +73,7 @@ public class ProtocolDetailActivity extends AppCompatActivity {
         // Yêu cầu tải dữ liệu
         viewModel.loadProtocolDetails(currentProtocolId);
 
-        // ✅ BƯỚC 6: GỌI HÀM SETUP CHO NÚT MỚI
+        // GỌI HÀM SETUP CHO NÚT MỚI
         setupFab();
     }
 
@@ -88,7 +88,7 @@ public class ProtocolDetailActivity extends AppCompatActivity {
         recyclerItems = findViewById(R.id.recyclerItems);
         progressBar = findViewById(R.id.progressBar);
 
-        // ✅ BƯỚC 4: ÁNH XẠ NÚT FAB TỪ LAYOUT
+        // ÁNH XẠ NÚT FAB TỪ LAYOUT
         fabCreateExperiment = findViewById(R.id.fab_create_experiment);
     }
 
@@ -103,21 +103,30 @@ public class ProtocolDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ BƯỚC 5: TẠO HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
      * Cài đặt sự kiện click cho nút "Tạo Experiment".
      */
     private void setupFab() {
         fabCreateExperiment.setOnClickListener(view -> {
             // Kiểm tra lại ID để chắc chắn
             if (currentProtocolId != INVALID_ID) {
-                Toast.makeText(this, "Chuẩn bị tạo experiment từ Protocol ID: " + currentProtocolId, Toast.LENGTH_SHORT).show();
 
+                // 1. Tạo một Intent để mở màn hình tạo thí nghiệm mới
+                Intent intent = new Intent(ProtocolDetailActivity.this, com.lkms.ui.createexperiment.CreateNewExperimentActivity.class);
+
+                // 2. Gửi ID của protocol hiện tại sang màn hình mới.
+                // Đây là bước BẮT BUỘC để màn hình tiếp theo biết phải tạo thí nghiệm dựa trên protocol nào.
+                intent.putExtra("SELECTED_PROTOCOL_ID", currentProtocolId);
+
+                // 3. Khởi chạy Activity mới
+                startActivity(intent);
 
             } else {
+                // Nếu không có ID hợp lệ, thông báo cho người dùng
                 Toast.makeText(this, "Không thể tạo experiment, protocol ID không hợp lệ.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void observeViewModel() {
         viewModel.isLoading().observe(this, isLoading -> {

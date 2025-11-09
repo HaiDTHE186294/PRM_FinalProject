@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.user_profile.MemberDetailActvity">
+    tools:context=".ui.user.MemberDetailActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -30,7 +30,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!--User's profile display part-->
-    <com.lkms.ui.user_profile.view.UserProfileHeader
+    <com.lkms.ui.user.view.UserProfileHeader
         android:id="@+id/user_profile_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
