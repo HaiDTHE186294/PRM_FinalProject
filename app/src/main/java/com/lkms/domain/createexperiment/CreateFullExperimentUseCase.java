@@ -5,12 +5,12 @@ import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.model.java.Protocol;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.ProtocolStep;
-import com.lkms.data.model.java.Team; // ⭐ THÊM IMPORT
+import com.lkms.data.model.java.Team;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.IExperimentStepRepositoryVjet;
 import com.lkms.data.repository.IProtocolRepository;
-import com.lkms.data.repository.ITeamRepository; // ⭐ THÊM IMPORT
-import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums; // ⭐ THÊM IMPORT
+import com.lkms.data.repository.ITeamRepository;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class CreateFullExperimentUseCase {
     private final IExperimentRepository experimentRepo;
     private final IProtocolRepository protocolRepo;
     private final IExperimentStepRepositoryVjet experimentStepRepo;
-    private final ITeamRepository teamRepo; // ⭐ THÊM REPO MỚI
+    private final ITeamRepository teamRepo;
 
     /**
      * Constructor được cập nhật để nhận thêm ITeamRepository.
@@ -33,7 +33,7 @@ public class CreateFullExperimentUseCase {
         this.experimentRepo = er;
         this.protocolRepo = pr;
         this.experimentStepRepo = esr;
-        this.teamRepo = tr; // ⭐ THÊM REPO MỚI
+        this.teamRepo = tr;
     }
 
     /**

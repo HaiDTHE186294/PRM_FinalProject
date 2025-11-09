@@ -4,24 +4,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.lkms.R;
 import com.lkms.data.model.java.User;
-
 import java.util.ArrayList;
-import java.util.HashSet; // ⭐ THÊM NÀY
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;    // ⭐ THÊM NÀY
+import java.util.Set;
 
 public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.UserViewHolder> {
 
     private List<User> userList = new ArrayList<>();
     private OnUserClickListener listener;
 
-    // ⭐ THÊM 1: Một Set để lưu trữ các item đang được chọn ⭐
+    // Một Set để lưu trữ các item đang được chọn
     private final Set<User> selectedUsers = new HashSet<>();
 
     public interface OnUserClickListener {
@@ -43,7 +40,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
 
-        // ⭐ THÊM 2: Kiểm tra xem user hiện tại có trong danh sách chọn không ⭐
+        // Kiểm tra xem user hiện tại có trong danh sách chọn không
         boolean isSelected = selectedUsers.contains(user);
 
         // Truyền cả user và trạng thái `isSelected` vào hàm bind
@@ -74,12 +71,12 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
             tvUserEmail = itemView.findViewById(R.id.tvUserEmail);
         }
 
-        // ⭐ THÊM 3: Hàm bind bây giờ nhận cả trạng thái isSelected ⭐
+        // Hàm bind bây giờ nhận cả trạng thái isSelected
         public void bind(final User user, final boolean isSelected, final OnUserClickListener listener) {
             tvUserName.setText(user.getName());
             tvUserEmail.setText(user.getEmail());
 
-            // ⭐ THAY ĐỔI QUAN TRỌNG: Cập nhật trạng thái của itemView ⭐
+            // Cập nhật trạng thái của itemView
             // Lệnh này sẽ kích hoạt selector mà chúng ta đã tạo ở Bước 1
             itemView.setSelected(isSelected);
 
@@ -95,7 +92,6 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     }
 
     /**
-     * ⭐ HÀM CÒN THIẾU ⭐
      * Cập nhật trạng thái lựa chọn (chọn/bỏ chọn) cho một user
      * trong danh sách selectedUsers nội bộ của Adapter.
      * @param user User vừa được click.

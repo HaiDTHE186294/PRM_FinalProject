@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.protocol.ProtocolDetailActivity">
 
-    <!-- AppBarLayout và Toolbar (Giữ nguyên) -->
+    <!-- AppBarLayout và Toolbar  -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -17,11 +17,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Chi tiết Giao thức" />
+            app:title="Protocol Detail" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- NestedScrollView chứa toàn bộ nội dung (Giữ nguyên) -->
+    <!-- NestedScrollView chứa toàn bộ nội dung -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Toàn bộ nội dung chi tiết của bạn ở đây (Giữ nguyên) -->
+            <!-- Toàn bộ nội dung chi tiết của bạn ở đây -->
             <TextView
                 android:id="@+id/txtTitle"
                 android:layout_width="0dp"
@@ -42,7 +42,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Tên giao thức (Protocol Title)" />
+                tools:text="Protocol Title" />
 
             <TextView
                 android:id="@+id/txtVersion"
@@ -52,7 +52,7 @@
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txtTitle"
-                tools:text="Phiên bản: 1.0.2" />
+                tools:text="Version: 1.0.2" />
 
             <TextView
                 android:id="@+id/txtStatus"
@@ -98,7 +98,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Các bước thực hiện"
+                android:text="Steps"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -119,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Vật tư yêu cầu"
+                android:text="Required Items"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -139,7 +139,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- ProgressBar (Giữ nguyên) -->
+    <!-- ProgressBar -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -148,14 +148,13 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <!-- ✅ BƯỚC 1: THÊM NÚT "TẠO EXPERIMENT" VÀO ĐÂY -->
+    <!-- NÚT "TẠO EXPERIMENT"-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_create_experiment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Tạo experiment mới từ protocol này"
-        app:srcCompat="@drawable/ic_science" /> <!-- Bạn cần thêm icon này vào drawable -->
-
+        android:contentDescription="Create nex experiment from this protocol"
+        app:srcCompat="@drawable/ic_science" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

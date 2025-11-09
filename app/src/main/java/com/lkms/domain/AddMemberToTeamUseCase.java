@@ -16,7 +16,6 @@ public class AddMemberToTeamUseCase {
 
     private final ITeamRepository teamRepository;
 
-    // ⭐ SỬA: Đổi tên biến theo quy chuẩn của SonarQube, bỏ dấu gạch dưới.
     private final MutableLiveData<Boolean> addMembersSuccess = new MutableLiveData<>();
     public LiveData<Boolean> getAddMembersSuccess() {
         return addMembersSuccess;
@@ -47,13 +46,11 @@ public class AddMemberToTeamUseCase {
         teamRepository.addMembers(newTeamMembers, new ITeamRepository.BulkTeamMemberCallback() {
             @Override
             public void onSuccess() {
-                // Sử dụng tên biến đã được đổi
                 addMembersSuccess.postValue(true);
             }
 
             @Override
             public void onError(String errorMessage) {
-                // Sử dụng tên biến đã được đổi
                 addMembersError.postValue(errorMessage);
             }
         });

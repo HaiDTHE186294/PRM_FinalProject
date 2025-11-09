@@ -1,7 +1,7 @@
 package com.lkms.data.repository;
 
 import com.lkms.data.model.java.Team;
-import java.util.List; // ⭐ THÊM DÒNG NÀY
+import java.util.List;
 
 /**
  * Interface để quản lý các thành viên trong nhóm (Team) của một thí nghiệm. */
@@ -24,7 +24,6 @@ public interface ITeamRepository {
     void addMember(Team teamMember, TeamMemberCallback callback);
 
 
-    // ⭐ --- PHẦN BỔ SUNG BẮT ĐẦU TỪ ĐÂY --- ⭐
 
     /**
      * Interface callback cho các tác vụ thêm hàng loạt thành viên.

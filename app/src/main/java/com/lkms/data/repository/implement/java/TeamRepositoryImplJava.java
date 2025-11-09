@@ -1,14 +1,11 @@
 package com.lkms.data.repository.implement.java;
 
-// Import SUPABASE_URL từ BuildConfig
 import static com.lkms.BuildConfig.SUPABASE_URL;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lkms.data.model.java.Team;
-import com.lkms.data.repository.implement.java.HttpHelper;
 import com.lkms.data.repository.ITeamRepository;
 
 import java.lang.reflect.Type;
@@ -16,7 +13,6 @@ import java.util.List;
 
 public class TeamRepositoryImplJava implements ITeamRepository {
 
-    // ⭐ SỬA 1: Định nghĩa hằng số cho Log Tag và tên bảng để tránh lặp lại
     private static final String TAG = "TeamRepository";
     private static final String TEAM_TABLE = "Team";
     private static final Gson gson = new Gson();
@@ -43,7 +39,7 @@ public class TeamRepositoryImplJava implements ITeamRepository {
 
                 if (createdMembers != null && !createdMembers.isEmpty()) {
                     Team createdMember = createdMembers.get(0);
-                    // ⭐ SỬA 2: Đảm bảo callback được gọi trên Main Thread
+                    // Đảm bảo callback được gọi trên Main Thread
                     new Handler(Looper.getMainLooper()).post(() -> callback.onSuccess(createdMember));
                 } else {
                     throw new Exception("Thêm thành viên thất bại. Server không trả về bản ghi đã tạo.");
@@ -53,7 +49,6 @@ public class TeamRepositoryImplJava implements ITeamRepository {
                 // Giữ lại Log.e để ghi lại các lỗi quan trọng trong quá trình debug
                 Log.e(TAG, "Lỗi nghiêm trọng khi thêm thành viên: ", e);
                 final String errorMessage = "Lỗi khi thêm thành viên: " + e.getMessage();
-                // ⭐ SỬA 2: Đảm bảo callback được gọi trên Main Thread
                 new Handler(Looper.getMainLooper()).post(() -> callback.onError(errorMessage));
             }
         }).start();
@@ -77,14 +72,12 @@ public class TeamRepositoryImplJava implements ITeamRepository {
                 HttpHelper.postJson(endpoint, jsonBody);
 
                 // Nếu không có exception, coi như thành công
-                // ⭐ SỬA 2: Đảm bảo callback được gọi trên Main Thread
                 new Handler(Looper.getMainLooper()).post(callback::onSuccess);
 
             } catch (Exception e) {
                 // Giữ lại Log.e để ghi lại các lỗi quan trọng
                 Log.e(TAG, "Lỗi nghiêm trọng khi thêm nhiều thành viên: ", e);
                 final String errorMessage = "Lỗi khi thêm nhiều thành viên: " + e.getMessage();
-                // ⭐ SỬA 2: Đảm bảo callback được gọi trên Main Thread
                 new Handler(Looper.getMainLooper()).post(() -> callback.onError(errorMessage));
             }
         }).start();
