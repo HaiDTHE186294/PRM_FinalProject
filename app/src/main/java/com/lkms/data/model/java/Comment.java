@@ -1,5 +1,6 @@
 package com.lkms.data.model.java;
 
+import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.gson.annotations.SerializedName;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@IgnoreExtraProperties
 public class Comment {
 
     @SerializedName("commentId")

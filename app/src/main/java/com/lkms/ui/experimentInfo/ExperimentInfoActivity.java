@@ -12,6 +12,9 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.lkms.R;
@@ -27,6 +30,8 @@ import com.lkms.ui.addmember.AddMemberActivity;
 import com.lkms.ui.experimentdetail.ExperimentDetailActivity;
 import com.lkms.util.PdfGenerator;
 
+import com.lkms.ui.comment.CommentFragment;
+
 public class ExperimentInfoActivity extends AppCompatActivity {
 
     private ExperimentInfoViewModel viewModel;
@@ -40,6 +45,13 @@ public class ExperimentInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_experiment_info);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, Math.max(systemBars.bottom, ime.bottom));
+            return insets;
+        });
 
         pdfGenerator = new PdfGenerator(this);
         experimentId = getIntent().getIntExtra("experimentId", -1);
@@ -109,6 +121,28 @@ public class ExperimentInfoActivity extends AppCompatActivity {
         observeViewModel();
 
         viewModel.loadExperiment(experimentId);
+
+        // Chỉ thêm Fragment khi Activity được tạo lần đầu (savedInstanceState == null)
+        // và chúng ta có experimentId hợp lệ
+        if (savedInstanceState == null && experimentId != -1) {
+
+            // 1. Lấy các tham số như Goshujinsama yêu cầu
+            int targetId = experimentId;
+            LKMSConstantEnums.CommentType type = LKMSConstantEnums.CommentType.GENERAL;
+
+            // 2. Tạo Fragment bằng hàm newInstance
+            CommentFragment commentFragment = CommentFragment.newInstance(targetId, type);
+
+            // 3. Dùng FragmentManager để "nhét" fragment vào container
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.commentFragmentContainer, commentFragment)
+                    .commit();
+
+        } else if (experimentId == -1) {
+            // Ghi log nếu ID không hợp lệ
+            Log.e("ExperimentInfoActivity", "Invalid experimentId, CommentFragment was not loaded.");
+        }
+
     }
 
     /**

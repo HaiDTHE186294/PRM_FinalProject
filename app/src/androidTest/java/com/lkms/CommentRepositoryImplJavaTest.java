@@ -240,6 +240,41 @@ public class CommentRepositoryImplJavaTest {
     }
 
     @Test
+    public void test_postComment_withFixProject() throws InterruptedException {
+        System.out.println("🧪 Bắt đầu test: postComment (Đã sửa lỗi)...");
+
+        // (Giả sử Chủ nhân đã sửa lỗi `commentId` thành `String`)
+        Comment newComment = new Comment();
+        newComment.setCommentType(LKMSConstantEnums.CommentType.DISCUSSION.toString());
+        newComment.setProjectId(REAL_PROJECT_ID);
+        newComment.setCommentText("Đây là comment từ test tích hợp (Project)!");
+        newComment.setUserId(999); // ID của user test
+
+        List<Integer> mentions = Arrays.asList(1, 2); // Mention user 1 và 2
+
+        repository.postComment(newComment, mentions, new ICommentRepository.OnPostResultListener() {
+            @Override
+            public void onSuccess() {
+                System.out.println("✅ [postComment] Thành công!");
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Exception error) {
+                System.out.println("❌ [postComment] Thất bại: " + error.getMessage());
+                latch.countDown();
+            }
+        });
+
+        // Chờ tối đa 30 giây
+        if (latch.await(180, TimeUnit.SECONDS)) {
+            System.out.println("✅ Test postComment hoàn thành.");
+        } else {
+            System.out.println("❌ Test postComment thất bại (Timeout).");
+        }
+    }
+
+    @Test
     public void test_FirebaseConnection() throws InterruptedException {
         System.out.println("🧪 Bắt đầu test: Kết nối Firebase (.info/connected)...");
 

@@ -41,6 +41,13 @@ import com.lkms.ui.user_profile.UserProfileActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
 public class MainDashboardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerExperiments, recyclerAlerts, recyclerBookings;
@@ -53,9 +60,25 @@ public class MainDashboardActivity extends AppCompatActivity {
     private List<BookingDisplay> bookingList = new ArrayList<>();
     private MainDashboardUseCase useCase;
 
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Log.d("Permission", "POST_NOTIFICATIONS - Have granted!");
+                    } else {
+                        Log.w("Permission", "POST_NOTIFICATIONS - Is refused!");
+                        // Ngài có thể Toast ở đây nếu muốn
+                        // Toast.makeText(this, "Bạn sẽ không nhận được thông báo mention!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_dashboard);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -96,6 +119,8 @@ public class MainDashboardActivity extends AppCompatActivity {
         loadOngoingExperiments();
         loadInventoryAlerts();
         loadBookings();
+
+        checkAndRequestNotificationPermission();
     }
 
     private void loadOngoingExperiments() {
@@ -298,6 +323,22 @@ public class MainDashboardActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("LOGOUT_ERROR", "Logout failed: " + e.getMessage(), e);
             Toast.makeText(this, "Lỗi khi đăng xuất: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void checkAndRequestNotificationPermission() {
+        // Chỉ chạy trên Android 13 (TIRAMISU) trở lên
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            // Kiểm tra xem đã có quyền chưa
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // Nếu CHƯA, hiển thị hộp thoại xin quyền
+                Log.d("Permission", "Requesting POST_NOTIFICATIONS...");
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            } else {
+                // Đã có quyền rồi
+                Log.d("Permission", "POST_NOTIFICATIONS - Already granted.");
+            }
         }
     }
 

@@ -54,6 +54,8 @@ android {
             name = "JWT_SECRET",
             value = "\"${localProperties.getProperty("JWT_SECRET", "DEFAULT_SECRET_KEY")}\""
         )
+
+
     }
 
     buildTypes {
@@ -133,6 +135,10 @@ dependencies {
 
     //Live-data testing
     implementation("androidx.arch.core:core-testing:2.2.0")
+
+    //Auto complete text (for mention)
+    implementation("com.linkedin.android.spyglass:spyglass:3.0.3")
+
 }
 
 

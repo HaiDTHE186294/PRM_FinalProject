@@ -1,11 +1,13 @@
 package com.lkms.data.repository.implement.java;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,9 +39,10 @@ import com.google.gson.Gson;
 public class CommentRepositoryImplJava implements ICommentRepository {
 
     private final FirebaseDatabase database;
-    private ValueEventListener currentCommentListener;
+    private ChildEventListener currentCommentListener;
     private DatabaseReference currentCommentRef;
     private final MutableLiveData<List<Comment>> commentsLiveData = new MutableLiveData<>();
+    private final List<Comment> mCommentList = new ArrayList<>();
 
     //Supabase
     private MutableLiveData<List<User>> mentionableUsersLiveData = new MutableLiveData<>();
@@ -49,37 +52,76 @@ public class CommentRepositoryImplJava implements ICommentRepository {
         this.database = FirebaseDatabase.getInstance();
     }
 
-    // --- 1. LẤY COMMENT (FIREBASE) ---
+    // --- 1. LẤY COMMENT (FIREBASE) - ĐÃ SỬA ---
     @Override
     public LiveData<List<Comment>> getRealtimeComments(Integer targetId, LKMSConstantEnums.CommentType type) {
         unsubscribeFromComments();
 
-        // [ĐÃ SỬA] Đổi tên enum cho đúng (DISCUSSION -> PROJECT)
-        String nodePath = (type == LKMSConstantEnums.CommentType.DISCUSSION) ? "project" : "experiment";
+        // Xóa list cũ khi lắng nghe 1 node mới
+        mCommentList.clear();
 
-        // [ĐÃ SỬA] Phải chuyển Integer thành String cho Firebase path
+        String nodePath = (type == LKMSConstantEnums.CommentType.DISCUSSION) ? "project" : "experiment";
         currentCommentRef = database.getReference("comment").child(nodePath).child(String.valueOf(targetId));
 
-        currentCommentListener = new ValueEventListener() {
+        // [ĐÃ SỬA] Dùng ChildEventListener thay vì ValueEventListener
+        currentCommentListener = new ChildEventListener() {
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Comment> newList = new ArrayList<>();
-                for (DataSnapshot commentSnapshot : snapshot.getChildren()) {
-                    Comment comment = commentSnapshot.getValue(Comment.class);
-                    if (comment != null) {
-                        newList.add(comment);
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Comment newComment = snapshot.getValue(Comment.class);
+                if (newComment != null) {
+                    // Thêm 1 comment mới vào list
+                    mCommentList.add(newComment);
+                    // Post 1 bản copy của list lên LiveData để UI cập nhật
+                    commentsLiveData.postValue(new ArrayList<>(mCommentList));
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // (Nên xử lý) Logic khi 1 comment bị sửa
+                Comment changedComment = snapshot.getValue(Comment.class);
+                if (changedComment == null) return;
+
+                // Tìm và thay thế comment cũ trong list
+                for (int i = 0; i < mCommentList.size(); i++) {
+                    if (mCommentList.get(i).getCommentId().equals(changedComment.getCommentId())) {
+                        mCommentList.set(i, changedComment);
+                        break;
                     }
                 }
-                commentsLiveData.postValue(newList);
+                commentsLiveData.postValue(new ArrayList<>(mCommentList));
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                // (Nên xử lý) Logic khi 1 comment bị xóa
+                Comment removedComment = snapshot.getValue(Comment.class);
+                if (removedComment == null) return;
+
+                // Tìm và xóa comment khỏi list
+                for (int i = 0; i < mCommentList.size(); i++) {
+                    if (mCommentList.get(i).getCommentId().equals(removedComment.getCommentId())) {
+                        mCommentList.remove(i);
+                        break;
+                    }
+                }
+                commentsLiveData.postValue(new ArrayList<>(mCommentList));
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // (Không cần xử lý nhiều cho comment)
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                // [ĐÃ SỬA] Vẫn nên post list rỗng để UI biết là có lỗi
                 commentsLiveData.postValue(new ArrayList<>());
             }
         };
 
-        currentCommentRef.addValueEventListener(currentCommentListener);
+        currentCommentRef.addChildEventListener((ChildEventListener) currentCommentListener);
         return commentsLiveData;
     }
 
@@ -87,7 +129,8 @@ public class CommentRepositoryImplJava implements ICommentRepository {
     @Override
     public void unsubscribeFromComments() {
         if (currentCommentRef != null && currentCommentListener != null) {
-            currentCommentRef.removeEventListener(currentCommentListener);
+            // [ĐÃ SỬA] Phải ép kiểu đúng về ChildEventListener
+            currentCommentRef.removeEventListener((ChildEventListener) currentCommentListener);
             currentCommentRef = null;
             currentCommentListener = null;
         }
@@ -95,7 +138,6 @@ public class CommentRepositoryImplJava implements ICommentRepository {
 
     // --- 3. POST COMMENT (FIREBASE) ---
     @Override
-    // [ĐÃ SỬA] List<Integer> mentionedUserIds
     public void postComment(Comment newComment, List<Integer> mentionedUserIds, OnPostResultListener listener) {
 
         String nodePath = (newComment.getCommentType().equals(LKMSConstantEnums.CommentType.DISCUSSION.toString())) ? "project" : "experiment";

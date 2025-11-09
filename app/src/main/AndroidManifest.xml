@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -49,6 +50,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.experimentInfo.ExperimentInfoActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".ui.experimentdetail.ExperimentDetailActivity"
@@ -113,6 +115,7 @@
         <activity
             android:name=".ui.project.projectdetail.ProjectDetailActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".ui.project.projectmanage.ProjectActivity" />
 
         <provider
@@ -124,9 +127,5 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <activity
-            android:name=".ui.project.projectdetail.ProjectDetailActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.project.projectmanage.ProjectActivity"></activity>
     </application>
 </manifest>
