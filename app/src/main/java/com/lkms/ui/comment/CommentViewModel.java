@@ -168,38 +168,6 @@ public class CommentViewModel extends AndroidViewModel {
             @Override
             public void onSuccess() {
                 postSuccess.postValue(true);
-
-                if (mentionedUsers != null && !mentionedUsers.isEmpty()) {
-
-                    NotificationHelper notificationHelper = new NotificationHelper(getApplication());
-                    notificationHelper.createNotificationChannel();
-
-                    // 1. Lấy tên "A" (Người gửi)
-                    String userNameA = findUserNameById(currentUserId);
-
-                    // 2. Lặp qua "B" (Những người được mention)
-                    for (User userB : mentionedUsers) {
-
-                        // Bỏ qua nếu tự mention chính mình
-                        if (userB.getUserId() == currentUserId) {
-                            continue;
-                        }
-
-                        String title = "You have been mentioned!";
-
-                        // 3. MEOW! TẠO CONTENT MỚI
-                        String content = userNameA + " mentioned you in "; // "User A mentioned you in "
-
-                        if (commentType == LKMSConstantEnums.CommentType.DISCUSSION) {
-                            content += "project with id: " + targetId;
-                        } else { // (Giả định là GENERAL)
-                            content += "experiment with id: " + targetId;
-                        }
-
-                        // 4. Gửi thông báo!
-                        notificationHelper.sendMentionNotification(title, content, userB.getUserId());
-                    }
-                }
             }
 
             @Override
