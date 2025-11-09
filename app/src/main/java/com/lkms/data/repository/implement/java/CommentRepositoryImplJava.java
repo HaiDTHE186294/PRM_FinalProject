@@ -158,6 +158,8 @@ public class CommentRepositoryImplJava implements ICommentRepository {
                 String endpoint = endpointBuilder(targetId, type);
                 String json = HttpHelper.getJson(endpoint);
 
+                Log.d("CommentRepositoryImpl", "JSON nhận được từ Supabase: " + json);
+
                 // Parse JSON thành List<User>
                 Type listType = new TypeToken<List<User>>() {}.getType();
                 List<User> userList = gson.fromJson(json, listType);
@@ -174,37 +176,33 @@ public class CommentRepositoryImplJava implements ICommentRepository {
                 mentionableUsersLiveData.postValue(null);
 
                 if (listener != null) {
-                    listener.onRefreshComplete();
+                    listener.onError(e);
                 }
             }
         }).start();
     }
 
     private String endpointBuilder(Integer targetId, LKMSConstantEnums.CommentType type) {
-        // Gốc của query: Chúng ta luôn muốn lấy User
-        String baseUrl = SUPABASE_URL + "/rest/v1/User?select=*";
+        String baseUrl = SUPABASE_URL + "/rest/v1/User";
 
         if (type == LKMSConstantEnums.CommentType.DISCUSSION) {
             // --- LOGIC CHO PROJECT (DISCUSSION) ---
-            // targetId ở đây là projectId
-            // Supabase/PostgREST cho phép join lồng nhau: Team.Experiment.projectId
-            // (Với 'Team' là bảng join từ User, và 'Experiment' là bảng join từ Team)
-
-            return baseUrl + "&Team.Experiment.projectId=eq." + targetId;
+            // Ép INNER JOIN 2 cấp
+            // Lấy User NÀO có Team, VÀ Team đó có Experiment
+            return baseUrl + "?select=*,Team!inner(Experiment!inner(*))"
+                    + "&Team.Experiment.projectId=eq." + targetId;
 
         } else if (type == LKMSConstantEnums.CommentType.GENERAL) {
             // --- LOGIC CHO EXPERIMENT (GENERAL) ---
-            // targetId ở đây là experimentId
-            // Query này đơn giản hơn, chỉ cần join 1 cấp: Team.experimentId
-
-            return baseUrl + "&Team.experimentId=eq." + targetId;
+            // Ép INNER JOIN 1 cấp
+            // Lấy User NÀO có Team
+            return baseUrl + "?select=*,Team!inner(*)"
+                    + "&Team.experimentId=eq." + targetId;
 
         } else {
-            // Trường hợp không xác định, trả về một query không có kết quả
+            // Trường hợp không xác định, trả về query rỗng
             Log.e("CommentRepositoryImpl", "Error during endpointBuilder: Unknown Command type" + type);
-            // Trả về một query luôn rỗng (vd: userId = -1)
-            // để tránh lỗi và đảm bảo an toàn.
-            return baseUrl + "&userId=eq.-1";
+            return SUPABASE_URL + "/rest/v1/User?select=*&userId=eq.-1";
         }
     }
 }
