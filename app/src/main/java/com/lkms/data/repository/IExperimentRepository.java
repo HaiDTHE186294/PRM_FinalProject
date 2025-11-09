@@ -155,28 +155,12 @@ public interface IExperimentRepository {
             StringCallback callback
     );
 
-    // --- Chức năng Báo cáo (UC15) ---
-
-    /**
-     * UC15: Yêu cầu server tạo báo cáo PDF cho một thí nghiệm đã hoàn thành.
-     * Trả về link tải xuống (String url) [6, 7].
-     */
-    void requestExperimentReport(int experimentId, StringCallback callback);
-
     // --- Chức năng Cộng tác (UC13) ---
 
     /**
      * UC13: Đăng bình luận vào thí nghiệm.
      * Chèn vào bảng "Comment" [3].
      */
-    void postComment(int experimentId, int userId, String commentText, GenericCallback callback);
-
-    /**
-     * UC13: Lấy danh sách bình luận cho một thí nghiệm.
-     * Truy vấn bảng "Comment" [3].
-     */
-    void getCommentsForExperiment(int experimentId, CommentListCallback callback);
-
 
     void getExperimentIdsByUserId(int userId, IdListCallback callback);
 

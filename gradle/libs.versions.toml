@@ -11,6 +11,7 @@ navigationUi = "2.9.5"
 activity = "1.11.0"
 kotlin = "2.2.0"
 coreKtx = "1.17.0"
+googleGmsServices = "4.4.2"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -27,4 +28,4 @@ core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx"
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+google-gms-services = { id = "com.google.gms.google-services", version.ref = "googleGmsServices" }
