@@ -3,7 +3,6 @@ package com.lkms.data.repository;
 import com.lkms.data.model.java.*;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +46,11 @@ public interface IInventoryRepository {
     public interface InventoryDisplayListCallback {
         void onSuccess(List<InventoryDisplayItem> displayItems);
         void onError(String errorMessage);
+    }
+
+    public interface InventoryTransactionListCallback {
+        void onSuccess(List<InventoryTransaction> transactions);
+        void onError(String message);
     }
 
     // --- Chức năng Tra cứu và Hiển thị Tồn kho (UC7, UC11) ---
@@ -94,6 +98,12 @@ public interface IInventoryRepository {
             TransactionIdCallback callback
     );
 
+    /**
+     * UC08: Lấy danh sách giao dịch tồn kho (Check In/Check Out) dựa trên id của 1 item.
+     * Truy vấn bảng "InventoryTransaction" [2]..
+     */
+    void getInventoryTransaction(int itemId, InventoryTransactionListCallback callback);
+
     // --- Chức năng Phê duyệt Tồn kho (Approval - Dành cho Lab Manager) ---
 
     /**
@@ -137,8 +147,10 @@ public interface IInventoryRepository {
      * [CHỈ HÀNH ĐỘNG] - Được dùng bởi DeductInventoryForExperimentUseCase.
      * Trừ kho cho một danh sách vật tư. Hàm này giả định việc kiểm tra đã được thực hiện trước đó.
      * Nhiệm vụ chính của nó là thực hiện các lệnh gọi API để cập nhật số lượng trong DB.
+     *
      * @param itemsToDeduct Danh sách các ProtocolItem cần trừ.
-     * @param callback Báo cáo thành công (trừ kho xong) hoặc thất bại (lỗi khi đang trừ).
+     * @param userId
+     * @param callback      Báo cáo thành công (trừ kho xong) hoặc thất bại (lỗi khi đang trừ).
      */
-    void deductStock(List<ProtocolItem> itemsToDeduct, GenericCallback callback);
+    void deductStock(List<ProtocolItem> itemsToDeduct, int userId, GenericCallback callback);
 }

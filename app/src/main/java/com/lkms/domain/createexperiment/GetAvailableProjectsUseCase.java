@@ -1,6 +1,5 @@
 package com.lkms.domain.createexperiment;
 
-// Import interface của Repository và Callback tương ứng
 import com.lkms.data.repository.IProjectRepositoryVjet;
 
 /**

@@ -17,7 +17,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private List<Project> projects = new ArrayList<>();
     private final OnProjectClickListener listener;
 
-    // Interface để xử lý click (UC 18: "ấn vào chuyển sang màn Project Detail")
     public interface OnProjectClickListener {
         void onProjectClick(Project project);
     }
@@ -45,11 +44,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         return projects.size();
     }
 
-    // Hàm để ViewModel cập nhật dữ liệu cho Adapter
     public void setProjects(List<Project> newProjects) {
         this.projects.clear();
         this.projects.addAll(newProjects);
-        notifyDataSetChanged(); // Có thể dùng DiffUtil để tối ưu
+        notifyDataSetChanged();
     }
 
     // --- ViewHolder ---
@@ -65,7 +63,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
 
         public void bind(Project project, OnProjectClickListener listener) {
             tvProjectTitle.setText(project.getProjectTitle());
-            // Tạm thời hiển thị ID, vì model Project không có tên Leader
             tvProjectLeader.setText("Leader ID: " + project.getProjectLeaderId());
 
             itemView.setOnClickListener(v -> listener.onProjectClick(project));

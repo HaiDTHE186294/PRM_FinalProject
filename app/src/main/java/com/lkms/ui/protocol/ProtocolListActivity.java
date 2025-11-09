@@ -1,4 +1,4 @@
-// File: ProtocolListActivity.java
+
 package com.lkms.ui.protocol;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-// ✅ BƯỚC 1: THÊM IMPORT CHO FLOATINGACTIONBUTTON
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.lkms.R;
@@ -35,7 +35,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
     private EditText versionNumberInput;
     private Button filterButton;
 
-    // ✅ BƯỚC 2: KHAI BÁO BIẾN CHO NÚT MỚI
+    // KHAI BÁO BIẾN CHO NÚT MỚI
     private FloatingActionButton fabNewProtocol;
 
     @Override
@@ -50,7 +50,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         setupViewModel();
         setupFilterControls();
 
-        // ✅ BƯỚC 3: GỌI HÀM SETUP CHO NÚT MỚI
+        //GỌI HÀM SETUP CHO NÚT MỚI
         setupFab();
     }
 
@@ -71,7 +71,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
         versionNumberInput = findViewById(R.id.edittext_version_number);
         filterButton = findViewById(R.id.button_filter);
 
-        // ✅ BƯỚC 4: ÁNH XẠ NÚT MỚI TỪ LAYOUT
+        // ÁNH XẠ NÚT MỚI TỪ LAYOUT
         fabNewProtocol = findViewById(R.id.fab_new_protocol);
     }
 
@@ -147,7 +147,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
     }
 
     /**
-     * ✅ BƯỚC 5: TẠO HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
+     * HÀM MỚI ĐỂ XỬ LÝ SỰ KIỆN CHO NÚT FAB
      * Cài đặt sự kiện click cho nút FloatingActionButton.
      */
     private void setupFab() {fabNewProtocol.setOnClickListener(view -> {
@@ -165,7 +165,7 @@ public class ProtocolListActivity extends AppCompatActivity implements ProtocolA
 
         viewModel.getProtocols().observe(this, protocols -> {
             if (protocols != null) {
-                // Lưu ý: Nếu bạn đã áp dụng Enum và thay đổi interface, bạn cần sửa lại Adapter và cả onItemClick bên dưới
+
                 protocolAdapter.submitList(protocols);
             }
         });

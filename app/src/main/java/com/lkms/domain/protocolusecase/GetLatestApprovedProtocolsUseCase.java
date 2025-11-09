@@ -1,4 +1,4 @@
-package com.lkms.domain.protocolusecase; // ✅ DÒNG 1: Khai báo package phải ở đầu tiên và đúng cú pháp.
+package com.lkms.domain.protocolusecase;
 
 import com.lkms.data.repository.IProtocolRepository;
 

@@ -5,32 +5,35 @@ import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.model.java.Protocol;
 import com.lkms.data.model.java.ProtocolItem;
 import com.lkms.data.model.java.ProtocolStep;
+import com.lkms.data.model.java.Team;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.IExperimentStepRepositoryVjet;
 import com.lkms.data.repository.IProtocolRepository;
+import com.lkms.data.repository.ITeamRepository;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * UseCase đơn giản hóa: Chỉ chịu trách nhiệm tạo bản ghi Experiment và các ExperimentStep tương ứng.
- * Logic về kiểm tra và trừ kho đã được tách ra khỏi UseCase này.
+ * UseCase chịu trách nhiệm tạo bản ghi Experiment, các ExperimentStep,
+ * và tự động thêm người tạo vào Team.
  */
 public class CreateFullExperimentUseCase {
 
     private final IExperimentRepository experimentRepo;
     private final IProtocolRepository protocolRepo;
-    // Chú ý: tên IExperimentStepRepositoryVjet của bạn hơi khác, tôi sẽ giữ nguyên
     private final IExperimentStepRepositoryVjet experimentStepRepo;
-    // --- ĐÃ XÓA: IInventoryRepository inventoryRepo; ---
+    private final ITeamRepository teamRepo;
 
     /**
-     * Constructor đã được đơn giản hóa, không còn nhận IInventoryRepository.
+     * Constructor được cập nhật để nhận thêm ITeamRepository.
      */
-    public CreateFullExperimentUseCase(IExperimentRepository er, IProtocolRepository pr, IExperimentStepRepositoryVjet esr) {
+    public CreateFullExperimentUseCase(IExperimentRepository er, IProtocolRepository pr, IExperimentStepRepositoryVjet esr, ITeamRepository tr) {
         this.experimentRepo = er;
         this.protocolRepo = pr;
         this.experimentStepRepo = esr;
+        this.teamRepo = tr;
     }
 
     /**
@@ -40,12 +43,12 @@ public class CreateFullExperimentUseCase {
      */
     public void execute(String title, String objective, int protocolId, int userId, int projectId, IExperimentRepository.IdCallback finalCallback) {
 
-        // --- BƯỚC 1: Chỉ cần lấy danh sách các bước (Steps) của Protocol ---
+        // --- BƯỚC 1: Lấy danh sách các bước (Steps) của Protocol ---
         protocolRepo.getProtocolDetails(protocolId, new IProtocolRepository.ProtocolContentCallback() {
             @Override
             public void onStepsReceived(List<ProtocolStep> steps) {
                 // Khi có steps, bắt đầu quy trình tạo thí nghiệm
-                createExperimentAndSteps(title, objective, userId, protocolId, projectId, steps, finalCallback);
+                createExperimentAndRelatedData(title, objective, userId, protocolId, projectId, steps, finalCallback);
             }
 
             @Override
@@ -54,46 +57,63 @@ public class CreateFullExperimentUseCase {
             }
 
             // Các hàm không cần dùng đến trong UseCase này
-            @Override
-            public void onProtocolReceived(Protocol protocol) { /* Không dùng */ }
-
-            @Override
-            public void onItemsReceived(List<ProtocolItem> items) { /* Không dùng */ }
+            @Override public void onProtocolReceived(Protocol protocol) { /* Không dùng */ }
+            @Override public void onItemsReceived(List<ProtocolItem> items) { /* Không dùng */ }
         });
     }
 
     /**
-     * Hàm nội bộ để phối hợp việc tạo Experiment và sau đó là tạo các Step.
+     * Hàm nội bộ để phối hợp việc tạo Experiment, thêm thành viên Team và sau đó là tạo các Step.
      */
-    private void createExperimentAndSteps(String title, String objective, int userId, int protocolId, int projectId,
-                                          List<ProtocolStep> steps, IExperimentRepository.IdCallback finalCallback) {
+    private void createExperimentAndRelatedData(String title, String objective, int userId, int protocolId, int projectId,
+                                                List<ProtocolStep> steps, IExperimentRepository.IdCallback finalCallback) {
         // --- BƯỚC 2: Tạo bản ghi Experiment chính ---
         experimentRepo.createNewExperiment(title, objective, userId, protocolId, projectId, new IExperimentRepository.IdCallback() {
             @Override
             public void onSuccess(int newExperimentId) {
-                // --- BƯỚC 3: Nếu tạo Experiment thành công, tiếp tục tạo các Step ---
-                createExperimentSteps(newExperimentId, steps, new IExperimentRepository.GenericCallback() {
+                // --- BƯỚC 3: Thêm người tạo vào bảng Team với status ACTIVE ---
+                addCreatorToTeam(newExperimentId, userId, new ITeamRepository.TeamMemberCallback() {
                     @Override
-                    public void onSuccess() {
-                        // Khi tạo Step cũng thành công, toàn bộ quá trình hoàn tất.
-                        // Báo thành công và trả về ID của Experiment vừa tạo.
-                        finalCallback.onSuccess(newExperimentId);
+                    public void onSuccess(Team teamMember) {
+                        // --- BƯỚC 4: Nếu thêm team thành công, tiếp tục tạo các Step ---
+                        createExperimentSteps(newExperimentId, steps, new IExperimentRepository.GenericCallback() {
+                            @Override
+                            public void onSuccess() {
+                                // Khi tạo Step cũng thành công, toàn bộ quá trình hoàn tất.
+                                finalCallback.onSuccess(newExperimentId);
+                            }
+
+                            @Override
+                            public void onError(String stepErrorMessage) {
+                                finalCallback.onError("Tạo thí nghiệm và team thành công, nhưng lỗi khi tạo các bước: " + stepErrorMessage);
+                            }
+                        });
                     }
 
                     @Override
-                    public void onError(String stepErrorMessage) {
-                        // Nếu tạo Step lỗi, toàn bộ quá trình vẫn bị coi là thất bại.
-                        finalCallback.onError("Tạo thí nghiệm thành công, nhưng lỗi khi tạo các bước: " + stepErrorMessage);
+                    public void onError(String teamErrorMessage) {
+                        finalCallback.onError("Tạo thí nghiệm thành công, nhưng lỗi khi thêm người tạo vào team: " + teamErrorMessage);
                     }
                 });
             }
 
             @Override
             public void onError(String experimentErrorMessage) {
-                // Nếu tạo Experiment chính đã thất bại, báo lỗi và dừng lại.
                 finalCallback.onError("Lỗi khi tạo bản ghi thí nghiệm: " + experimentErrorMessage);
             }
         });
+    }
+
+    /**
+     * Hàm nội bộ để thêm người tạo vào bảng Team.
+     */
+    private void addCreatorToTeam(int experimentId, int creatorId, ITeamRepository.TeamMemberCallback callback) {
+        Team creatorAsMember = new Team(
+                experimentId,
+                creatorId,
+                LKMSConstantEnums.TeamStatus.ACTIVE.name() // Status là ACTIVE
+        );
+        teamRepo.addMember(creatorAsMember, callback);
     }
 
     /**
@@ -109,7 +129,6 @@ public class CreateFullExperimentUseCase {
         for (ProtocolStep p : steps) {
             newSteps.add(new ExperimentStep(null, newExperimentId, p.getProtocolStepId(), "PENDING", null));
         }
-        // Sử dụng repo của bạn
         experimentStepRepo.createExperimentSteps(newSteps, cb);
     }
 }

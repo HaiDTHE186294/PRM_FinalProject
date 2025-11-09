@@ -21,15 +21,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.lkms.R;
 import com.lkms.data.model.java.Item;
 import com.lkms.data.repository.IInventoryRepository;
 import com.lkms.data.repository.implement.java.InventoryRepositoryImplJava;
-import com.lkms.domain.inventoryusecase.InventoryManagementUseCase;
+import com.lkms.domain.inventory.InventoryManagementUseCase;
 
 import java.util.List;
 
@@ -86,6 +85,12 @@ public class InventoryActivity extends AppCompatActivity {
             } else {
                 requestCameraPermission.launch(Manifest.permission.CAMERA);
             }
+        });
+
+        FloatingActionButton fabAddItem = findViewById(R.id.fab_add_item);
+        fabAddItem.setOnClickListener( v -> {
+            Intent intent = new Intent(InventoryActivity.this, ItemAddUpdateActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -173,11 +178,17 @@ public class InventoryActivity extends AppCompatActivity {
                         startActivity(intent);
 
                     } catch (NumberFormatException e) {
-                        Toast.makeText(this, "Mã QR không hợp lệ!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "QR is invalid!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(this, "Scan cancelled", Toast.LENGTH_SHORT).show();
                 }
             });
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadInventoryItems();
+    }
 
 }

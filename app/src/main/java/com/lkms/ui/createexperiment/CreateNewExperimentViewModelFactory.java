@@ -26,17 +26,19 @@ public class CreateNewExperimentViewModelFactory implements ViewModelProvider.Fa
             IProjectRepositoryVjet projectRepo = new ProjectRepositoryVjetImplJava();
             IExperimentStepRepositoryVjet experimentStepRepo = new ExperimentStepRepositoryVjetImplJava();
             IInventoryRepository inventoryRepo = new InventoryRepositoryImplJava();
+            ITeamRepository teamRepo = new TeamRepositoryImplJava();
 
-            // --- SỬA Ở ĐÂY: KHỞI TẠO CẢ 3 USE CASE CHO LUỒNG LOGIC MỚI ---
+            // KHỞI TẠO CÁC USE CASE VỚI ĐẦY ĐỦ REPOSITORY ---
 
             // UseCase 1: Chỉ để KIỂM TRA kho, không hành động
             CheckInventoryUseCase checkInventoryUseCase = new CheckInventoryUseCase(inventoryRepo, protocolRepo);
 
-            // UseCase 2: Chỉ để TẠO thí nghiệm, không dính đến kho
+            // UseCase 2: TẠO thí nghiệm, team và các bước
             CreateFullExperimentUseCase createFullUseCase = new CreateFullExperimentUseCase(
                     experimentRepo,
                     protocolRepo,
-                    experimentStepRepo
+                    experimentStepRepo,
+                    teamRepo
             );
 
             // UseCase 3: Chỉ để TRỪ KHO, sau khi đã tạo thí nghiệm thành công
@@ -45,16 +47,15 @@ public class CreateNewExperimentViewModelFactory implements ViewModelProvider.Fa
                     protocolRepo
             );
 
-            // Các UseCase phụ khác
             GetProtocolDetailsUseCase getProtocolDetailsUseCase = new GetProtocolDetailsUseCase(protocolRepo);
             GetAvailableProjectsUseCase getProjectsUseCase = new GetAvailableProjectsUseCase(projectRepo);
 
 
-            // --- "TIÊM" CẢ 3 USE CASE LIÊN QUAN VÀO VIEWMODEL ---
+            // --- "TIÊM" CÁC USE CASE LIÊN QUAN VÀO VIEWMODEL ---
             return (T) new CreateNewExperimentViewModel(
                     createFullUseCase,
                     deductInventoryUseCase,
-                    checkInventoryUseCase, // Thêm UseCase kiểm tra vào
+                    checkInventoryUseCase,
                     getProtocolDetailsUseCase,
                     getProjectsUseCase
             );

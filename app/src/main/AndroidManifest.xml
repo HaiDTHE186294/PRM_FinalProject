@@ -4,12 +4,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
     <application
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher2"
@@ -17,7 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-
+        <activity
+            android:name=".ui.inventory.CheckInCheckOutActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.inventory.ItemDetailActivity"
             android:exported="false" />
@@ -47,6 +52,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.experimentInfo.ExperimentInfoActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".ui.experimentdetail.ExperimentDetailActivity"
@@ -60,6 +66,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -69,6 +76,13 @@
             android:exported="false" />
         <activity
             android:name=".ui.equipment.EquipmentListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.inventory.ItemAddUpdateActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".ui.user.AddUserActivity"
             android:exported="false" />
         <activity
             android:name=".ui.protocol.ProtocolListActivity"
@@ -91,18 +105,30 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.user_profile.UserProfileActivity"
+            android:name=".ui.addmember.AddMemberActivity"
+            android:exported="false"
+            android:label="Add Member to Experiment"
+            android:parentActivityName=".ui.experimentInfo.ExperimentInfoActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            />
+
+        <activity
+            android:name=".ui.user.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.MemberListActivity"
+            android:name=".ui.user.MemberListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.user_profile.ProfileSettingActivity"
+            android:name=".ui.user.ProfileSettingActivity"
             android:exported="false" />
 
+        <activity android:name=".ui.user.MemberDetailActivity" 
+            android:exported="false"/>
+            
         <activity
             android:name=".ui.project.projectdetail.ProjectDetailActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".ui.project.projectmanage.ProjectActivity" />
 
         <provider
@@ -114,5 +140,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <activity
+            android:name=".ui.project.projectdetail.ProjectDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.project.projectmanage.ProjectActivity"></activity>
     </application>
 </manifest>

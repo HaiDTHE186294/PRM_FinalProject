@@ -9,12 +9,10 @@ public class SystemLoginUseCase {
 
     private final IAuthRepository authRepository;
 
-    // ✅ Constructor — có thể inject repository từ ngoài (nếu cần test dễ hơn)
     public SystemLoginUseCase() {
         this.authRepository = new AuthRepositoryImplJava();
     }
 
-    // ✅ Hoặc constructor có tham số (nếu bạn muốn truyền repo từ Activity)
     public SystemLoginUseCase(IAuthRepository authRepository) {
         this.authRepository = authRepository;
     }
@@ -22,7 +20,7 @@ public class SystemLoginUseCase {
     // ✅ Hàm xử lý logic login
     public void execute(String email, String password, IAuthRepository.AuthCallback callback) {
         if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            callback.onError("Vui lòng nhập đầy đủ thông tin");
+            callback.onError("Please enter all required information.");
             return;
         }
 

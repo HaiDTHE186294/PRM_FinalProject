@@ -42,9 +42,10 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
             return insets;
         });
 
+        String statusText = getIntent().getStringExtra("status");
 
         // 1. Khởi tạo Adapter CHỈ MỘT LẦN
-        adapter = new ExperimentDetailAdapter(this);
+        adapter = new ExperimentDetailAdapter(this, this, statusText);
 
         // 2. Setup RecyclerView
         recyclerView = findViewById(RECYCLER_VIEW_ID);
@@ -73,7 +74,7 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
         viewModel.loadExperimentData(experimentId);
 
         tilte.setText(getIntent().getStringExtra("title"));
-        status.setText(getIntent().getStringExtra("status"));
+        status.setText(statusText);
         objectiveText.setText(getIntent().getStringExtra("objective"));
     }
 
@@ -107,12 +108,7 @@ public class ExperimentDetailActivity extends AppCompatActivity implements Exper
 
     @Override
     public void onStepExpandClicked(int stepId, int adapterPosition) {
-        Toast.makeText(this, "Clicked: " + stepId, Toast.LENGTH_SHORT).show();
-        // TODO: Gọi logic expand/collapse
-        // Ví dụ: viewModel.loadLogsForStep(stepId, adapterPosition);
-        // Sau đó, khi có kết quả, gọi: adapter.insertLogsForStep(logList, adapterPosition);
         viewModel.loadLogFromStep(stepId, adapterPosition);
     }
-
 
 }

@@ -86,10 +86,6 @@ public class ProjectViewModel extends ViewModel {
         });
     }
 
-    /**
-     * Tạo một dự án mới.
-     * UI sẽ quan sát 'newProjectId' để điều hướng khi thành công.
-     */
     public void createProject(String title, int leaderId) {
         _isLoading.setValue(true);
         projectUserCase.createProject(title, leaderId, new IProjectRepository.DataCallback<Integer>() {
@@ -106,11 +102,6 @@ public class ProjectViewModel extends ViewModel {
             }
         });
     }
-
-    /**
-     * Tải tất cả thông tin chi tiết cho một dự án cụ thể.
-     * (Thường được gọi khi người dùng nhấp vào một dự án).
-     */
     public void loadProjectDetailsScreen(int projectId) {
         _isLoading.setValue(true);
 
@@ -144,10 +135,8 @@ public class ProjectViewModel extends ViewModel {
                 _projectExperiments.postValue(experiments);
             }
             @Override
-            public void onError(String error) { /* Bỏ qua hoặc gộp lỗi */ }
+            public void onError(String error) { }
         });
-
-        // Giả định tải xong hết (có thể cải thiện bằng cách đợi tất cả)
         _isLoading.postValue(false);
     }
 

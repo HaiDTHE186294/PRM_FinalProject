@@ -20,7 +20,7 @@ public class CreateProtocolViewModel extends ViewModel {
     private final CreateNewProtocolUseCase createProtocolUseCase;
     private final IInventoryRepository inventoryRepository;
 
-    // --- SỬA LỖI ĐẶT TÊN: Bỏ dấu gạch dưới '_' ở đầu tên biến ---
+
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     public LiveData<Boolean> isLoading() { return isLoading; }
 
@@ -49,46 +49,46 @@ public class CreateProtocolViewModel extends ViewModel {
     }
 
     private void loadAllAvailableItems() {
-        isLoading.postValue(true); // Sửa tên biến ở đây
+        isLoading.postValue(true);
         Log.d(TAG, "Bắt đầu tải danh sách vật tư...");
         inventoryRepository.getAllInventoryItems(new IInventoryRepository.InventoryListCallback() {
             @Override
             public void onSuccess(List<Item> result) {
-                items.postValue(result); // Sửa tên biến ở đây
-                isLoading.postValue(false); // Sửa tên biến ở đây
+                items.postValue(result);
+                isLoading.postValue(false);
                 Log.d(TAG, "Tải thành công " + (result != null ? result.size() : 0) + " vật tư.");
             }
 
             @Override
             public void onError(String errorMessage) {
-                error.postValue("Lỗi tải vật tư: " + errorMessage); // Sửa tên biến ở đây
-                isLoading.postValue(false); // Sửa tên biến ở đây
+                error.postValue("Lỗi tải vật tư: " + errorMessage);
+                isLoading.postValue(false);
                 Log.e(TAG, "Lỗi khi tải vật tư: " + errorMessage);
             }
         });
     }
 
     public void createProtocol(Protocol protocolData, List<ProtocolStep> steps, List<ProtocolItem> protocolItems, int creatorId) {
-        isLoading.postValue(true); // Sửa tên biến ở đây
-        error.postValue(null); // Sửa tên biến ở đây
+        isLoading.postValue(true);
+        error.postValue(null);
 
         if (creatorId == -1) {
-            error.postValue("Không thể xác thực người dùng. Vui lòng đăng nhập lại."); // Sửa tên biến ở đây
-            isLoading.postValue(false); // Sửa tên biến ở đây
+            error.postValue("Không thể xác thực người dùng. Vui lòng đăng nhập lại.");
+            isLoading.postValue(false);
             return;
         }
 
         createProtocolUseCase.execute(protocolData, steps, protocolItems, creatorId, new IProtocolRepository.ProtocolIdCallback() {
             @Override
             public void onSuccess(int protocolId) {
-                creationSuccess.postValue(protocolId); // Sửa tên biến ở đây
-                isLoading.postValue(false); // Sửa tên biến ở đây
+                creationSuccess.postValue(protocolId);
+                isLoading.postValue(false);
             }
 
             @Override
             public void onError(String errorMessage) {
-                error.postValue(errorMessage); // Sửa tên biến ở đây
-                isLoading.postValue(false); // Sửa tên biến ở đây
+                error.postValue(errorMessage);
+                isLoading.postValue(false);
             }
         });
     }
@@ -96,8 +96,8 @@ public class CreateProtocolViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        // Không bắt buộc phải set null ở đây, nhưng nếu có thì cũng sửa lại tên biến
-        creationSuccess.setValue(null); // Sửa tên biến ở đây
-        error.setValue(null); // Sửa tên biến ở đây
+
+        creationSuccess.setValue(null);
+        error.setValue(null);
     }
 }

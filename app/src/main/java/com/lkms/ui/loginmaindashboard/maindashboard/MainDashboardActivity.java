@@ -35,11 +35,18 @@ import com.lkms.ui.loginmaindashboard.login.SystemLoginActivity;
 import com.lkms.ui.project.projectmanage.ProjectActivity;
 import com.lkms.ui.protocol.ProtocolListActivity;
 import com.lkms.ui.sds.SdsLookupActivity;
-import com.lkms.ui.user_profile.MemberListActivity;
-import com.lkms.ui.user_profile.UserProfileActivity;
+import com.lkms.ui.user.UserProfileActivity;
+import com.lkms.ui.user.MemberListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 public class MainDashboardActivity extends AppCompatActivity {
 
@@ -53,9 +60,25 @@ public class MainDashboardActivity extends AppCompatActivity {
     private List<BookingDisplay> bookingList = new ArrayList<>();
     private MainDashboardUseCase useCase;
 
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Log.d("Permission", "POST_NOTIFICATIONS - Have granted!");
+                    } else {
+                        Log.w("Permission", "POST_NOTIFICATIONS - Is refused!");
+                        // Ngài có thể Toast ở đây nếu muốn
+                        // Toast.makeText(this, "Bạn sẽ không nhận được thông báo mention!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_dashboard);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -96,13 +119,15 @@ public class MainDashboardActivity extends AppCompatActivity {
         loadOngoingExperiments();
         loadInventoryAlerts();
         loadBookings();
+
+        checkAndRequestNotificationPermission();
     }
 
     private void loadOngoingExperiments() {
         int userId = getUserIdFromSecurePrefs();
         //android.util.Log.d("USER_CHECK", "User ID from EncryptedSharedPrefs: " + userId);
         if (userId == -1) {
-            Toast.makeText(this, "Không tìm thấy userId — vui lòng đăng nhập lại!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "UserId not found — please log in again!", Toast.LENGTH_SHORT).show();
             return;
         }
         useCase.getOngoingExperiments(userId, new ExperimentRepositoryImplJava.ExperimentListCallback() {
@@ -118,7 +143,7 @@ public class MainDashboardActivity extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() ->
-                        Toast.makeText(MainDashboardActivity.this, "Lỗi tải dữ liệu: " + message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(MainDashboardActivity.this, "Data loading error: " + message, Toast.LENGTH_SHORT).show()
                 );
             }
         });
@@ -138,7 +163,7 @@ public class MainDashboardActivity extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() ->
-                        Toast.makeText(MainDashboardActivity.this, "Lỗi tải tồn kho: " + message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(MainDashboardActivity.this, "Inventory loading error: " + message, Toast.LENGTH_SHORT).show()
                 );
             }
         });
@@ -148,7 +173,7 @@ public class MainDashboardActivity extends AppCompatActivity {
         int userId = getUserIdFromSecurePrefs();
         //android.util.Log.d("USER_CHECK1", "User ID from EncryptedSharedPrefs: " + userId);
         if (userId == -1) {
-            Toast.makeText(this, "Không tìm thấy userId — vui lòng đăng nhập lại!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "UserId not found — please log in again!", Toast.LENGTH_SHORT).show();
             return;
         }
         useCase.getUpcomingEquipmentBookings(userId, new IEquipmentRepository.BookingDisplayListCallback() {
@@ -164,7 +189,7 @@ public class MainDashboardActivity extends AppCompatActivity {
             @Override
             public void onError(String message) {
                 runOnUiThread(() ->
-                        Toast.makeText(MainDashboardActivity.this, "Lỗi tải booking: " + message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(MainDashboardActivity.this, "Error loading booking: " + message, Toast.LENGTH_SHORT).show()
                 );
             }
         });
@@ -212,7 +237,6 @@ public class MainDashboardActivity extends AppCompatActivity {
         }
 
         if (roleId != 0) {
-            menu.findItem(R.id.menu_approve).setVisible(false);
             menu.findItem(R.id.menu_role).setVisible(false);
         }
 
@@ -230,7 +254,7 @@ public class MainDashboardActivity extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.menu_protocol) {
+        if (id == R.id.menu_new_experiment) {
             startActivity(new Intent(this, ProtocolListActivity.class));
             Log.d("MENU_ACTION", "Navigated to ProtocolListActivity");
             return true;
@@ -288,7 +312,7 @@ public class MainDashboardActivity extends AppCompatActivity {
             editor.clear();
             editor.apply();
 
-            Toast.makeText(this, "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Log out successfully!", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(this, SystemLoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -298,7 +322,30 @@ public class MainDashboardActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             Log.e("LOGOUT_ERROR", "Logout failed: " + e.getMessage(), e);
-            Toast.makeText(this, "Lỗi khi đăng xuất: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error when logging out: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadOngoingExperiments();
+        loadInventoryAlerts();
+        loadBookings();
+    }
+
+    private void checkAndRequestNotificationPermission() {
+        // Chỉ chạy trên Android 13 (TIRAMISU) trở lên
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Kiểm tra xem đã có quyền chưa
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // Nếu CHƯA, hiển thị hộp thoại xin quyền
+                Log.d("Permission", "Requesting POST_NOTIFICATIONS...");
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            } else {
+                // Đã có quyền rồi
+                Log.d("Permission", "POST_NOTIFICATIONS - Already granted.");
+            }
         }
     }
 

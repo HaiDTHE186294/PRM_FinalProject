@@ -21,6 +21,28 @@ public class UserProfileUseCase
         return _user;
     }
 
+    public void addNewUser(String fullName, String email, String password, LKMSConstantEnums.UserRole role) {
+
+        User newUser = new User();
+        newUser.setName(fullName);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setRoleId(role.ordinal());
+        newUser.setUserStatus("Active");
+
+        userRepository.addUser(newUser, new UserRepositoryImplJava.UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                _user.postValue(user);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                _user.postValue(null);
+            }
+        });
+    }
+
     /**
      * Load user data from the repository based on the provided user ID.
      *
@@ -60,7 +82,6 @@ public class UserProfileUseCase
         //Update user's data inside this ViewModel
         getUser.setName(newName);
         getUser.setContactInfo(newContactInfo);
-        _user.postValue(getUser);
 
         //Update user's data inside DB
         userRepository.updateUserProfile(
@@ -93,7 +114,6 @@ public class UserProfileUseCase
 
         //Update user's data inside this ViewModel
         getUser.setRoleId(newRole.ordinal());
-        _user.postValue(getUser);
 
         //Update user's data inside DB
         userRepository.updateUserRole(

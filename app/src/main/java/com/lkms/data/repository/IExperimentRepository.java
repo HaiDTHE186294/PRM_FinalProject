@@ -1,6 +1,7 @@
 package com.lkms.data.repository;
 
 import com.lkms.data.model.java.*;
+import com.lkms.data.model.java.combine.ExperimentReportData;
 
 import java.io.File;
 import java.util.List;
@@ -80,6 +81,12 @@ public interface IExperimentRepository {
         void onError(String errorMessage);
     }
 
+    interface ExperimentReportDataCallback {
+        void onSuccess(ExperimentReportData data);
+        void onError(String errorMessage);
+    }
+
+
 
     // --- Chức năng Quản lý Thí nghiệm (UC5, UC34) ---
 
@@ -148,28 +155,12 @@ public interface IExperimentRepository {
             StringCallback callback
     );
 
-    // --- Chức năng Báo cáo (UC15) ---
-
-    /**
-     * UC15: Yêu cầu server tạo báo cáo PDF cho một thí nghiệm đã hoàn thành.
-     * Trả về link tải xuống (String url) [6, 7].
-     */
-    void requestExperimentReport(int experimentId, StringCallback callback);
-
     // --- Chức năng Cộng tác (UC13) ---
 
     /**
      * UC13: Đăng bình luận vào thí nghiệm.
      * Chèn vào bảng "Comment" [3].
      */
-    void postComment(int experimentId, int userId, String commentText, GenericCallback callback);
-
-    /**
-     * UC13: Lấy danh sách bình luận cho một thí nghiệm.
-     * Truy vấn bảng "Comment" [3].
-     */
-    void getCommentsForExperiment(int experimentId, CommentListCallback callback);
-
 
     void getExperimentIdsByUserId(int userId, IdListCallback callback);
 
@@ -182,5 +173,9 @@ public interface IExperimentRepository {
     void getLogEntryById(int logEntryId, LogEntryCallback callback);
 
     void getFile(String url, FileCallBack callback);
+
+    void completeExperiment(int experimentId, GenericCallback callback);
+
+    void getExperimentReportData(int experimentId, ExperimentReportDataCallback callback);
 
 }

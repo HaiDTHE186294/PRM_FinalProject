@@ -10,6 +10,7 @@ import com.lkms.data.model.java.Experiment;
 import com.lkms.data.model.java.ExperimentStep;
 import com.lkms.data.model.java.LogEntry;
 import com.lkms.data.model.java.Project;
+import com.lkms.data.model.java.combine.ExperimentReportData;
 import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
 
@@ -212,22 +213,6 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
         }).start();
     }
 
-    // -------------------- NOT IMPLEMENTED YET --------------------
-    @Override
-    public void requestExperimentReport(int experimentId, StringCallback callback) {
-        callback.onError("Chưa được triển khai.");
-    }
-
-    @Override
-    public void postComment(int experimentId, int userId, String commentText, GenericCallback callback) {
-        callback.onError("Chưa được triển khai.");
-    }
-
-    @Override
-    public void getCommentsForExperiment(int experimentId, CommentListCallback callback) {
-        callback.onError("Chưa được triển khai.");
-    }
-
     //Adding
     @Override
     public void getExperimentIdsByUserId(int userId, IdListCallback callback) {
@@ -391,5 +376,68 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
         }).start();
     }
 
+    @Override
+    public void completeExperiment(int experimentId, GenericCallback callback) {
+        new Thread(() -> {
+            try {
+                // 1. Tạo endpoint Supabase REST cho bảng "Experiment"
+                // Lọc theo experimentId.
+                String endpoint = SUPABASE_URL + "/rest/v1/Experiment?experimentId=eq." + experimentId;
+
+                // 2. Lấy giá trị status mới
+                String status = LKMSConstantEnums.ExperimentStatus.COMPLETED.toString();
+
+                java.util.Date today = new java.util.Date();
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                String todayString = sdf.format(today);
+
+                // 3. Tạo JSON payload để gửi đi
+                // Payload sẽ có dạng: {"experimentStatus": "COMPLETED"}
+                // (Giả sử cột trong Supabase tên là "experimentStatus")
+                String jsonPayload = "{\"experimentStatus\": \"" + status + "\", " +
+                        "\"finishDate\": \"" + todayString + "\"}";
+
+                // 4. Gửi PATCH request
+                HttpHelper.patchJson(endpoint, jsonPayload);
+
+                // 5. Nếu không ném ra exception, tức là đã thành công
+                callback.onSuccess();
+
+            } catch (Exception e) {
+                // 6. Xử lý nếu có lỗi
+                callback.onError("Error completing experiment: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    @Override
+    public void getExperimentReportData(int experimentId, ExperimentReportDataCallback callback) {
+        new Thread(() -> {
+            try {
+                // 1. Lọc Endpoint RPC
+                String endpoint = SUPABASE_URL + "/rest/v1/rpc/get_experiment_report_data";
+
+                // 2. Tạo JSON Payload
+                String jsonPayload = "{\"p_experiment_id\":" + experimentId + "}";
+
+                String jsonResponse = HttpHelper.postJson(endpoint, jsonPayload);
+
+                // 4. Parse JSON String thành Object
+                if (jsonResponse != null && !jsonResponse.isEmpty()) {
+                    Gson gson = new Gson();
+                    ExperimentReportData data = gson.fromJson(jsonResponse, ExperimentReportData.class);
+
+                    // 5. Thành công
+                    callback.onSuccess(data);
+                } else {
+                    callback.onError("No data received from server.");
+                }
+
+            } catch (Exception e) {
+                // 6. Xử lý lỗi
+                callback.onError("Error fetching report data: " + e.getMessage());
+            }
+        }).start();
+    }
 
 }

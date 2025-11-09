@@ -1,4 +1,4 @@
-// File: ProtocolDetailActivity.java
+
 package com.lkms.ui.protocol;
 
 import android.content.Intent;
@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.core.content.ContextCompat; // Dùng để lấy màu từ file colors.xml một cách an toàn.
+import androidx.core.content.ContextCompat;
 import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums.ProtocolApproveStatus; // Để code có thể "hiểu" được Enum ProtocolApproveStatus là gì.
 
 
@@ -43,10 +43,10 @@ public class ProtocolDetailActivity extends AppCompatActivity {
     private ProtocolStepAdapter stepAdapter;
     private ProtocolItemAdapter itemAdapter;
 
-    // ✅ BƯỚC 2: KHAI BÁO BIẾN CHO NÚT MỚI
+
     private FloatingActionButton fabCreateExperiment;
 
-    // ✅ BƯỚC 3: TẠO BIẾN LƯU ID CỦA PROTOCOL HIỆN TẠI
+    // TẠO BIẾN LƯU ID CỦA PROTOCOL HIỆN TẠI
     private int currentProtocolId = INVALID_ID;
 
     @Override
@@ -73,7 +73,7 @@ public class ProtocolDetailActivity extends AppCompatActivity {
         // Yêu cầu tải dữ liệu
         viewModel.loadProtocolDetails(currentProtocolId);
 
-        // ✅ BƯỚC 6: GỌI HÀM SETUP CHO NÚT MỚI
+        // GỌI HÀM SETUP CHO NÚT MỚI
         setupFab();
     }
 
@@ -88,7 +88,7 @@ public class ProtocolDetailActivity extends AppCompatActivity {
         recyclerItems = findViewById(R.id.recyclerItems);
         progressBar = findViewById(R.id.progressBar);
 
-        // ✅ BƯỚC 4: ÁNH XẠ NÚT FAB TỪ LAYOUT
+        // ÁNH XẠ NÚT FAB TỪ LAYOUT
         fabCreateExperiment = findViewById(R.id.fab_create_experiment);
     }
 
