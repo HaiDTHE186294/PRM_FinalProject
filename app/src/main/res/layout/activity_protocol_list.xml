@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.protocol.ProtocolListActivity">
 
-    <!-- Thanh tìm kiếm (Giữ nguyên) -->
+    <!-- Thanh tìm kiếm  -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="0dp"
@@ -17,9 +17,9 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:queryHint="Tìm kiếm theo tiêu đề..." />
+        app:queryHint="Search by title" />
 
-    <!-- Khung lọc (Giữ nguyên) -->
+    <!-- Khung lọc  -->
     <LinearLayout
         android:id="@+id/filterLayout"
         android:layout_width="0dp"
@@ -58,11 +58,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Lọc" />
+            android:text="Filter" />
 
     </LinearLayout>
 
-    <!-- Danh sách hiển thị (Giữ nguyên) -->
+    <!-- Danh sách hiển thị  -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewProtocols"
         android:layout_width="0dp"
@@ -76,7 +76,7 @@
         app:layout_constraintTop_toBottomOf="@+id/filterLayout"
         tools:listitem="@layout/item_protocol" />
 
-    <!-- Vòng xoay loading (Giữ nguyên) -->
+    <!-- Vòng xoay loading-->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -88,7 +88,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <!-- ✅ BƯỚC 1: THÊM NÚT FLOATING ACTION BUTTON VÀO ĐÂY -->
+    <!-- NÚT FLOATING ACTION BUTTON -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_new_protocol"
         android:layout_width="wrap_content"

@@ -33,7 +33,7 @@
             <!-- Các mục khác -->
             <item
                 android:id="@+id/menu_project"
-                android:title="Project" />
+                android:title="Manage Project" />
 
             <item
                 android:id="@+id/menu_inventory"

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".ui.addmember.AddMemberActivity">
 
-    <!-- ⭐ DÙNG LẠI TextInputLayout VÌ DỰ ÁN ĐÃ CÓ THƯ VIỆN MATERIAL ⭐ -->
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSearch"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:hint="Search by name or email"
-        app:startIconDrawable="@android:drawable/ic_menu_search">  <!-- ⭐ THAY THẾ: Dùng icon có sẵn của Android -->
+        app:startIconDrawable="@android:drawable/ic_menu_search">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSearchUser"
@@ -25,9 +25,9 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Thanh tiến trình (ProgressBar) - Giữ nguyên -->
+    <!-- Thanh tiến trình (ProgressBar)  -->
 
-    <!-- Danh sách kết quả tìm kiếm - Giữ nguyên -->
+    <!-- Danh sách kết quả tìm kiếm -->
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -37,7 +37,7 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <!-- Nút xác nhận thêm thành viên - Giữ nguyên -->
+    <!-- Nút xác nhận thêm thành viên -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSearchResults"
         android:layout_width="match_parent"
