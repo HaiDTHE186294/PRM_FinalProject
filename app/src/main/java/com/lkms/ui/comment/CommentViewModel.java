@@ -124,10 +124,9 @@ public class CommentViewModel extends AndroidViewModel {
         });
     }
 
-    // 2. Gửi comment
     public void sendComment(String commentText, List<User> mentionedUsers) {
         if (commentText == null || commentText.trim().isEmpty()) {
-            errorMessage.setValue("Vui lòng nhập bình luận!"); // Sửa lại error message
+            errorMessage.setValue("Vui lòng nhập bình luận!");
             return;
         }
 
@@ -137,11 +136,12 @@ public class CommentViewModel extends AndroidViewModel {
             return;
         }
 
-        List<Integer> mentionedUserIds = new ArrayList<>();
-        if (mentionedUsers != null) {
-            for (User user : mentionedUsers) {
-                mentionedUserIds.add(user.getUserId());
-            }
+        // 1. MEOW! LẤY TÊN NGƯỜI GỬI (USER A) TỪ DANH SÁCH
+        String senderName = findUserNameById(currentUserId);
+        if (senderName.startsWith("User ")) {
+            // Trường hợp hiếm: list user chưa kịp tải mà đã gửi
+            errorMessage.setValue("Dữ liệu người dùng chưa sẵn sàng, vui lòng thử lại!");
+            return;
         }
 
         Comment newComment = new Comment();
@@ -158,55 +158,29 @@ public class CommentViewModel extends AndroidViewModel {
         }
 
         newComment.setCommentText(commentText.trim());
-        newComment.setUserId(currentUserId);
+        newComment.setUserId(currentUserId); // ID của User A
 
         long timestamp = System.currentTimeMillis();
         newComment.setTimeStamp(String.valueOf(timestamp));
 
-        // Gọi UseCase để post
-        postCommentUseCase.execute(newComment, mentionedUserIds, new ICommentRepository.OnPostResultListener() {
-            @Override
-            public void onSuccess() {
-                postSuccess.postValue(true);
+        postCommentUseCase.execute(
+                newComment,
+                senderName,
+                mentionedUsers, // <-- List<User> của User B, C...
+                new ICommentRepository.OnPostResultListener() {
+                    @Override
+                    public void onSuccess() {
+                        postSuccess.postValue(true);
+                        // (Logic mock-up noti đã được xóa,
+                        //  vì Firebase Function sẽ lo việc này!)
+                    }
 
-                if (mentionedUsers != null && !mentionedUsers.isEmpty()) {
-
-                    NotificationHelper notificationHelper = new NotificationHelper(getApplication());
-                    notificationHelper.createNotificationChannel();
-
-                    // 1. Lấy tên "A" (Người gửi)
-                    String userNameA = findUserNameById(currentUserId);
-
-                    // 2. Lặp qua "B" (Những người được mention)
-                    for (User userB : mentionedUsers) {
-
-                        // Bỏ qua nếu tự mention chính mình
-                        if (userB.getUserId() == currentUserId) {
-                            continue;
-                        }
-
-                        String title = "You have been mentioned!";
-
-                        // 3. MEOW! TẠO CONTENT MỚI
-                        String content = userNameA + " mentioned you in "; // "User A mentioned you in "
-
-                        if (commentType == LKMSConstantEnums.CommentType.DISCUSSION) {
-                            content += "project with id: " + targetId;
-                        } else { // (Giả định là GENERAL)
-                            content += "experiment with id: " + targetId;
-                        }
-
-                        // 4. Gửi thông báo!
-                        notificationHelper.sendMentionNotification(title, content, userB.getUserId());
+                    @Override
+                    public void onError(Exception e) {
+                        errorMessage.postValue("Gửi bình luận thất bại: " + e.getMessage());
                     }
                 }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                errorMessage.postValue("Gửi bình luận thất bại: " + e.getMessage());
-            }
-        });
+        );
     }
 
     // 3. Dọn dẹp

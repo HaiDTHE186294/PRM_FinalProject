@@ -41,6 +41,9 @@ public class Comment {
     @SerializedName("projectId")
     private Integer projectId;
 
+    @SerializedName("senderName")
+    private String senderName;
+
     public Integer getTargetId(){
         if(commentType.equals(LKMSConstantEnums.CommentType.GENERAL.toString())){
             return experimentId;

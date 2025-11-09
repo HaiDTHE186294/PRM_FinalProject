@@ -55,7 +55,7 @@ public interface ICommentRepository {
      * @param mentionedUserIds  Danh sách các User ID đã được mention.
      * @param listener          Callback thông báo kết quả.
      */
-    void postComment(Comment newComment, List<Integer> mentionedUserIds, OnPostResultListener listener);
+    public void postComment(Comment newComment, String senderName, List<User> mentionedUsers, OnPostResultListener listener);
 
 
     // --- Chức năng 3: Lấy danh sách Mention (@) [ĐÃ SỬA ĐỔI] ---

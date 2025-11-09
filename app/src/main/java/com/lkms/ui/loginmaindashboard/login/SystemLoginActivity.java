@@ -17,6 +17,7 @@ import com.lkms.BuildConfig;
 import com.lkms.data.model.java.AuthResult;
 import com.lkms.data.repository.IAuthRepository;
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
@@ -28,6 +29,12 @@ import androidx.security.crypto.MasterKey;
 import com.lkms.R;
 import com.lkms.domain.loginmaindashboardusecase.SystemLoginUseCase;
 import com.lkms.ui.loginmaindashboard.maindashboard.MainDashboardActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Date;
 
@@ -82,9 +89,11 @@ public class SystemLoginActivity extends AppCompatActivity {
                             editor.putString("jwt_token", result.getAuthToken());
                             editor.putInt("user_role", result.getRoleId());
                             editor.putInt("user_id", result.getUserId());
+                            int currentUserId = result.getUserId();
                             editor.apply();
 
                         //    int savedRole = sharedPreferences.getInt("user_role", -1);
+                            saveFcmTokenToFirebase(currentUserId);
 
                             startActivity(new Intent(SystemLoginActivity.this, MainDashboardActivity.class));
                             finish();
@@ -143,6 +152,36 @@ public class SystemLoginActivity extends AppCompatActivity {
             Log.e("Error", "⚠️ Lỗi khi kiểm tra token: " + e.getMessage());
             return false;
         }
+    }
+
+    private void saveFcmTokenToFirebase(int userId) {
+        // 1. Lấy token từ Firebase Messaging
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (!task.isSuccessful()) {
+                    Log.w("FCM", "Lấy FcmToken thất bại", task.getException());
+                    return;
+                }
+
+                // 2. Lấy được Token
+                String token = task.getResult();
+                Log.d("FCM", "FcmToken của máy này là: " + token);
+
+                // 3. Lấy đường dẫn đến node "fcm_tokens" trên RTDB
+                DatabaseReference databaseRef = FirebaseDatabase.getInstance()
+                        .getReference("fcm_tokens");
+
+                // 4. Ghi đè token vào fcm_tokens/{userId}
+                databaseRef.child(String.valueOf(userId)).setValue(token)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("FCM", "Đã lưu FcmToken lên RTDB cho user: " + userId);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.w("FCM", "Lưu FcmToken lên RTDB thất bại!", e);
+                        });
+            }
+        });
     }
 
     private void clearLoginSession() {

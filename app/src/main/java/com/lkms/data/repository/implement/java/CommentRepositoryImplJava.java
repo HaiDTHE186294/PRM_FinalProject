@@ -136,12 +136,21 @@ public class CommentRepositoryImplJava implements ICommentRepository {
         }
     }
 
-    // --- 3. POST COMMENT (FIREBASE) ---
+    // Trong file: CommentRepositoryImplJava.java
+
     @Override
-    public void postComment(Comment newComment, List<Integer> mentionedUserIds, OnPostResultListener listener) {
+// (Chữ ký hàm đã đúng như lần trước chúng ta sửa)
+    public void postComment(Comment newComment, String senderName, List<User> mentionedUsers, OnPostResultListener listener) {
 
         String nodePath = (newComment.getCommentType().equals(LKMSConstantEnums.CommentType.DISCUSSION.toString())) ? "project" : "experiment";
-        Integer targetId = newComment.getTargetId(); // Giả sử model trả về Integer
+
+        // 1. MEOW! LẤY ID MỤC TIÊU (Sửa lại getter nếu cần)
+        Integer targetId;
+        if (nodePath.equals("project")) {
+            targetId = newComment.getProjectId();
+        } else {
+            targetId = newComment.getExperimentId();
+        }
 
         DatabaseReference commentsRef = database.getReference("comment").child(nodePath).child(String.valueOf(targetId));
 
@@ -151,27 +160,43 @@ public class CommentRepositoryImplJava implements ICommentRepository {
             return;
         }
         newComment.setCommentId(newCommentId);
+        newComment.setSenderName(senderName); // (Ngài đã thêm trường này vào model 'Comment')
 
+        // 2. GHI COMMENT (Như cũ)
         commentsRef.child(newCommentId).setValue(newComment).addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 listener.onError(task.getException());
                 return;
             }
 
-            if (mentionedUserIds == null || mentionedUserIds.isEmpty()) {
+            if (mentionedUsers == null || mentionedUsers.isEmpty()) {
                 listener.onSuccess();
                 return;
             }
 
-            // 3. Có mention, lưu vào node /mentions/comment_id/
+            // 3. MEOW! TẠO "GÓI HÀNG" ĐẦY ĐỦ CHO FUNCTION
             DatabaseReference mentionsRef = database.getReference("mention").child(newCommentId);
 
-            Map<String, Object> userMap = new HashMap<>();
-            for (Integer userId : mentionedUserIds) {
-                userMap.put(String.valueOf(userId), true);
-            }
+            Map<String, Object> mentionPayload = new HashMap<>();
 
-            mentionsRef.setValue(userMap).addOnCompleteListener(mentionTask -> {
+            // A. Thông tin người gửi (User A)
+            mentionPayload.put("senderId", newComment.getUserId());
+            mentionPayload.put("senderName", senderName);
+
+            // B. Thông tin "nơi" được mention (Project/Experiment)
+            mentionPayload.put("targetType", nodePath); // "project" hoặc "experiment"
+            mentionPayload.put("targetId", targetId);
+
+            // C. Danh sách người bị mention (Map<String, String>)
+            Map<String, String> mentionedUserMap = new HashMap<>();
+            for (User user : mentionedUsers) {
+                mentionedUserMap.put(String.valueOf(user.getUserId()), user.getName());
+            }
+            mentionPayload.put("mentionedUsers", mentionedUserMap);
+            // ---- HẾT "GÓI HÀNG" ----
+
+            // 4. GHI "GÓI HÀNG" NÀY LÊN RTDB
+            mentionsRef.setValue(mentionPayload).addOnCompleteListener(mentionTask -> {
                 if (mentionTask.isSuccessful()) {
                     listener.onSuccess();
                 } else {
