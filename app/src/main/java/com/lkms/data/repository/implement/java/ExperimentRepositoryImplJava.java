@@ -211,22 +211,6 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
         }).start();
     }
 
-    // -------------------- NOT IMPLEMENTED YET --------------------
-    @Override
-    public void requestExperimentReport(int experimentId, StringCallback callback) {
-        callback.onError("Chưa được triển khai.");
-    }
-
-    @Override
-    public void postComment(int experimentId, int userId, String commentText, GenericCallback callback) {
-        callback.onError("Chưa được triển khai.");
-    }
-
-    @Override
-    public void getCommentsForExperiment(int experimentId, CommentListCallback callback) {
-        callback.onError("Chưa được triển khai.");
-    }
-
     //Adding
     @Override
     public void getExperimentIdsByUserId(int userId, IdListCallback callback) {
@@ -453,6 +437,5 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
             }
         }).start();
     }
-
 
 }

@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
+import com.lkms.ui.comment.CommentFragment;
 
 import com.lkms.ui.project.peerreview.ProjectPeerReviewFragment;
 
@@ -27,7 +29,10 @@ public class ProjectDetailAdapter extends FragmentStateAdapter {
             case 1:
                 return ProjectPeerReviewFragment.newInstance(projectId);
             case 2:
-                return new Fragment();
+                return CommentFragment.newInstance(
+                        projectId,
+                        LKMSConstantEnums.CommentType.DISCUSSION
+                );
             default:
                 return new Fragment();
         }
