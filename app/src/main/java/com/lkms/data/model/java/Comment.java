@@ -1,6 +1,9 @@
 package com.lkms.data.model.java;
 
+import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.gson.annotations.SerializedName;
+import com.lkms.data.repository.enumPackage.java.LKMSConstantEnums;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -11,10 +14,11 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@IgnoreExtraProperties
 public class Comment {
 
     @SerializedName("commentId")
-    private Integer commentId;
+    private String commentId;
 
     @SerializedName("commentType")
     private String commentType;
@@ -34,6 +38,16 @@ public class Comment {
     private Integer userId;
 
     // Khóa ngoại đến LogEntry
-    @SerializedName("logId")
-    private Integer logId;
+    @SerializedName("projectId")
+    private Integer projectId;
+
+    public Integer getTargetId(){
+        if(commentType.equals(LKMSConstantEnums.CommentType.GENERAL.toString())){
+            return experimentId;
+        }else if(commentType.equals(LKMSConstantEnums.CommentType.DISCUSSION.toString())){
+            return projectId;
+        }else  {
+            return -1;
+        }
+    }
 }

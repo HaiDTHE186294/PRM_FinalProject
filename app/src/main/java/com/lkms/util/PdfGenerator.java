@@ -170,7 +170,6 @@ public class PdfGenerator {
 
         } catch (Exception e) {
             Log.e(TAG, "Lỗi khi tạo PDF: " + e.getMessage());
-            e.printStackTrace();
             showToast("Lỗi khi tạo PDF: " + e.getMessage());
         }
     }

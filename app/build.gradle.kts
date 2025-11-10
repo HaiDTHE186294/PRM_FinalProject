@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     kotlin("plugin.serialization") version "1.9.0"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,6 +54,8 @@ android {
             name = "JWT_SECRET",
             value = "\"${localProperties.getProperty("JWT_SECRET", "DEFAULT_SECRET_KEY")}\""
         )
+
+
     }
 
     buildTypes {
@@ -94,15 +97,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-
-    // SUPABASE - JAN TENNERT (for Kotlin code)
-    implementation(platform("io.github.jan-tennert.supabase:bom:3.2.4"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:auth-kt")
-    implementation("io.github.jan-tennert.supabase:realtime-kt")
-    implementation("io.github.jan-tennert.supabase:storage-kt")
-
-
     // GSON (Dependency for Harium Supabase)
     implementation("com.google.code.gson:gson:2.10.1")
 
@@ -133,6 +127,18 @@ dependencies {
     implementation("com.itextpdf:layout:8.0.4")
     // iText yêu cầu một thư viện ghi log, ta dùng bản 'no-op' (không làm gì cả)
     implementation("org.slf4j:slf4j-nop:1.7.30")
+
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-auth")
+
+    //Live-data testing
+    implementation("androidx.arch.core:core-testing:2.2.0")
+
+    //Auto complete text (for mention)
+    implementation("com.linkedin.android.spyglass:spyglass:3.0.3")
+
 }
 
 

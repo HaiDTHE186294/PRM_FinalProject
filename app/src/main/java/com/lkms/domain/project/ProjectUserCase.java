@@ -91,15 +91,15 @@ public class ProjectUserCase {
     public void createPeerReview(PeerReview review, IProjectRepository.DataCallback<Boolean> callback) {
         // Business Logic: Validate dữ liệu đầu vào
         if (review.getProjectId() == null) {
-            callback.onError("Cần có ProjectId để tạo Peer Review.");
+            callback.onError("Need ProjectId to create Peer Review.");
             return;
         }
         if (review.getStartTime() == null || review.getStartTime().isEmpty()) {
-            callback.onError("Thời gian bắt đầu không được để trống.");
+            callback.onError("Start time must not null.");
             return;
         }
         if (review.getDetail() == null || review.getDetail().trim().isEmpty()) {
-            callback.onError("Nội dung/chi tiết buổi họp không được để trống.");
+            callback.onError("Peer review content must not null.");
             return;
         }
 
