@@ -323,4 +323,45 @@ public class ProtocolRepositoryImplJava implements IProtocolRepository {
             this.rejectionReason = rejectionReason;
         }
     }
+
+    @Override
+    public void getItemsDetailsByIds(List<Integer> itemIds, ItemsDetailCallback callback) {
+        new Thread(() -> {
+            if (itemIds == null || itemIds.isEmpty()) {
+                // Nếu không có ID nào thì trả về danh sách rỗng, không cần gọi API
+                callback.onSuccess(new java.util.ArrayList<>());
+                return;
+            }
+
+            try {
+                // 1. Chuyển List<Integer> thành chuỗi "(1,2,3)" để dùng trong truy vấn 'in'
+                StringBuilder idListBuilder = new StringBuilder("(");
+                for (int i = 0; i < itemIds.size(); i++) {
+                    idListBuilder.append(itemIds.get(i));
+                    if (i < itemIds.size() - 1) {
+                        idListBuilder.append(",");
+                    }
+                }
+                idListBuilder.append(")");
+
+                // 2. Xây dựng URL với toán tử 'in'
+                //    Nó có nghĩa là: "lấy các item có itemId nằm TRONG danh sách này"
+                String endpoint = SUPABASE_URL + "/rest/v1/Item?select=itemId,itemName,unit&itemId=in." + idListBuilder.toString();
+
+                // 3. Gọi API
+                String json = HttpHelper.getJson(endpoint);
+
+                // 4. Decode kết quả vào List<Item>
+                Type listType = new TypeToken<List<com.lkms.data.model.java.Item>>() {}.getType();
+                List<com.lkms.data.model.java.Item> items = gson.fromJson(json, listType);
+
+                // 5. Trả về kết quả
+                callback.onSuccess(items);
+
+            } catch (Exception e) {
+                android.util.Log.e("ProtocolRepo", "Lỗi khi tải chi tiết các item bằng ID", e);
+                callback.onError("Lỗi khi tải chi tiết các item: " + e.getMessage());
+            }
+        }).start();
+    }
 }

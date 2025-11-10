@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lkms.R;
-import com.lkms.data.model.java.ProtocolItem;
+import com.lkms.ui.protocol.viewmodel.ProtocolDetailViewModel;
 import java.util.Objects;
 
 /**
- * Adapter để hiển thị danh sách vật tư (ProtocolItem).
- * Sử dụng ListAdapter với DiffUtil để có hiệu năng cao và xử lý khóa chính phức hợp.
+ * Adapter để hiển thị danh sách vật tư đã có chi tiết (tên, đơn vị).
+ * Sử dụng ListAdapter với lớp ProtocolItemView từ ViewModel.
  */
-public class ProtocolItemAdapter extends ListAdapter<ProtocolItem, ProtocolItemAdapter.ItemViewHolder> {
+public class ProtocolItemAdapter extends ListAdapter<ProtocolDetailViewModel.ProtocolItemView, ProtocolItemAdapter.ItemViewHolder> {
 
     public ProtocolItemAdapter() {
         super(DIFF_CALLBACK);
@@ -33,7 +33,8 @@ public class ProtocolItemAdapter extends ListAdapter<ProtocolItem, ProtocolItemA
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        ProtocolItem currentItem = getItem(position);
+        // Bây giờ getItem() sẽ trả về một đối tượng ProtocolItemView
+        ProtocolDetailViewModel.ProtocolItemView currentItem = getItem(position);
         holder.bind(currentItem);
     }
 
@@ -50,22 +51,17 @@ public class ProtocolItemAdapter extends ListAdapter<ProtocolItem, ProtocolItemA
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
         }
 
-        public void bind(ProtocolItem item) {
+        public void bind(ProtocolDetailViewModel.ProtocolItemView item) {
             if (item != null) {
-                // Do model ProtocolItem không có tên, ta tạm thời hiển thị ID.
-                // Sau này, bạn cần có cơ chế để lấy tên từ itemId.
-                if (item.getItemId() != null) {
-                    String nameText = "Vật tư ID: " + item.getItemId();
-                    tvItemName.setText(nameText);
-                }
+                // Tuyệt vời! Giờ chúng ta đã có tên để hiển thị trực tiếp
+                tvItemName.setText(item.itemName);
 
-                // Hiển thị số lượng
-                if (item.getQuantity() != null) {
-                    String quantityText = "x" + item.getQuantity();
-                    tvQuantity.setText(quantityText);
-                } else {
-                    tvQuantity.setText(""); // Ẩn nếu không có số lượng
+                // Hiển thị số lượng và đơn vị (nếu có)
+                String quantityText = "x" + item.quantity;
+                if (item.unit != null && !item.unit.isEmpty()) {
+                    quantityText += " " + item.unit;
                 }
+                tvQuantity.setText(quantityText);
             }
         }
     }
@@ -73,22 +69,19 @@ public class ProtocolItemAdapter extends ListAdapter<ProtocolItem, ProtocolItemA
     /**
      * DiffUtil.ItemCallback để ListAdapter tính toán sự thay đổi trong danh sách.
      */
-    private static final DiffUtil.ItemCallback<ProtocolItem> DIFF_CALLBACK = new DiffUtil.ItemCallback<ProtocolItem>() {
+    private static final DiffUtil.ItemCallback<ProtocolDetailViewModel.ProtocolItemView> DIFF_CALLBACK = new DiffUtil.ItemCallback<ProtocolDetailViewModel.ProtocolItemView>() {
         @Override
-        public boolean areItemsTheSame(@NonNull ProtocolItem oldItem, @NonNull ProtocolItem newItem) {
-            // Vì có khóa chính phức hợp (protocolId, itemId), ta phải so sánh cả hai ID
-            // để xác định xem chúng có phải là cùng một item hay không.
-            // Objects.equals an toàn với các giá trị có thể là null.
-            return Objects.equals(oldItem.getProtocolId(), newItem.getProtocolId()) &&
-                    Objects.equals(oldItem.getItemId(), newItem.getItemId());
+        public boolean areItemsTheSame(@NonNull ProtocolDetailViewModel.ProtocolItemView oldItem, @NonNull ProtocolDetailViewModel.ProtocolItemView newItem) {
+            // ID của item vẫn là định danh duy nhất
+            return oldItem.itemId == newItem.itemId;
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull ProtocolItem oldItem, @NonNull ProtocolItem newItem) {
-            // Lombok's @Data đã tự tạo ra hàm equals() hoàn hảo để so sánh nội dung (quantity).
-            // Hàm này sẽ kiểm tra xem trường quantity có thay đổi hay không.
-            return oldItem.equals(newItem);
+        public boolean areContentsTheSame(@NonNull ProtocolDetailViewModel.ProtocolItemView oldItem, @NonNull ProtocolDetailViewModel.ProtocolItemView newItem) {
+            // So sánh tất cả các nội dung có thể thay đổi
+            return oldItem.quantity.equals(newItem.quantity) &&
+                    oldItem.itemName.equals(newItem.itemName) &&
+                    Objects.equals(oldItem.unit, newItem.unit);
         }
     };
 }
-

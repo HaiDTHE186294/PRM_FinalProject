@@ -15,6 +15,10 @@ public interface IProtocolRepository {
         void onSuccess(List<Protocol> protocols); // Trả về List<Protocol>
         void onError(String errorMessage);
     }
+    interface ItemsDetailCallback {
+        void onSuccess(List<Item> items);
+        void onError(String errorMessage);
+    }
 
     // Callback đặc biệt để trả về nội dung chi tiết
     interface ProtocolContentCallback {
@@ -111,4 +115,6 @@ public interface IProtocolRepository {
     void getProtocolStep(int protocolStepId, ProtocolStepCallback callback);
 
     void getProtocolById(int protocolId, ProtocolCallBack callback);
+
+    void getItemsDetailsByIds(List<Integer> itemIds, ItemsDetailCallback callback);
 }
