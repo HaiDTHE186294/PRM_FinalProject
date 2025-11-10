@@ -9,12 +9,12 @@
         android:title="Search"
         app:showAsAction="always" />-->
 
-    <!-- Icon chuông thông báo -->
+    <!-- Icon chuông thông báo
     <item
         android:id="@+id/action_notifications"
         android:icon="@drawable/ic_notifications"
         android:title="Notifications"
-        app:showAsAction="always" />
+        app:showAsAction="always" />-->
 
     <!-- Icon menu bên cạnh chuông -->
     <item
