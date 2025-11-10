@@ -19,9 +19,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolbar_bg"
 
-            app:navigationIcon="?attr/homeAsUpIndicator"
-            app:navigationIconTint="@android:color/white"
-
             app:title="Team Members"
             app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
