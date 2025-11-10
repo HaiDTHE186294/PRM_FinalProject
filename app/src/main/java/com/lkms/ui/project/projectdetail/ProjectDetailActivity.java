@@ -57,6 +57,11 @@ public class ProjectDetailActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(project.getProjectTitle());
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         viewModel.loadProjectDetailsScreen(projectId);
     }
 
