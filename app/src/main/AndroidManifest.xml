@@ -141,9 +141,5 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity
-            android:name=".ui.project.projectdetail.ProjectDetailActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.project.projectmanage.ProjectActivity"></activity>
     </application>
 </manifest>
