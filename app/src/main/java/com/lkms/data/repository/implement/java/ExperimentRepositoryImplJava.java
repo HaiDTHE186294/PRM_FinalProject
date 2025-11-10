@@ -65,24 +65,22 @@ public class ExperimentRepositoryImplJava implements IExperimentRepository {
     // -------------------- GET ONGOING EXPERIMENTS --------------------
     @Override
     public void getOngoingExperiments(int userId, ExperimentListCallback callback) {
-        new Thread(() -> {
-            try {
-                String endpoint = SUPABASE_URL + "/rest/v1/Experiment?select=*"
-                        + "&userId=eq." + userId
-                        + "&experimentStatus=eq." + LKMSConstantEnums.ExperimentStatus.ONGOING;
-
-                String json = HttpHelper.getJson(endpoint);
-
-                Type listType = new TypeToken<List<Experiment>>() {}.getType();
-                List<Experiment> experiments = gson.fromJson(json, listType);
-
-                callback.onSuccess(experiments);
-            } catch (Exception e) {
-                callback.onError("Lỗi khi tải danh sách experiment: " + e.getMessage());
+        getExperimentIdsByUserId(userId, new IdListCallback() {
+            @Override
+            public void onSuccess(List<Integer> experimentIds) {
+                if (experimentIds == null || experimentIds.isEmpty()) {
+                    callback.onSuccess(new ArrayList<>());
+                    return;
+                }
+                getOngoingExperimentsByIds(experimentIds, callback);
             }
-        }).start();
-    }
 
+            @Override
+            public void onError(String message) {
+                callback.onError("Lỗi khi lấy danh sách experiment ID: " + message);
+            }
+        });
+    }
     // -------------------- GET EXPERIMENT STEPS --------------------
     @Override
     public void getExperimentStepsList(int experimentId, ExperimentStepListCallback callback) {

@@ -10,6 +10,7 @@ import com.lkms.data.repository.IExperimentRepository;
 import com.lkms.data.repository.implement.java.EquipmentRepositoryImplJava;
 import com.lkms.data.repository.implement.java.ExperimentRepositoryImplJava;
 import com.lkms.domain.booking.EquipmentBookingUseCase;
+import com.lkms.domain.loginmaindashboardusecase.MainDashboardUseCase;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,6 +41,10 @@ public class BookingViewModel extends ViewModel {
     private final MutableLiveData<String> _error = new MutableLiveData<>();
     public LiveData<String> error = _error;
 
+    private MainDashboardUseCase mainDashboardUseCase;
+
+
+
     private final int userId;
     private int equipmentId;
 
@@ -54,6 +59,7 @@ public class BookingViewModel extends ViewModel {
     }
 
     public void loadExperiments() {
+
         experimentRepo.getOngoingExperiments(userId, new IExperimentRepository.ExperimentListCallback() {
             @Override
             public void onSuccess(List<Experiment> list) {

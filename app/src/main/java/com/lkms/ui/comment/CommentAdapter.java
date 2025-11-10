@@ -61,7 +61,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         String userId = String.valueOf(comment.getUserId());
         String userName = userIdToNameMap.get(userId);
         if (userName == null) {
-            userName = "Unknown User";
+            userName = "Project Leader";
         }
         holder.userName.setText(userName);
     }
