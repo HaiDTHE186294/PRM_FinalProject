@@ -128,7 +128,11 @@ Dự án được xây dựng theo kiến trúc 3 tầng (MVVM + Use Cases), l�
 ## 🧑‍💻 Đội ngũ Phát triển
 
 Dự án này là nỗ lực chung của 5 thành viên, với trách nhiệm được phân chia theo các nhóm module/use case.
-
+   * **Lê Huy Điệp - lehuydiep4@gmail.com:**
+      * Experiment Logbook (UC6)
+      * File/Data Upload (UC12)
+      * Reporting (UC15)
+      * Team Collaboration & Comments (UC13, UC17)
   * **Đặng Thanh Hải - thanhhaidangabc@gmail.com:**
       * Equipment Booking (UC9)
       * Equipment Details & Manuals (UC10)
@@ -142,11 +146,6 @@ Dự án này là nỗ lực chung của 5 thành viên, với trách nhiệm đ
   * **Lê Đức Việt:**
       * Protocol/SOP Management (UC3, UC4)
       * Create Experiment
-  * **Lê Huy Điệp:**
-      * Experiment Logbook (UC6)
-      * File/Data Upload (UC12)
-      * Reporting (UC15)
-      * Team Collaboration & Comments (UC13, UC17)
   * **Đỗ Ngọc Hoàng Anh - da.flying.castle@gmail.com:**
       * Add/Update inventory
       * Checkin/Checkout
