@@ -1,5 +1,7 @@
-name: Android CI
+# Tên của workflow
+name: Android CI (Lint, Test, Build)
 
+# Kích hoạt khi có push hoặc mở Pull Request vào nhánh 'master'
 on:
   push:
     branches: [ "master" ]
@@ -7,22 +9,37 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  # Tên của job
+  build-lint-test:
+    name: Build, Lint & Test
+    runs-on: ubuntu-latest # Chạy trên máy ảo Ubuntu
 
     steps:
-    - uses: actions/checkout@v4
-    - name: set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      # Bước 1: Lấy code từ repo về
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
-    - name: Run Unit Tests
-    run: ./gradlew testDebugUnitTest
+      # Bước 2: Cài đặt Java JDK 17
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # Bước 3: Cấp quyền cho file gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+
+      # Bước 4: Chạy Lint (Kiểm tra code bẩn)
+      - name: Run Lint
+        run: ./gradlew lintDebug
+
+      # Bước 5: Chạy Unit Tests (Sẽ chạy các test trong 'app/src/test/java')
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
+      # Bước 6: Build thử file APK (Đảm bảo mọi thứ OK)
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
