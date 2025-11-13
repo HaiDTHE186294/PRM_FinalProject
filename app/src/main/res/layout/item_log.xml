@@ -17,7 +17,7 @@
         android:id="@+id/logEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[10:00 AM] Log entry detail (Text/File added)"
+        android:text="Log entry detail (Text/File added)"
         android:textSize="16sp"/>
 
 </LinearLayout>
