@@ -1,4 +1,3 @@
-package com.lkms;
 import com.lkms.data.model.java.Booking;
 import com.lkms.data.model.java.Equipment;
 import com.lkms.data.repository.IEquipmentRepository;
