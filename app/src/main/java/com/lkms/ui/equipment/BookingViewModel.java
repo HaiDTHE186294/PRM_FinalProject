@@ -140,7 +140,7 @@ public class BookingViewModel extends ViewModel {
         }
 
         useCase.loadBookingsForCalendar(equipmentId, start, end,
-                new EquipmentBookingUseCase.CalendarBookingCallback() {
+                    new EquipmentBookingUseCase.CalendarBookingCallback() {
                     @Override
                     public void onSuccess(List<LocalDate> list) {
                         _bookedDays.postValue(list);
