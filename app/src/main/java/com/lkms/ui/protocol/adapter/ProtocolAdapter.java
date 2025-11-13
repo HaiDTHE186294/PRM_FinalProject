@@ -120,7 +120,6 @@ public class ProtocolAdapter extends ListAdapter<Protocol, ProtocolAdapter.Proto
 
         @Override
         public boolean areContentsTheSame(@NonNull Protocol oldItem, @NonNull Protocol newItem) {
-            // So sánh nội dung để biết item có cần vẽ lại không
             return oldItem.equals(newItem);
         }
     };
